@@ -96,3 +96,40 @@ process align_reads {
     samtools view -Sb -f 4 > ${run_id}_nohuman.bam
     """
 }
+
+process convert_bam_to_fastq {
+    cpus 1
+    memory '1 GB'
+    container 'alexeyebi/bowtie2_samtools'
+
+    input:
+    path bam from aligned_reads_ch
+    val run_id from params.RUN_ID
+
+    output:
+    path "${run_id}_nohuman*fq" into bam_to_fastq_ch
+
+    script:
+    """
+    samtools bam2fq -1 ${run_id}_nohuman_1.fq -2 ${run_id}_nohuman_2.fq \
+    -s ${run_id}_nohuman_s.fq ${bam} > ${run_id}_nohuman_3.fq
+    """
+}
+
+process align_reads_to_sars2_genome {
+    cpus 19
+    memory '90 GB'
+    container 'alexeyebi/bowtie2_samtools'
+
+    input:
+
+    output:
+
+    script:
+    """
+    bowtie2 -p $v_threads --no-mixed --no-discordant --met-file $s \
+    -x $v_sars2_idx -1 $f -2 $r | samtools view -bST $v_sars2_fa | \
+    samtools sort | samtools view -h -F 4 -b > $bam
+    samtools index $bam
+    """
+}
