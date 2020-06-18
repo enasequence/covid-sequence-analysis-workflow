@@ -132,6 +132,9 @@ process align_reads_to_sars2_genome {
     file indices from bt_indices_sars2.collect()
     val run_id from params.RUN_ID
 
+    output:
+    path "${run_id}.bam" into sars2_aligned_reads_ch
+
     script:
     index_base = indices[0].toString() - ~/.rev.\d.bt2?/ - ~/.\d.bt2?/
     """
@@ -141,4 +144,22 @@ process align_reads_to_sars2_genome {
     samtools sort | samtools view -h -F 4 -b > ${run_id}.bam
     samtools index ${run_id}.bam
     """
+}
+
+process remove_duplicates {
+    cpus 1
+    memory '10 GB'
+    container 'biocontainers/picard:v1.141_cv3'
+
+    input:
+    path bam from sars2_aligned_reads_ch
+    val run_id from params.RUN_ID
+
+    script:
+    """
+    picard MarkDuplicates I=${bam} O=${run_id}_dep.bam REMOVE_DUPLICATES=true \
+    M=${run_id}_marked_dup_metrics.txt
+    """
+
+
 }
