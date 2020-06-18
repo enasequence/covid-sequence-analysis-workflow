@@ -3,6 +3,8 @@
 params.READS = "/sars-cov2-sequence-analysis/SRR11092064_{1,2}.fastq.gz"
 params.OUTDIR = "results"
 params.HUMAN_IDX = "/sars-cov2-sequence-analysis/ref/human/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.bowtie_index"
+params.SARS2_IDX = "/sars-cov2-sequence-analysis/ref/sars2/index/NC_045512.2"
+params.SARS2_FA = "/sars-cov2-sequence-analysis/ref/sars2/fa/NC_045512.2.fa"
 params.RUN_ID = "SRR11092064"
 
 Channel
@@ -116,20 +118,27 @@ process convert_bam_to_fastq {
     """
 }
 
+bt_indices_sars2 = Channel
+    .fromPath("${params.SARS2_IDX}*", checkIfExists: true)
+
 process align_reads_to_sars2_genome {
     cpus 19
     memory '90 GB'
     container 'alexeyebi/bowtie2_samtools'
 
     input:
-
-    output:
+    path fastq from bam_to_fastq_ch
+    path sars2_fasta from params.SARS2_FA
+    file indices from bt_indices_sars2.collect()
+    val run_id from params.RUN_ID
 
     script:
+    index_base = indices[0].toString() - ~/.rev.\d.bt2?/ - ~/.\d.bt2?/
     """
-    bowtie2 -p $v_threads --no-mixed --no-discordant --met-file $s \
-    -x $v_sars2_idx -1 $f -2 $r | samtools view -bST $v_sars2_fa | \
-    samtools sort | samtools view -h -F 4 -b > $bam
-    samtools index $bam
+    bowtie2 -p ${task.cpus} --no-mixed --no-discordant \
+    --met-file ${run_id}_bowtie_nohuman_summary -x $index_base \
+    -1 ${fastq[0]} -2 ${fastq[1]} | samtools view -bST ${sars2_fasta} | \
+    samtools sort | samtools view -h -F 4 -b > ${run_id}.bam
+    samtools index ${run_id}.bam
     """
 }
