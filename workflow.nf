@@ -155,11 +155,32 @@ process remove_duplicates {
     path bam from sars2_aligned_reads_ch
     val run_id from params.RUN_ID
 
+    output:
+    path "${run_id}_dep.bam" into remove_duplicates_ch
+
     script:
     """
     picard MarkDuplicates I=${bam} O=${run_id}_dep.bam REMOVE_DUPLICATES=true \
     M=${run_id}_marked_dup_metrics.txt
     """
+}
 
+process check_coverage {
+    cpus 1
+    memory '1 GB'
+    container 'alexeyebi/bowtie2_samtools'
 
+    input:
+    path bam from remove_duplicates_ch
+    val run_id from params.RUN_ID
+    path sars2_fasta from params.SARS2_FA
+
+    output:
+    path "${run_id}.pileup" into check_coverage_ch
+
+    script:
+    """
+    samtools mpileup -A -Q 30 -d 1000000 -f ${sars2_fasta} ${bam} > \
+    ${run_id}.pileup
+    """
 }

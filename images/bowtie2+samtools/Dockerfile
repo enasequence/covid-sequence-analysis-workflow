@@ -15,6 +15,6 @@ RUN wget $URL/$ZIP -O $DST/$ZIP && \
     mv $DST/$FOLDER/* $DST && \
     rmdir $DST/$FOLDER
 
-RUN conda install samtools=1.3.1
+RUN conda install -c bioconda samtools
 
 WORKDIR /data
