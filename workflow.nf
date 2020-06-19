@@ -184,3 +184,22 @@ process check_coverage {
     ${run_id}.pileup
     """
 }
+
+process make_small_file_with_coverage {
+    publishDir params.OUTDIR, mode:'copy'
+    cpus 1
+    memory '1 GB'
+    container 'alexeyebi/bowtie2_samtools'
+
+    input:
+    path pileup from check_coverage_ch
+    val run_id from params.RUN_ID
+
+    output:
+    path("${run_id}.coverage")
+
+    script:
+    """
+    cat ${pileup} | awk '{print \$2,","\$3,","\$4}' > ${run_id}.coverage
+    """
+}
