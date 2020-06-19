@@ -289,3 +289,26 @@ process filter_snv {
     """
 
 }
+
+process annotate_snps {
+    publishDir params.OUTDIR, mode:'copy'
+    cpus 19
+    memory '90 GB'
+    container 'alexeyebi/snpeff'
+
+    input:
+    path vcf from filtered_freq_vcf_ch
+    val run_id from params.RUN_ID
+
+    output:
+    path("${run_id}.annot.n.filtered_freq.vcf")
+
+    script:
+    """
+    cat ${vcf} | sed "s/^NC_045512.2/NC_045512/" > \
+    ${run_id}.newchr.filtered_freq.vcf
+    snpeff eff -v -s ${run_id}.snpEff_summary.html sars.cov.2 \
+    ${run_id}.newchr.filtered_freq.vcf > ${run_id}.annot.n.filtered_freq.vcf
+    """
+
+}
