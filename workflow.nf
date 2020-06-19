@@ -5,6 +5,7 @@ params.OUTDIR = "results"
 params.HUMAN_IDX = "/sars-cov2-sequence-analysis/ref/human/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.bowtie_index"
 params.SARS2_IDX = "/sars-cov2-sequence-analysis/ref/sars2/index/NC_045512.2"
 params.SARS2_FA = "/sars-cov2-sequence-analysis/ref/sars2/fa/NC_045512.2.fa"
+params.SARS2_FA_FAI = "/sars-cov2-sequence-analysis/ref/sars2/fa/NC_045512.2.fa.fai"
 params.RUN_ID = "SRR11092064"
 
 Channel
@@ -156,7 +157,7 @@ process remove_duplicates {
     val run_id from params.RUN_ID
 
     output:
-    path "${run_id}_dep.bam" into remove_duplicates_ch
+    path "${run_id}_dep.bam" into remove_duplicates_ch, remove_duplicates2_ch
 
     script:
     """
@@ -201,5 +202,32 @@ process make_small_file_with_coverage {
     script:
     """
     cat ${pileup} | awk '{print \$2,","\$3,","\$4}' > ${run_id}.coverage
+    """
+}
+
+process generate_vcf {
+    publishDir params.OUTDIR, mode:'copy'
+    cpus 19
+    memory '90 GB'
+    container 'alexeyebi/bowtie2_samtools'
+
+    input:
+    path bam from remove_duplicates2_ch
+    path sars2_fasta from params.SARS2_FA
+    path sars2_fasta_fai from params.SARS2_FA_FAI
+    val run_id from params.RUN_ID
+
+    output:
+    path "${run_id}.vcf.gz" into vcf_ch
+    path("${run_id}.stat")
+
+    script:
+    """
+    samtools index ${bam}
+    lofreq call-parallel --pp-threads ${task.cpus} -f ${sars2_fasta} \
+    -o ${run_id}.vcf ${bam}
+    bgzip ${run_id}.vcf
+    tabix ${run_id}.vcf.gz
+    bcftools stats ${run_id}.vcf.gz > ${run_id}.stat
     """
 }

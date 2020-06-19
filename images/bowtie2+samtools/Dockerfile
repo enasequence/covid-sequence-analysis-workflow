@@ -16,5 +16,7 @@ RUN wget $URL/$ZIP -O $DST/$ZIP && \
     rmdir $DST/$FOLDER
 
 RUN conda install -c bioconda samtools
+RUN conda install -c bioconda lofreq
+RUN conda install -c bioconda bcftools
 
 WORKDIR /data
