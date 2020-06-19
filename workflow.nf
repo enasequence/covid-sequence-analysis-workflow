@@ -231,3 +231,38 @@ process generate_vcf {
     bcftools stats ${run_id}.vcf.gz > ${run_id}.stat
     """
 }
+
+process create_consensus_sequence {
+    publishDir params.OUTDIR, mode:'copy'
+    cpus 19
+    memory '90 GB'
+    container 'alexeyebi/bowtie2_samtools'
+
+    input:
+    path vcf from vcf_ch
+    path sars2_fasta from params.SARS2_FA
+    path sars2_fasta_fai from params.SARS2_FA_FAI
+    val run_id from params.RUN_ID
+
+    output:
+    path("${run_id}.cons.fa")
+
+    script:
+    """
+    bcftools filter -i "DP>50" ${vcf} -o ${run_id}.cfiltered.vcf
+    bgzip ${run_id}.cfiltered.vcf
+    tabix ${run_id}.cfiltered.vcf.gz
+    bcftools filter -i "AF>0.5" ${run_id}.cfiltered.vcf.gz > \
+    ${run_id}.cfiltered_freq.vcf
+    bgzip -c ${run_id}.cfiltered_freq.vcf > ${run_id}.cfiltered_freq.vcf.gz
+    bcftools index ${run_id}.cfiltered_freq.vcf.gz
+    bcftools consensus -f ${sars2_fasta} ${run_id}.cfiltered_freq.vcf.gz > \
+    ${run_id}.cons.fa
+    sed -i "1s/.*/>${run_id}/" ${run_id}.cons.fa
+    rm ${run_id}.cfiltered.vcf.gz
+    rm ${run_id}.cfiltered.vcf.gz.tbi
+    rm ${run_id}.cfiltered_freq.vcf
+    rm ${run_id}.cfiltered_freq.vcf.gz.csi
+    rm ${run_id}.cfiltered_freq.vcf.gz
+    """
+}
