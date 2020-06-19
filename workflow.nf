@@ -218,7 +218,7 @@ process generate_vcf {
     val run_id from params.RUN_ID
 
     output:
-    path "${run_id}.vcf.gz" into vcf_ch
+    path "${run_id}.vcf.gz" into vcf_ch, vcf2_ch
     path("${run_id}.stat")
 
     script:
@@ -265,4 +265,27 @@ process create_consensus_sequence {
     rm ${run_id}.cfiltered_freq.vcf.gz.csi
     rm ${run_id}.cfiltered_freq.vcf.gz
     """
+}
+
+process filter_snv {
+    cpus 1
+    memory '1 GB'
+    container 'alexeyebi/bowtie2_samtools'
+
+    input:
+    path vcf from vcf2_ch
+    val run_id from params.RUN_ID
+
+    output:
+    path "${run_id}.filtered_freq.vcf" into filtered_freq_vcf_ch
+
+    script:
+    """
+    bcftools filter -i "DP>50" ${vcf} -o ${run_id}.filtered.vcf
+    bgzip ${run_id}.filtered.vcf
+    tabix ${run_id}.filtered.vcf.gz
+    bcftools filter -i "AF>0.1" ${run_id}.filtered.vcf.gz > \
+    ${run_id}.filtered_freq.vcf
+    """
+
 }
