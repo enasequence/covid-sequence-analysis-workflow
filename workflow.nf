@@ -1,16 +1,14 @@
 #!/usr/bin/env nextflow
 
-params.READS = "/sars-cov2-sequence-analysis/SRR11092064_{1,2}.fastq.gz"
 params.OUTDIR = "results"
-params.HUMAN_IDX = "/sars-cov2-sequence-analysis/ref/human/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.bowtie_index"
-params.SARS2_IDX = "/sars-cov2-sequence-analysis/ref/sars2/index/NC_045512.2"
-params.SARS2_FA = "/sars-cov2-sequence-analysis/ref/sars2/fa/NC_045512.2.fa"
-params.SARS2_FA_FAI = "/sars-cov2-sequence-analysis/ref/sars2/fa/NC_045512.2.fa.fai"
-params.RUN_ID = "SRR11092064"
+params.HUMAN_IDX = "/data/ref/human/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.bowtie_index"
+params.SARS2_IDX = "/data/ref/sars2/index/NC_045512.2"
+params.SARS2_FA = "/data/ref/sars2/fa/NC_045512.2.fa"
+params.SARS2_FA_FAI = "/data/ref/sars2/fa/NC_045512.2.fa.fai"
 
 Channel
     .fromFilePairs(params.READS, checkIfExists:true)
-    .into {read_pairs_ch; read_pairs2_ch}
+    .into {read_pairs_ch; read_pairs2_ch; read_pairs3_ch}
 
 process quality_control_pre {
     publishDir params.OUTDIR, mode:'copy'
@@ -18,7 +16,6 @@ process quality_control_pre {
     cpus 1
     memory '1 GB'
     container 'biocontainers/fastqc:v0.11.8dfsg-2-deb_cv1'
-    containerOptions = "--user root"
 
     input:
     tuple val(run_id), path(reads) from read_pairs_ch
@@ -38,7 +35,6 @@ process trimming_reads {
     cpus 1
     memory '1 GB'
     container 'davelabhub/trimmomatic:0.39--1'
-    containerOptions = "--user root"
 
     input:
     tuple val(run_id), path(reads) from read_pairs2_ch
@@ -62,7 +58,6 @@ process quality_control_post {
     cpus 1
     memory '1 GB'
     container 'biocontainers/fastqc:v0.11.8dfsg-2-deb_cv1'
-    containerOptions = "--user root"
 
     input:
     path trimmed_reads from trim_reads_ch
@@ -83,7 +78,6 @@ process align_reads {
     cpus 19
     memory '90 GB'
     container 'alexeyebi/bowtie2_samtools'
-    containerOptions = "--user root"
 
     input:
     path trimmed_reads from trim_reads2_ch
@@ -108,7 +102,6 @@ process convert_bam_to_fastq {
     cpus 1
     memory '1 GB'
     container 'alexeyebi/bowtie2_samtools'
-    containerOptions = "--user root"
 
     input:
     path bam from aligned_reads_ch
@@ -131,7 +124,6 @@ process align_reads_to_sars2_genome {
     cpus 19
     memory '90 GB'
     container 'alexeyebi/bowtie2_samtools'
-    containerOptions = "--user root"
 
     input:
     path fastq from bam_to_fastq_ch
@@ -157,7 +149,6 @@ process remove_duplicates {
     cpus 1
     memory '10 GB'
     container 'biocontainers/picard:v1.141_cv3'
-    containerOptions = "--user root"
 
     input:
     path bam from sars2_aligned_reads_ch
@@ -177,7 +168,6 @@ process check_coverage {
     cpus 1
     memory '1 GB'
     container 'alexeyebi/bowtie2_samtools'
-    containerOptions = "--user root"
 
     input:
     path bam from remove_duplicates_ch
@@ -199,7 +189,6 @@ process make_small_file_with_coverage {
     cpus 1
     memory '1 GB'
     container 'alexeyebi/bowtie2_samtools'
-    containerOptions = "--user root"
 
     input:
     path pileup from check_coverage_ch
@@ -219,7 +208,6 @@ process generate_vcf {
     cpus 19
     memory '90 GB'
     container 'alexeyebi/bowtie2_samtools'
-    containerOptions = "--user root"
 
     input:
     path bam from remove_duplicates2_ch
@@ -247,7 +235,6 @@ process create_consensus_sequence {
     cpus 19
     memory '90 GB'
     container 'alexeyebi/bowtie2_samtools'
-    containerOptions = "--user root"
 
     input:
     path vcf from vcf_ch
@@ -282,7 +269,6 @@ process filter_snv {
     cpus 1
     memory '1 GB'
     container 'alexeyebi/bowtie2_samtools'
-    containerOptions = "--user root"
 
     input:
     path vcf from vcf2_ch
@@ -299,7 +285,6 @@ process filter_snv {
     bcftools filter -i "AF>0.1" ${run_id}.filtered.vcf.gz > \
     ${run_id}.filtered_freq.vcf
     """
-
 }
 
 process annotate_snps {
@@ -307,13 +292,13 @@ process annotate_snps {
     cpus 19
     memory '90 GB'
     container 'alexeyebi/snpeff'
-    containerOptions = "--user root"
 
     input:
     path vcf from filtered_freq_vcf_ch
     val run_id from params.RUN_ID
 
     output:
+    path "${run_id}.annot.n.filtered_freq.vcf" into final_vcf_ch
     path("${run_id}.annot.n.filtered_freq.vcf")
 
     script:
@@ -323,5 +308,19 @@ process annotate_snps {
     snpeff eff -v -s ${run_id}.snpEff_summary.html sars.cov.2 \
     ${run_id}.newchr.filtered_freq.vcf > ${run_id}.annot.n.filtered_freq.vcf
     """
+}
 
+process remove_raw_data {
+    cpus 1
+    memory '1 GB'
+    container 'alexeyebi/bowtie2_samtools'
+
+    input:
+    path vcf from final_vcf_ch
+    tuple val(run_id), path(reads) from read_pairs3_ch
+
+    script:
+    """
+    rm ${reads[0]} ${reads[1]}
+    """
 }
