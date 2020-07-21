@@ -18,6 +18,7 @@ process quality_control_pre {
     cpus 1
     memory '1 GB'
     container 'biocontainers/fastqc:v0.11.8dfsg-2-deb_cv1'
+    containerOptions = "--user root"
 
     input:
     tuple val(run_id), path(reads) from read_pairs_ch
@@ -37,6 +38,7 @@ process trimming_reads {
     cpus 1
     memory '1 GB'
     container 'davelabhub/trimmomatic:0.39--1'
+    containerOptions = "--user root"
 
     input:
     tuple val(run_id), path(reads) from read_pairs2_ch
@@ -60,6 +62,7 @@ process quality_control_post {
     cpus 1
     memory '1 GB'
     container 'biocontainers/fastqc:v0.11.8dfsg-2-deb_cv1'
+    containerOptions = "--user root"
 
     input:
     path trimmed_reads from trim_reads_ch
@@ -80,6 +83,7 @@ process align_reads {
     cpus 19
     memory '90 GB'
     container 'alexeyebi/bowtie2_samtools'
+    containerOptions = "--user root"
 
     input:
     path trimmed_reads from trim_reads2_ch
@@ -104,6 +108,7 @@ process convert_bam_to_fastq {
     cpus 1
     memory '1 GB'
     container 'alexeyebi/bowtie2_samtools'
+    containerOptions = "--user root"
 
     input:
     path bam from aligned_reads_ch
@@ -126,6 +131,7 @@ process align_reads_to_sars2_genome {
     cpus 19
     memory '90 GB'
     container 'alexeyebi/bowtie2_samtools'
+    containerOptions = "--user root"
 
     input:
     path fastq from bam_to_fastq_ch
@@ -151,6 +157,7 @@ process remove_duplicates {
     cpus 1
     memory '10 GB'
     container 'biocontainers/picard:v1.141_cv3'
+    containerOptions = "--user root"
 
     input:
     path bam from sars2_aligned_reads_ch
@@ -170,6 +177,7 @@ process check_coverage {
     cpus 1
     memory '1 GB'
     container 'alexeyebi/bowtie2_samtools'
+    containerOptions = "--user root"
 
     input:
     path bam from remove_duplicates_ch
@@ -191,6 +199,7 @@ process make_small_file_with_coverage {
     cpus 1
     memory '1 GB'
     container 'alexeyebi/bowtie2_samtools'
+    containerOptions = "--user root"
 
     input:
     path pileup from check_coverage_ch
@@ -210,6 +219,7 @@ process generate_vcf {
     cpus 19
     memory '90 GB'
     container 'alexeyebi/bowtie2_samtools'
+    containerOptions = "--user root"
 
     input:
     path bam from remove_duplicates2_ch
@@ -237,6 +247,7 @@ process create_consensus_sequence {
     cpus 19
     memory '90 GB'
     container 'alexeyebi/bowtie2_samtools'
+    containerOptions = "--user root"
 
     input:
     path vcf from vcf_ch
@@ -271,6 +282,7 @@ process filter_snv {
     cpus 1
     memory '1 GB'
     container 'alexeyebi/bowtie2_samtools'
+    containerOptions = "--user root"
 
     input:
     path vcf from vcf2_ch
@@ -295,6 +307,7 @@ process annotate_snps {
     cpus 19
     memory '90 GB'
     container 'alexeyebi/snpeff'
+    containerOptions = "--user root"
 
     input:
     path vcf from filtered_freq_vcf_ch
