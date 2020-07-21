@@ -317,10 +317,11 @@ process remove_raw_data {
 
     input:
     path vcf from final_vcf_ch
-    tuple val(run_id), path(reads) from read_pairs3_ch
+    val run_id from params.RUN_ID
 
     script:
     """
-    rm ${reads[0]} ${reads[1]}
+    rm /data/${run_id}_1.fastq.gz
+    rm /data/${run_id}_2.fastq.gz
     """
 }
