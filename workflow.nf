@@ -8,7 +8,7 @@ params.SARS2_FA_FAI = "/data/ref/sars2/fa/NC_045512.2.fa.fai"
 
 Channel
     .fromFilePairs(params.READS, checkIfExists:true)
-    .into {read_pairs_ch; read_pairs2_ch; read_pairs3_ch}
+    .into {read_pairs_ch; read_pairs2_ch}
 
 process quality_control_pre {
     publishDir params.OUTDIR, mode:'copy'
@@ -22,6 +22,7 @@ process quality_control_pre {
 
     output:
     path("${run_id}_*_fastqc.html")
+    path "${run_id}_*_fastqc.html" into quality_control_pre_ch
 
     script:
     """
@@ -64,6 +65,7 @@ process quality_control_post {
 
     output:
     path("*.html")
+    path "*.html" into quality_control_post_ch
 
     script:
     """
@@ -196,6 +198,7 @@ process make_small_file_with_coverage {
 
     output:
     path("${run_id}.coverage")
+    path "${run_id}.coverage" into make_small_file_with_coverage_ch
 
     script:
     """
@@ -244,6 +247,7 @@ process create_consensus_sequence {
 
     output:
     path("${run_id}.cons.fa")
+    path "${run_id}.cons.fa" into create_consensus_sequence_ch
 
     script:
     """
@@ -316,6 +320,10 @@ process remove_raw_data {
     container 'alexeyebi/bowtie2_samtools'
 
     input:
+    path pre_qc from quality_control_pre_ch
+    path post_qc from quality_control_post_ch
+    path small_file from make_small_file_with_coverage_ch
+    path consensus from create_consensus_sequence_ch
     path vcf from final_vcf_ch
     val run_id from params.RUN_ID
 
