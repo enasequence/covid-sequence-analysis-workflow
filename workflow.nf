@@ -323,5 +323,6 @@ process remove_raw_data {
     """
     rm /data/${run_id}_1.fastq.gz
     rm /data/${run_id}_2.fastq.gz
+    rm -rf /data/${run_id}_output/work
     """
 }
