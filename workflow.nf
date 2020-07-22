@@ -22,7 +22,6 @@ process quality_control_pre {
 
     output:
     path("${run_id}_*_fastqc.html")
-    path "${run_id}_*_fastqc.html" into quality_control_pre_ch
 
     script:
     """
@@ -65,7 +64,6 @@ process quality_control_post {
 
     output:
     path("*.html")
-    path "*.html" into quality_control_post_ch
 
     script:
     """
@@ -198,7 +196,6 @@ process make_small_file_with_coverage {
 
     output:
     path("${run_id}.coverage")
-    path "${run_id}.coverage" into make_small_file_with_coverage_ch
 
     script:
     """
@@ -247,7 +244,6 @@ process create_consensus_sequence {
 
     output:
     path("${run_id}.cons.fa")
-    path "${run_id}.cons.fa" into create_consensus_sequence_ch
 
     script:
     """
@@ -302,7 +298,6 @@ process annotate_snps {
     val run_id from params.RUN_ID
 
     output:
-    path "${run_id}.annot.n.filtered_freq.vcf" into final_vcf_ch
     path("${run_id}.annot.n.filtered_freq.vcf")
 
     script:
@@ -311,26 +306,5 @@ process annotate_snps {
     ${run_id}.newchr.filtered_freq.vcf
     snpeff eff -v -s ${run_id}.snpEff_summary.html sars.cov.2 \
     ${run_id}.newchr.filtered_freq.vcf > ${run_id}.annot.n.filtered_freq.vcf
-    """
-}
-
-process remove_raw_data {
-    cpus 1
-    memory '1 GB'
-    container 'alexeyebi/bowtie2_samtools'
-
-    input:
-    path pre_qc from quality_control_pre_ch
-    path post_qc from quality_control_post_ch
-    path small_file from make_small_file_with_coverage_ch
-    path consensus from create_consensus_sequence_ch
-    path vcf from final_vcf_ch
-    val run_id from params.RUN_ID
-
-    script:
-    """
-    rm /data/${run_id}_1.fastq.gz
-    rm /data/${run_id}_2.fastq.gz
-    rm -rf /data/${run_id}_output/work
     """
 }
