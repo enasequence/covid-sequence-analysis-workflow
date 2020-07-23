@@ -30,8 +30,8 @@ process quality_control_pre {
 }
 
 process trimming_reads {
-    cpus 19
-    memory '90 GB'
+    cpus 10
+    memory '30 GB'
     container 'davelabhub/trimmomatic:0.39--1'
 
     input:
@@ -72,8 +72,8 @@ bt_indices = Channel
     .fromPath("${params.HUMAN_IDX}*", checkIfExists: true)
 
 process align_reads {
-    cpus 19
-    memory '90 GB'
+    cpus 10
+    memory '30 GB'
     container 'alexeyebi/bowtie2_samtools'
 
     input:
@@ -118,8 +118,8 @@ bt_indices_sars2 = Channel
     .fromPath("${params.SARS2_IDX}*", checkIfExists: true)
 
 process align_reads_to_sars2_genome {
-    cpus 19
-    memory '90 GB'
+    cpus 10
+    memory '30 GB'
     container 'alexeyebi/bowtie2_samtools'
 
     input:
@@ -202,8 +202,8 @@ process make_small_file_with_coverage {
 
 process generate_vcf {
     publishDir params.OUTDIR, mode:'copy'
-    cpus 19
-    memory '90 GB'
+    cpus 10
+    memory '30 GB'
     container 'alexeyebi/bowtie2_samtools'
 
     input:
@@ -229,8 +229,8 @@ process generate_vcf {
 
 process create_consensus_sequence {
     publishDir params.OUTDIR, mode:'copy'
-    cpus 19
-    memory '90 GB'
+    cpus 10
+    memory '30 GB'
     container 'alexeyebi/bowtie2_samtools'
 
     input:
@@ -286,8 +286,8 @@ process filter_snv {
 
 process annotate_snps {
     publishDir params.OUTDIR, mode:'copy'
-    cpus 19
-    memory '90 GB'
+    cpus 10
+    memory '30 GB'
     container 'alexeyebi/snpeff'
 
     input:
