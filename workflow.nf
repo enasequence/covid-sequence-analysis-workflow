@@ -32,8 +32,8 @@ process quality_control_pre {
 process trimming_reads {
     publishDir params.OUTDIR, mode:'copy'
 
-    cpus 1
-    memory '1 GB'
+    cpus 19
+    memory '90 GB'
     container 'davelabhub/trimmomatic:0.39--1'
 
     input:
@@ -146,8 +146,8 @@ process align_reads_to_sars2_genome {
 }
 
 process remove_duplicates {
-    cpus 1
-    memory '10 GB'
+    cpus 19
+    memory '90 GB'
     container 'biocontainers/picard:v1.141_cv3'
 
     input:
