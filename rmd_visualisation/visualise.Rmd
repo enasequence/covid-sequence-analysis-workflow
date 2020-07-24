@@ -1,0 +1,565 @@
+---
+title: "SARS-CoV-2 sequence analysis"
+author: "Krisztian Papp"
+date: "05 July 2020"
+output: 
+  html_notebook: 
+    code_folding: hide
+    collapsed: yes
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 5
+    smooth_scroll: yes
+    theme: sandstone
+    toc: yes
+    toc_depth: 5
+    toc_float: yes
+    number_sections: true
+params:
+  # stat_folder: "./output/data/"
+  # gff_folder: "./data/ref/sars2/NC_045512.2.gff3"
+---
+
+
+<!-- # Aims -->
+
+<!-- * SARS-CoV-2 virus from five COVID-19 patients were isolated and sequenced by NGS. The goal is to visualize the mutations in these virus sequences focusing also on mutations with lower frequency. -->
+
+<!-- # Summary -->
+
+<!-- * The raw fastq files of five SARS-CoV-2 isolates were downloaded, processed and the mutation profile was visualized focusing on low frequency mutations [see](#comp) -->
+<!-- * The spike protein coding region is displayed in an interactive sequence viewer [see](#seq) -->
+<!-- * This is only an example notebook for visualization, samples were selected randomly and the coverage was very low, need relevant samples with high coverage  -->
+
+
+<!-- # Background -->
+
+<!-- * This is only a sample notebook that compares five randomly selected SARS-CoV-2 samples -->
+
+
+<!-- # Setup environment -->
+
+
+<!-- ```{r eval=FALSE} -->
+<!-- # setup environment -->
+<!-- if (!requireNamespace("BiocManager", quietly = TRUE)) { -->
+<!--   install.packages("BiocManager") -->
+<!-- } -->
+<!-- BiocManager::install("rtracklayer", version = "3.10") -->
+<!-- # do not update -->
+<!-- BiocManager::install("trackViewer", version = "3.10") -->
+<!-- install.packages("DT") -->
+<!-- install.packages("msaR") -->
+<!-- ``` -->
+
+# Analysis
+
+```{r message=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(reshape2)
+library(stringr)
+library(tidyr)
+library(DT)
+library(rtracklayer)
+library(trackViewer)
+library(RColorBrewer)
+library(msaR)
+library(Biostrings)
+```
+
+<!-- ## Download raw reads for analysis -->
+
+
+<!-- Five raw reads were downloaded from this project:  -->
+
+<!-- * Project: PRJNA627229 -->
+<!-- * Study of SARS-CoV-2 outbreak and transmission dynamics in North-Rhine Westphalia, Germany. Targeted Sequencing of SARS-CoV-2 was performed on several patient samples. Strains related to the Heinsberg outbreak were identified and the subsequent outbreak dynamics in the state capital Dusseldorf was studied. -->
+<!-- * https://www.ebi.ac.uk/ena/browser/view/PRJNA627229 -->
+
+<!-- ```{bash eval=FALSE} -->
+<!-- . "/opt/conda/etc/profile.d/conda.sh" -->
+<!-- conda activate /vol/conda-pkrisz5/condaenvs/conda-pkrisz5 -->
+
+<!-- prefetch -v SRR11593354 SRR11593355 SRR11593356 SRR11593362 SRR11593361	# downloaded sra file will be here: ~/ncbi/public/sra -->
+<!-- fastq-dump --outdir /home/share/pkrisz5-sarscov2veo/data/raw --split-files ~/ncbi/public/sra/*.sra # create fastq files from downloaded sra files -->
+<!-- cd /home/share/pkrisz5-sarscov2veo/data/raw -->
+<!-- gzip *.fastq -->
+<!-- ``` -->
+
+<!-- ## Data processing -->
+
+
+<!-- ```{bash eval=FALSE} -->
+<!-- . "/opt/conda/etc/profile.d/conda.sh" -->
+<!-- conda activate /vol/conda-pkrisz5/condaenvs/conda-pkrisz5 -->
+
+<!-- v_raw_dir='/home/share/pkrisz5-sarscov2veo/data/raw/' -->
+<!-- v_analysis_dir='/home/share/pkrisz5-sarscov2veo/output/' -->
+<!-- v_human_idx='/home/share/pkrisz5-sarscov2veo/data/ref/human/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.bowtie_index' -->
+<!-- v_sars2_idx='/home/share/pkrisz5-sarscov2veo/data/ref/sars2/NC_045512.2' -->
+<!-- v_sars2_fa='/home/share/pkrisz5-sarscov2veo/data/ref/sars2/NC_045512.2.fa' -->
+<!-- v_threads=4 -->
+
+<!-- # Quality control of raw fastqc files -->
+
+<!-- mkdir -p $v_analysis_dir"fastqc_pre/" -->
+<!-- cd $v_raw_dir -->
+<!-- f=$(find -type f -name "*.fastq.gz") -->
+<!-- fastqc -t $v_threads -o $v_analysis_dir"fastqc_pre/" -q $f  -->
+
+<!-- # Trimming, remove reads with bad quality  -->
+<!-- mkdir -p $v_analysis_dir"data/" -->
+<!-- cd $v_raw_dir -->
+<!-- for f in *_1.fastq.gz -->
+<!-- do -->
+<!--   r=${f/'_1'/'_2'} -->
+<!--   of=$v_analysis_dir'data/'${f/'_1.fastq.gz'/'_trim_1.fq'} -->
+<!--   or=$v_analysis_dir'data/'${r/'_2.fastq.gz'/'_trim_2.fq'} -->
+<!--   uf=$v_analysis_dir'data/'${f/'_1.fastq.gz'/'_trim_1_un.fq'} -->
+<!--   ur=$v_analysis_dir'data/'${r/'_2.fastq.gz'/'_trim_2_un.fq'} -->
+<!--   s=$v_analysis_dir'data/'${r/'_2.fastq.gz'/'_trim_summary'} -->
+<!--   trimmomatic PE $f $r $of $uf $or $ur -summary $s -threads $v_threads \ -->
+<!--     SLIDINGWINDOW:5:30 \ -->
+<!--     MINLEN:50  -->
+<!-- done -->
+
+
+<!-- # Quality control of raw fastqc files  -->
+<!-- mkdir -p $v_analysis_dir"fastqc_post/" -->
+<!-- cd $v_analysis_dir'data/' -->
+<!-- f=$(find -type f -name "*[1,2].fq") -->
+<!-- fastqc -t $v_threads -o $v_analysis_dir'fastqc_post/' -q $f -->
+
+<!-- ## Alignment to human reference sequence, create a _nohuman.bam that contains only unaligned sequences -->
+<!-- cd $v_analysis_dir'data/' -->
+<!-- for f in *_1.fq -->
+<!-- do -->
+<!--   r=${f/'_trim_1.fq'/'_trim_2.fq'} -->
+<!--   uf=${f/'.fq'/'_un.fq'} -->
+<!--   ur=${r/'.fq'/'_un.fq'} -->
+<!--   bam=${f/'_trim_1.fq'/'_nohuman.bam'} -->
+<!--   s=${f/'_trim_1.fq'/'_bowtie_human_summary'}    -->
+<!--   bowtie2 --very-sensitive-local -p $v_threads -x $v_human_idx --met-file $s -1 $f -2 $r -U $uf','$ur | \ -->
+<!--     samtools view -Sb -f 4 > $bam -->
+
+<!--   # -p number of alignment threads to launch -->
+<!--   # -U Files with unpaired reads. -->
+<!--   # -x Index filename prefix  -->
+<!--   # -1 Files with #1 mates, paired with files in <m2>. -->
+<!--   # -2 Files with #2 mates, paired with files in <m1>. -->
+
+<!--   # -b Output in the BAM format. -->
+<!--   # -f INT Only output alignments with all bits set in INT present in the FLAG field. -->
+<!--   # -f 4 keep unmaped read -->
+<!--   # -S Ignored for compatibility with previous samtools versions. -->
+<!-- done -->
+
+
+<!-- # Converts a bam into FASTQ format (these will be the reads those do not aligned to human reference sequence) -->
+
+<!-- cd $v_analysis_dir'data/' -->
+<!-- for bam in *.bam -->
+<!-- do -->
+<!--   f=${bam/'.bam'/'_1.fq'} -->
+<!--   r=${bam/'.bam'/'_2.fq'}   -->
+<!--   u=${bam/'.bam'/'_3.fq'} -->
+<!--   s=${bam/'.bam'/'_s.fq'} -->
+<!--   samtools bam2fq -N -1 $f -2 $r -s $s $bam > $u -->
+<!--   # -s FILE Write singleton reads in FASTQ format to FILE instead of outputting them. -->
+<!-- done -->
+
+<!-- # Alignment of reads to SARS2 reference genome -->
+
+<!-- cd $v_analysis_dir'data/' -->
+
+<!-- for f in *nohuman_1.fq -->
+<!-- do -->
+<!--   r=${f/'_1.fq'/'_2.fq'} -->
+<!--   u=${f/'_1.fq'/'_3.fq'} -->
+<!--   bam=${f/'_nohuman_1.fq'/'.bam'} -->
+<!--   s=${f/'_nohuman_1.fq'/'_bowtie_nohuman_summary'} -->
+<!--   bowtie2 -p $v_threads --no-mixed --no-discordant --met-file $s -x $v_sars2_idx -1 $f -2 $r | \ -->
+
+<!--   # This step will produce the actual alignment -->
+<!--   # -p  The -p option causes Bowtie 2 to launch a specified number of parallel search threads (for computer with multiple processors/cores). -->
+<!--   # --no-mixed. By default, when bowtie2 cannot find a concordant or discordant alignment for a pair, it then tries to find alignments for the individual mates.  -->
+<!--   # This option disables that behavior. -->
+<!--   # --no-discordant. This option disables the search for discordant alignments if it cannot find any concordant alignments.  -->
+<!--   # A discordant alignment is an alignment where both mates align uniquely, but that does not satisfy the paired-end constraints. -->
+<!--   # -x. Indicates the base name of the index for the reference genome. -->
+<!--   # -1 and -2 are used to indicate the fastq files with the reads to align. -->
+
+<!--   samtools view -bST $v_sars2_fa | \ -->
+<!--   # This step exports the alignment from SAM format to the BAM format.  -->
+<!--   # -b. Forces output in the BAM format.  -->
+<!--   # -S. Ignored for compatibility with previous samtools versions.   -->
+<!--   # -T. Indicates the FASTA format for the reference file -->
+<!--   samtools sort | \ -->
+<!--   # Sorts the alignment by leftmost coordinates -->
+<!--   samtools view -h -F 4 -b > $bam -->
+<!--   # This step discards all reads that do not map to the reference -->
+<!--   # -h. Includes the header in the output.  -->
+<!--   # -F. Do not output alignments with specific flag (4 means that include only mapped reads) -->
+<!--   # -b. Forces output in the BAM format.  -->
+<!--   samtools index $bam  -->
+<!--   # This step generates the index file (.bai) of the alignment. -->
+
+<!-- done -->
+
+<!-- # Remove duplicates -->
+
+<!-- cd $v_analysis_dir'data/' -->
+<!-- for f in *.bai -->
+<!-- do -->
+<!--   ibam=${f/'.bai'/''}   -->
+<!--   obam=${ibam/'.bam'/'_dep.bam'} -->
+<!--   picard MarkDuplicates \ -->
+<!--     I=$ibam \ -->
+<!--     O=$obam \ -->
+<!--     REMOVE_DUPLICATES=true \ -->
+<!--     M=$ibam'_marked_dup_metrics.txt' -->
+<!-- done -->
+
+<!-- # Check the coverage -->
+<!-- cd $v_analysis_dir'data/' -->
+<!-- for f in *_dep.bam -->
+<!-- do       -->
+<!--   o=${f/'_dep.bam'/'.pileup'} -->
+<!--   samtools mpileup \ -->
+<!--     -a -A -Q 30 -d 1000000 \ -->
+<!--     -f $v_sars2_fa \ -->
+<!--     $f > $o -->
+<!--   # d, --max-depth INT -->
+<!--   # -f, --fasta-ref FILE -->
+<!--   # -a Output all positions, including those with zero depth. -->
+<!--   # -A, --count-orphans Do not skip anomalous read pairs in variant calling. Anomolous read pairs are those marked in the FLAG field as paired in sequencing but without the properly-paired flag set. -->
+<!--   # -Q, --min-BQ INT Minimum base quality for a base to be considered -->
+<!-- done -->
+
+<!-- # Make a small file with coverage -->
+<!-- cd $v_analysis_dir'data/' -->
+
+<!-- for f in *.pileup -->
+<!-- do  -->
+<!--   o=${f/'.pileup'/'.coverage'} -->
+<!--   cat $f | awk '{print $2,",",$3,",",$4}' > $o -->
+<!-- done -->
+
+<!-- # This step generates a VCF file with the SNV detected from the BAM file. -->
+<!-- cd $v_analysis_dir'data/' -->
+<!-- for f in *_dep.bam -->
+<!-- do -->
+<!--   o=${f/'_dep.bam'/'.vcf'} -->
+<!--   samtools index $f -->
+<!--   lofreq call-parallel --pp-threads $v_threads -f $v_sars2_fa -o $o $f -->
+<!--   # --pp-threads The --pp-threads option causes LoFreq to launch a specified number of parallel search threads (for computer with multiple processors/cores). -->
+<!--   # -f. Sets the reference file to use. -->
+<!--   # -o. Sets the output file name -->
+<!-- done -->
+
+<!-- for f in *.vcf -->
+<!-- do  -->
+<!--   g=${f/'.vcf'/'.vcf.gz'} -->
+<!--   v=${f/'.vcf'/'.stat'} -->
+<!--   bgzip $f -->
+<!--   tabix $g -->
+<!--   bcftools stats $g > $v -->
+<!-- done -->
+
+<!-- # Create consensus sequence (AF>0.5, DP>50) -->
+<!-- cd $v_analysis_dir'data/' -->
+<!-- for f in *.vcf.gz -->
+<!-- do -->
+<!--   o=${f/'.vcf.gz'/'.cfiltered.vcf'} -->
+<!--   g=${f/'.vcf.gz'/'.cfiltered.vcf.gz'} -->
+<!--   go=${f/'.vcf.gz'/'.cfiltered_freq.vcf'} -->
+<!--   bcftools filter -i "DP>50" $f   -o $o -->
+<!--   # -i "DP>50". Flag to filter by (i.e. only keeps calls with raw coverage > 50X).  -->
+<!--   bgzip $o -->
+<!--   tabix $g -->
+<!--   bcftools filter -i "AF>0.5" $g > $go -->
+<!--   # Filters the SNV for a specific parameter. -->
+<!--   # -i "AF>0.5". Flag to filter by (i.e. only keeps calls with allele frequency > 50%).  -->
+<!--   fa=${go/'.cfiltered_freq.vcf'/'.cons.fa'} -->
+<!--   gx=${go/'.vcf'/'.vcf.gz'} -->
+<!--   n='>'${go/'.cfiltered_freq.vcf'/''} -->
+<!--   bgzip -c $go > $gx -->
+<!--   bcftools index $gx -->
+<!--   bcftools consensus -f $v_sars2_fa $gx > $fa -->
+<!--   sed -i "1s/.*/$n/" $fa -->
+<!--   rm $g -->
+<!--   rm ${g/'.cfiltered.vcf.gz'/'.cfiltered.vcf.gz.tbi'} -->
+<!--   rm $go -->
+<!--   rm ${go/'cfiltered_freq.vcf'/'cfiltered_freq.vcf.gz.csi'} -->
+<!--   rm ${go/'cfiltered_freq.vcf'/'cfiltered_freq.vcf.gz'} -->
+<!-- done  -->
+
+
+<!-- # Filters the SNV for a specific parameter. -->
+<!-- cd $v_analysis_dir'data/' -->
+
+<!-- for f in *.vcf.gz -->
+<!-- do -->
+<!--   o=${f/'.vcf.gz'/'.filtered.vcf'} -->
+<!--   g=${f/'.vcf.gz'/'.filtered.vcf.gz'} -->
+<!--   go=${f/'.vcf.gz'/'.filtered_freq.vcf'} -->
+<!--   bcftools filter -i "DP>50" $f   -o $o -->
+<!--   # -i "DP>50". Flag to filter by (i.e. only keeps calls with raw coverage > 50X).  -->
+<!--   bgzip $o -->
+<!--   tabix $g -->
+<!--   bcftools filter -i "AF>0.1" $g > $go -->
+<!--   # Filters the SNV for a specific parameter. -->
+<!--   # -i "AF>0.1". Flag to filter by (i.e. only keeps calls with allele frequency > 10%).  -->
+<!-- done -->
+
+<!-- # Annotate the SNP-s -->
+<!-- cd $v_analysis_dir'data/' -->
+<!-- for f in *.filtered_freq.vcf -->
+<!-- do -->
+<!--   o=${f/'.filtered_freq.vcf'/'.annot.n.filtered_freq.vcf'} -->
+<!--   m=${f/'.filtered_freq.vcf'/'.newchr.filtered_freq.vcf'} -->
+<!--   s=${f/'.filtered_freq.vcf'/'.snpEff_summary.html'} -->
+
+<!--   cat $f | sed "s/^NC_045512.2/NC_045512/" > $m # need to fix the chromosome annotation -->
+<!--   java -Xmx4g -jar ~/tools/snpEff/snpEff.jar -v -s $s sars.cov.2 $m > $o -->
+<!--   # -v , -verbose -->
+<!--   # -formatEff   : Use 'EFF' field compatible with older versions (instead of 'ANN'). -->
+<!--   #-s , : Name of stats file (summary). Default is 'snpEff_summary.html' -->
+<!--   # -csvStats : Create CSV summary file instead of HTML -->
+<!-- done -->
+
+<!-- ``` -->
+## List of mutations
+
+```{r}
+
+n <- list.files(path = "./", pattern = "*.stat")
+n <- str_sub(n, end = -6)
+f <- list.files(path = "./", pattern = "*.stat", full.names = TRUE)
+f <- str_sub(f, end = -6)
+```
+
+```{r warning=FALSE}
+vcf_parse <- function(vcf_file, sample_name) {
+  # read two times the vcf file, first for the columns names, second for the data
+  tmp_vcf <- readLines(vcf_file)
+  tmp_vcf_data <- read.table(vcf_file, stringsAsFactors = FALSE)
+
+  # filter for the columns names
+  tmp_vcf <- tmp_vcf[-(grep("#CHROM", tmp_vcf) + 1):-(length(tmp_vcf))]
+  vcf_names <- unlist(strsplit(tmp_vcf[length(tmp_vcf)], "\t"))
+  names(tmp_vcf_data) <- vcf_names
+
+  tmp_vcf_data <- separate(tmp_vcf_data,
+    col = "INFO",
+    into = c("DP", "AF", "SB", "DP4", "ANN", "x"), sep = ";", remove = TRUE,
+    convert = FALSE, extra = "warn", fill = "warn"
+  )
+  tmp_vcf_data <- separate(tmp_vcf_data,
+    col = "ANN", into = c(
+      "Allele", "Annotation", "Annotation_Impact", "Gene_Name", "Gene_ID", "Feature_Type", "Feature_ID", "Transcript_BioType",
+      "Rank", "HGVS.c", "HGVS.p", "cDNA.pos_or_cDNA.length",
+      "CDS.pos_or_CDS.length", "AA.pos_or_AA.length",
+      "Distance"
+    ), sep = "\\|", remove = TRUE,
+    convert = FALSE, extra = "warn", fill = "warn"
+  )
+  tmp_vcf_data <- tmp_vcf_data %>%
+    mutate(AF = as.numeric(str_sub(AF, start = 4))) %>%
+    mutate(DP = as.numeric(str_sub(DP, start = 4))) %>%
+    mutate(SB = as.numeric(str_sub(SB, start = 4))) %>%
+    mutate(DP4 = as.character(str_sub(DP4, start = 5)))
+  tmp_vcf_data$sample_id <- sample_name
+  tmp_vcf_data
+}
+
+# s <- paste(f[1],".annot.newchr.filtered_freq.vcf", sep = "")
+s <- paste(f[1], ".annot.n.filtered_freq.vcf", sep = "")
+s <- paste(f[1], ".vcf", sep = "")
+
+
+vcf_all <- vcf_parse(s, "x")[0, ]
+
+for (i in 1:length(f)) {
+  #  s <- paste(f[i],".annot.newchr.filtered_freq.vcf", sep = "")
+  s <- paste(f[i], ".annot.n.filtered_freq.vcf", sep = "")
+  s <- paste(f[1], ".vcf", sep = "")
+  sample_id <- n[i]
+  tmp_vcf <- vcf_parse(s, sample_id)
+  vcf_all <- rbind(vcf_all, tmp_vcf)
+}
+
+annot_col <- data.frame(
+  Annotation = unique(vcf_all$Annotation),
+  color = 1:length(unique(vcf_all$Annotation))
+)
+
+vcf_all <- merge(vcf_all, annot_col, by = "Annotation", all.x = TRUE)
+vcf_all_present <- vcf_all %>%
+  select(sample_id, Annotation, POS, REF, ALT, Gene_Name, HGVS.p, QUAL:DP4) %>%
+  filter(AF > 0.1)
+
+datatable(vcf_all_present, extensions = "Buttons", caption = "Mutations in the four samples", options = list(
+  dom = "Bfrtip",
+  buttons = c("copy", "excel", "csv"),
+  scrollX = TRUE
+))
+```
+
+<!-- * The table above shows the mutations that can be found in the five samples. All the mutations are present where the frequency is higher than 0.1. The amino acide changes are indicated too. -->
+
+<!-- ## Coverage  -->
+
+
+<!-- ```{r} -->
+<!-- coverage <- read.table(paste(f[1], ".coverage", sep = ""), sep = ",", header = FALSE) -->
+<!-- names(coverage) <- c("pos", "ref", n[1]) -->
+
+<!-- for (i in 2:length(f)) { -->
+<!--   x <- read.table(paste(f[i], ".coverage", sep = ""), sep = ",", header = FALSE) -->
+<!--   coverage <- cbind(coverage, x[3]) -->
+<!--   names(coverage)[length(coverage)] <- n[i] -->
+<!-- } -->
+<!-- y <- as.character(names(coverage)[4:ncol(coverage)]) -->
+<!-- coverage <- melt(coverage, -->
+<!--   id.vars = c("pos", "ref"), -->
+<!--   measured.vars = as.character(names(coverage)[4:ncol(coverage)]), -->
+<!--   variable.name = "id" -->
+<!-- ) -->
+<!-- coverage$value <- as.numeric(coverage$value) -->
+<!-- ggplot(coverage, aes(x = pos, y = value, color = id)) + -->
+<!--   geom_line() + -->
+<!--   geom_hline(yintercept = 50) + -->
+<!--   labs(title = "Coverage", x = "Position", y = "Coverage") + -->
+<!--   theme_minimal() -->
+<!-- ``` -->
+
+<!-- * The coverage was low, need samples with higher coverage -->
+
+```{r}
+gff <- readGFF("NC_045512.2.gff3", version = 3)
+gff <- as.data.frame(gff) %>%
+  filter(type %in% c("gene"))
+geneModel <- data.frame(
+  chromosome = "1", start = gff$start,
+  end = gff$end, width = gff$end - gff$start,
+  strand = gff$strand, feature = gff$type,
+  gene = gff$Name, exon = gff$Name, transcript = gff$Name
+)
+
+for (i in unique(vcf_all$sample_id)) {
+  s <- vcf_all %>%
+    filter(sample_id == i) %>%
+    filter(AF > 0.1)
+  l <- unique(s$Annotation)
+  l <- filter(annot_col, Annotation %in% l)
+  legend <- as.numeric(l$color)
+  names(legend) <- l$Annotation
+  SNP <- as.numeric(s$POS)
+  MUT <- str_sub(as.character(s$HGVS.c), start = 3)
+  sample.gr <- GRanges("chr1", IRanges(SNP, width = 1, names = MUT))
+  sample.gr$color <- s$color
+  sample.gr$score <- s$AF * 100
+  sample.gr$label.parameter.rot <- 70
+  features <- GRanges("chr1", IRanges(
+    start = geneModel$start,
+    width = geneModel$width,
+    names = geneModel$gene
+  ))
+  features$fill <- brewer.pal(11, "Set3")
+  lolliplot(sample.gr, features, legend = legend, ylab = paste(i, "Frequency (%)", sep = " "))
+}
+```
+
+* Each graph above presents the mutations in a given samples 
+* Y axis show the frequency of the given mutation in the sample
+* Colors indicates the type of mutations
+* Mutation with higher than 10% frequency and 50 sequencing depth is indicated only 
+
+
+## Comparison of the five samples {#comp}
+
+```{r}
+gff <- readGFF("NC_045512.2.gff3", version = 3)
+gff <- as.data.frame(gff) %>%
+  filter(type %in% c("gene"))
+geneModel <- data.frame(
+  chromosome = "1", start = gff$start,
+  end = gff$end, width = gff$end - gff$start,
+  strand = gff$strand, feature = gff$type,
+  gene = gff$Name, exon = gff$Name, transcript = gff$Name
+)
+
+s <- vcf_all %>%
+  filter(AF > 0.10)
+x <- data.frame(sample_id = unique(s$sample_id), col_patient = brewer.pal(length(unique(s$sample_id)), "Dark2"))
+s <- merge(s, x, by = "sample_id", all.x = TRUE)
+
+SNP <- as.numeric(s$POS)
+MUT <- str_sub(as.character(s$HGVS.c), start = 3)
+sample.gr1 <- GRanges("chr1", IRanges(SNP, width = 1, names = MUT))
+sample.gr1$score <- NULL
+sample.gr1$label <- NULL
+sample.gr1$label.col <- NULL
+sample.gr1$value1 <- s$AF * 100
+sample.gr1$value2 <- 100 - s$AF * 100
+
+sample.gr1$border <- "gray30"
+sample.gr1$stack.factor <- s$sample_id
+
+patient.color.set <- as.list(as.data.frame(rbind(
+  as.character(s$col_patient),
+  "#FFFFFFFF"
+),
+stringsAsFactors = FALSE
+))
+names(patient.color.set) <- s$sample_id
+sample.gr1$color <- patient.color.set[sample.gr1$stack.factor]
+
+
+
+legend <- list(
+  labels = x$sample_id, col = "gray80",
+  fill = as.character(x$col_patient)
+)
+
+features <- GRanges("chr1", IRanges(
+  start = geneModel$start,
+  width = geneModel$width,
+  names = geneModel$gene
+))
+features$fill <- brewer.pal(11, "Set3")
+lolliplot(sample.gr1, legend = legend, features, ylab = "Frequency (%)", type = "pie.stack")
+grid.text("Comparison of samples",
+  x = .5, y = .98, just = "top",
+  gp = gpar(cex = 1.5, fontface = "bold")
+)
+```
+
+* The graph above shows the summary of the 5 samples. Pie graphs indicate the frequency of the mutation
+
+
+<!-- ## Sequence comparison {#seq} -->
+
+<!-- The figure below shows the sequence of spike protein coding region -->
+<!-- ```{r} -->
+<!-- fa <- list.files(path = "../output/data", pattern = "*.fa", full.names = TRUE) -->
+<!-- all_fa <- readDNAStringSet(fa, -->
+<!--   format = "fasta", -->
+<!--   nrec = -1L, skip = 0L, seek.first.rec = FALSE, use.names = TRUE -->
+<!-- ) -->
+
+<!-- s <- subseq(all_fa, start = 21563, end = 25384) -->
+<!-- msaR(s) -->
+<!-- ``` -->
+
+
+
+<!-- ## Environment ```{r} sessioninfo::session_info() ``` -->
+
+
+
+
+
+
