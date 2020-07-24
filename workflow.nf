@@ -1,10 +1,12 @@
 #!/usr/bin/env nextflow
 
+params.READS = "/sars-cov2-sequence-analysis/SRR11092064_{1,2}.fastq.gz"
 params.OUTDIR = "results"
-params.HUMAN_IDX = "/data/ref/human/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.bowtie_index"
-params.SARS2_IDX = "/data/ref/sars2/index/NC_045512.2"
-params.SARS2_FA = "/data/ref/sars2/fa/NC_045512.2.fa"
-params.SARS2_FA_FAI = "/data/ref/sars2/fa/NC_045512.2.fa.fai"
+params.HUMAN_IDX = "/sars-cov2-sequence-analysis/ref/human/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.bowtie_index"
+params.SARS2_IDX = "/sars-cov2-sequence-analysis/ref/sars2/index/NC_045512.2"
+params.SARS2_FA = "/sars-cov2-sequence-analysis/ref/sars2/fa/NC_045512.2.fa"
+params.SARS2_FA_FAI = "/sars-cov2-sequence-analysis/ref/sars2/fa/NC_045512.2.fa.fai"
+params.RUN_ID = "SRR11092064"
 
 Channel
     .fromFilePairs(params.READS, checkIfExists:true)
@@ -30,8 +32,10 @@ process quality_control_pre {
 }
 
 process trimming_reads {
-    cpus 10
-    memory '30 GB'
+    publishDir params.OUTDIR, mode:'copy'
+
+    cpus 1
+    memory '1 GB'
     container 'davelabhub/trimmomatic:0.39--1'
 
     input:
@@ -39,6 +43,7 @@ process trimming_reads {
 
     output:
     path "${run_id}*.fq" into trim_reads_ch, trim_reads2_ch
+    path("${run_id}_trim_summary")
 
     script:
     """
@@ -72,8 +77,8 @@ bt_indices = Channel
     .fromPath("${params.HUMAN_IDX}*", checkIfExists: true)
 
 process align_reads {
-    cpus 10
-    memory '30 GB'
+    cpus 19
+    memory '90 GB'
     container 'alexeyebi/bowtie2_samtools'
 
     input:
@@ -118,8 +123,8 @@ bt_indices_sars2 = Channel
     .fromPath("${params.SARS2_IDX}*", checkIfExists: true)
 
 process align_reads_to_sars2_genome {
-    cpus 10
-    memory '30 GB'
+    cpus 19
+    memory '90 GB'
     container 'alexeyebi/bowtie2_samtools'
 
     input:
@@ -144,7 +149,7 @@ process align_reads_to_sars2_genome {
 
 process remove_duplicates {
     cpus 1
-    memory '90 GB'
+    memory '10 GB'
     container 'biocontainers/picard:v1.141_cv3'
 
     input:
@@ -202,8 +207,8 @@ process make_small_file_with_coverage {
 
 process generate_vcf {
     publishDir params.OUTDIR, mode:'copy'
-    cpus 10
-    memory '30 GB'
+    cpus 19
+    memory '90 GB'
     container 'alexeyebi/bowtie2_samtools'
 
     input:
@@ -214,7 +219,7 @@ process generate_vcf {
 
     output:
     path "${run_id}.vcf.gz" into vcf_ch, vcf2_ch
-    path("${run_id}.stat")
+    path("${run_id}.stat") into stat_ch, stat2_ch
 
     script:
     """
@@ -229,8 +234,8 @@ process generate_vcf {
 
 process create_consensus_sequence {
     publishDir params.OUTDIR, mode:'copy'
-    cpus 10
-    memory '30 GB'
+    cpus 19
+    memory '90 GB'
     container 'alexeyebi/bowtie2_samtools'
 
     input:
@@ -282,12 +287,13 @@ process filter_snv {
     bcftools filter -i "AF>0.1" ${run_id}.filtered.vcf.gz > \
     ${run_id}.filtered_freq.vcf
     """
+
 }
 
 process annotate_snps {
     publishDir params.OUTDIR, mode:'copy'
-    cpus 10
-    memory '30 GB'
+    cpus 19
+    memory '90 GB'
     container 'alexeyebi/snpeff'
 
     input:
@@ -303,5 +309,26 @@ process annotate_snps {
     ${run_id}.newchr.filtered_freq.vcf
     snpeff eff -v -s ${run_id}.snpEff_summary.html sars.cov.2 \
     ${run_id}.newchr.filtered_freq.vcf > ${run_id}.annot.n.filtered_freq.vcf
+    """
+
+}
+
+process visualise {
+    publishDir params.OUTDIR, mode:'copy'
+    cpus 1
+    memory '1 GB'
+    container 'ctr26/covid-sequence-analysis-workflow-visualisation'
+
+    input:
+    path vcf from vcf_ch
+    path stat from stat_ch
+    val run_id from params.RUN_ID
+
+    output:
+    path("${run_id}.html")
+
+    script:
+    """
+    cp visualise.nb.html ${run_id}.html
     """
 }
