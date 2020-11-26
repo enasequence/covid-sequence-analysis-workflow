@@ -11,6 +11,7 @@ Channel
     .into {read_pairs_ch; read_pairs2_ch}
 
 process quality_control_pre {
+    pod nodeSelector: 'analysis=vcf'
     publishDir params.OUTDIR, mode:'copy'
 
     cpus 1
@@ -30,6 +31,7 @@ process quality_control_pre {
 }
 
 process trimming_reads {
+    pod nodeSelector: 'analysis=vcf'
     cpus 10
     memory '30 GB'
     container 'davelabhub/trimmomatic:0.39--1'
@@ -50,6 +52,7 @@ process trimming_reads {
 }
 
 process quality_control_post {
+    pod nodeSelector: 'analysis=vcf'
     publishDir params.OUTDIR, mode:'copy'
 
     cpus 1
@@ -72,6 +75,7 @@ bt_indices = Channel
     .fromPath("${params.HUMAN_IDX}*", checkIfExists: true)
 
 process align_reads {
+    pod nodeSelector: 'analysis=vcf'
     cpus 10
     memory '30 GB'
     container 'alexeyebi/bowtie2_samtools'
@@ -96,6 +100,7 @@ process align_reads {
 }
 
 process convert_bam_to_fastq {
+    pod nodeSelector: 'analysis=vcf'
     cpus 1
     memory '1 GB'
     container 'alexeyebi/bowtie2_samtools'
@@ -118,6 +123,7 @@ bt_indices_sars2 = Channel
     .fromPath("${params.SARS2_IDX}*", checkIfExists: true)
 
 process align_reads_to_sars2_genome {
+    pod nodeSelector: 'analysis=vcf'
     cpus 10
     memory '30 GB'
     container 'alexeyebi/bowtie2_samtools'
@@ -143,6 +149,7 @@ process align_reads_to_sars2_genome {
 }
 
 process remove_duplicates {
+    pod nodeSelector: 'analysis=vcf'
     cpus 1
     memory '90 GB'
     container 'biocontainers/picard:v1.141_cv3'
@@ -162,6 +169,7 @@ process remove_duplicates {
 }
 
 process check_coverage {
+    pod nodeSelector: 'analysis=vcf'
     cpus 1
     memory '1 GB'
     container 'alexeyebi/bowtie2_samtools'
@@ -182,6 +190,7 @@ process check_coverage {
 }
 
 process make_small_file_with_coverage {
+    pod nodeSelector: 'analysis=vcf'
     publishDir params.OUTDIR, mode:'copy'
     cpus 1
     memory '1 GB'
@@ -201,6 +210,7 @@ process make_small_file_with_coverage {
 }
 
 process generate_vcf {
+    pod nodeSelector: 'analysis=vcf'
     publishDir params.OUTDIR, mode:'copy'
     cpus 10
     memory '30 GB'
@@ -228,6 +238,7 @@ process generate_vcf {
 }
 
 process create_consensus_sequence {
+    pod nodeSelector: 'analysis=vcf'
     publishDir params.OUTDIR, mode:'copy'
     cpus 10
     memory '30 GB'
@@ -263,6 +274,7 @@ process create_consensus_sequence {
 }
 
 process filter_snv {
+    pod nodeSelector: 'analysis=vcf'
     cpus 1
     memory '1 GB'
     container 'alexeyebi/bowtie2_samtools'
@@ -285,6 +297,7 @@ process filter_snv {
 }
 
 process annotate_snps {
+    pod nodeSelector: 'analysis=vcf'
     publishDir params.OUTDIR, mode:'copy'
     cpus 10
     memory '30 GB'
@@ -301,7 +314,7 @@ process annotate_snps {
     """
     cat ${vcf} | sed "s/^NC_045512.2/NC_045512/" > \
     ${run_id}.newchr.filtered_freq.vcf
-    snpeff eff -v -s ${run_id}.snpEff_summary.html sars.cov.2 \
+    java -Xmx4g -jar /data/tools/snpEff/snpEff.jar -v -s ${run_id}.snpEff_summary.html sars.cov.2 \
     ${run_id}.newchr.filtered_freq.vcf > ${run_id}.annot.n.filtered_freq.vcf
     """
 }
