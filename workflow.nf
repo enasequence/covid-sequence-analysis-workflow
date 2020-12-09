@@ -11,7 +11,6 @@ Channel
     .into {read_pairs_ch; read_pairs2_ch}
 
 process quality_control_pre {
-    pod nodeSelector: 'vcf=secondary'
     publishDir params.OUTDIR, mode:'copy'
 
     cpus 1
@@ -31,7 +30,6 @@ process quality_control_pre {
 }
 
 process trimming_reads {
-    pod nodeSelector: 'vcf=secondary'
     cpus 10
     memory '30 GB'
     container 'davelabhub/trimmomatic:0.39--1'
@@ -52,7 +50,6 @@ process trimming_reads {
 }
 
 process quality_control_post {
-    pod nodeSelector: 'vcf=secondary'
     publishDir params.OUTDIR, mode:'copy'
 
     cpus 1
@@ -75,7 +72,6 @@ bt_indices = Channel
     .fromPath("${params.HUMAN_IDX}*", checkIfExists: true)
 
 process align_reads {
-    pod nodeSelector: 'vcf=secondary'
     cpus 10
     memory '30 GB'
     container 'alexeyebi/bowtie2_samtools'
@@ -100,7 +96,6 @@ process align_reads {
 }
 
 process convert_bam_to_fastq {
-    pod nodeSelector: 'vcf=secondary'
     cpus 1
     memory '1 GB'
     container 'alexeyebi/bowtie2_samtools'
@@ -123,7 +118,6 @@ bt_indices_sars2 = Channel
     .fromPath("${params.SARS2_IDX}*", checkIfExists: true)
 
 process align_reads_to_sars2_genome {
-    pod nodeSelector: 'vcf=secondary'
     cpus 10
     memory '30 GB'
     container 'alexeyebi/bowtie2_samtools'
@@ -149,7 +143,6 @@ process align_reads_to_sars2_genome {
 }
 
 process remove_duplicates {
-    pod nodeSelector: 'vcf=secondary'
     cpus 1
     memory '90 GB'
     container 'biocontainers/picard:v1.141_cv3'
@@ -169,7 +162,6 @@ process remove_duplicates {
 }
 
 process check_coverage {
-    pod nodeSelector: 'vcf=secondary'
     cpus 1
     memory '1 GB'
     container 'alexeyebi/bowtie2_samtools'
@@ -190,7 +182,6 @@ process check_coverage {
 }
 
 process make_small_file_with_coverage {
-    pod nodeSelector: 'vcf=secondary'
     publishDir params.OUTDIR, mode:'copy'
     cpus 1
     memory '1 GB'
@@ -210,7 +201,6 @@ process make_small_file_with_coverage {
 }
 
 process generate_vcf {
-    pod nodeSelector: 'vcf=secondary'
     publishDir params.OUTDIR, mode:'copy'
     cpus 10
     memory '30 GB'
@@ -238,7 +228,6 @@ process generate_vcf {
 }
 
 process create_consensus_sequence {
-    pod nodeSelector: 'vcf=secondary'
     publishDir params.OUTDIR, mode:'copy'
     cpus 10
     memory '30 GB'
@@ -274,7 +263,6 @@ process create_consensus_sequence {
 }
 
 process filter_snv {
-    pod nodeSelector: 'vcf=secondary'
     cpus 1
     memory '1 GB'
     container 'alexeyebi/bowtie2_samtools'
@@ -297,7 +285,6 @@ process filter_snv {
 }
 
 process annotate_snps {
-    pod nodeSelector: 'vcf=secondary'
     publishDir params.OUTDIR, mode:'copy'
     cpus 10
     memory '30 GB'
