@@ -1,8 +1,6 @@
 #!/usr/bin/env nextflow
 
 params.OUTDIR = "results"
-params.HUMAN_IDX = "/data/ref/human/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.bowtie_index"
-params.SARS2_IDX = "/data/ref/sars2/index/NC_045512.2"
 params.SARS2_FA = "/data/ref/sars2/fa/NC_045512.2.fa"
 params.SARS2_FA_FAI = "/data/ref/sars2/fa/NC_045512.2.fa.fai"
 
@@ -11,11 +9,10 @@ Channel
     .into {read_pairs_ch; read_pairs2_ch}
 
 process quality_control_pre {
-    pod nodeSelector: 'vcf=secondary'
     publishDir params.OUTDIR, mode:'copy'
 
     cpus 19
-    memory '30 GB'
+    memory '50 GB'
     container 'biocontainers/fastqc:v0.11.8dfsg-2-deb_cv1'
 
     input:
@@ -31,16 +28,17 @@ process quality_control_pre {
 }
 
 process trimming_reads {
-    pod nodeSelector: 'vcf=secondary'
     cpus 19
     memory '30 GB'
     container 'davelabhub/trimmomatic:0.39--1'
+    publishDir params.OUTDIR, mode:'copy'
 
     input:
     tuple val(run_id), path(reads) from read_pairs2_ch
 
     output:
     path "${run_id}*.fq" into trim_reads_ch, trim_reads2_ch
+    path("${run_id}_trim_summary")
 
     script:
     """
@@ -52,11 +50,10 @@ process trimming_reads {
 }
 
 process quality_control_post {
-    pod nodeSelector: 'vcf=secondary'
     publishDir params.OUTDIR, mode:'copy'
 
     cpus 19
-    memory '30 GB'
+    memory '50 GB'
     container 'biocontainers/fastqc:v0.11.8dfsg-2-deb_cv1'
 
     input:
@@ -71,63 +68,38 @@ process quality_control_post {
     """
 }
 
-bt_indices_sars2 = Channel
-    .fromPath("${params.SARS2_IDX}*", checkIfExists: true)
-
 process align_reads_to_sars2_genome {
+    publishDir params.OUTDIR, mode:'copy'
     pod nodeSelector: 'vcf=secondary'
-    cpus 10
+    cpus 19
     memory '30 GB'
     container 'alexeyebi/bowtie2_samtools'
 
     input:
     path trimmed_reads from trim_reads2_ch
     path sars2_fasta from params.SARS2_FA
-    file indices from bt_indices_sars2.collect()
     val run_id from params.RUN_ID
 
     output:
-    path "${run_id}.bam" into sars2_aligned_reads_ch
+    path "${run_id}.bam" into sars2_aligned_reads_ch, sars2_aligned_reads_ch2
+    path("${run_id}.bam")
 
-    script:
-    index_base = indices[0].toString() - ~/.rev.\d.bt2?/ - ~/.\d.bt2?/
     """
-    bowtie2 -p ${task.cpus} --no-mixed --no-discordant \
-    --met-file ${run_id}_bowtie_nohuman_summary -x $index_base \
-    -1 ${trimmed_reads[0]} -2 ${trimmed_reads[2]} | samtools view -bST ${sars2_fasta} | \
-    samtools sort | samtools view -h -F 4 -b > ${run_id}.bam
-    samtools index ${run_id}.bam
-    """
-}
-
-process remove_duplicates {
-    pod nodeSelector: 'vcf=secondary'
-    cpus 1
-    memory '30 GB'
-    container 'biocontainers/picard:v1.141_cv3'
-
-    input:
-    path bam from sars2_aligned_reads_ch
-    val run_id from params.RUN_ID
-
-    output:
-    path "${run_id}_dep.bam" into remove_duplicates_ch, remove_duplicates2_ch
-
-    script:
-    """
-    picard MarkDuplicates I=${bam} O=${run_id}_dep.bam REMOVE_DUPLICATES=true \
-    M=${run_id}_marked_dup_metrics.txt
+    bwa index ${sars2_fasta}
+    bwa mem -t ${task.cpus} ${sars2_fasta} ${trimmed_reads[0]} ${trimmed_reads[2]} | samtools view -bF 4 - | samtools sort - > ${run_id}_paired.bam
+    bwa mem -t ${task.cpus} ${sars2_fasta} <(cat ${trimmed_reads[1]} ${trimmed_reads[3]}) | samtools view -bF 4 - | samtools sort - > ${run_id}_unpaired.bam
+    samtools merge ${run_id}.bam ${run_id}_paired.bam ${run_id}_unpaired.bam
+    rm ${run_id}_paired.bam ${run_id}_unpaired.bam
     """
 }
 
 process check_coverage {
-    pod nodeSelector: 'vcf=secondary'
     cpus 1
-    memory '1 GB'
+    memory '10 GB'
     container 'alexeyebi/bowtie2_samtools'
 
     input:
-    path bam from remove_duplicates_ch
+    path bam from sars2_aligned_reads_ch
     val run_id from params.RUN_ID
     path sars2_fasta from params.SARS2_FA
 
@@ -142,10 +114,9 @@ process check_coverage {
 }
 
 process make_small_file_with_coverage {
-    pod nodeSelector: 'vcf=secondary'
     publishDir params.OUTDIR, mode:'copy'
     cpus 1
-    memory '1 GB'
+    memory '10 GB'
     container 'alexeyebi/bowtie2_samtools'
 
     input:
@@ -162,79 +133,41 @@ process make_small_file_with_coverage {
 }
 
 process generate_vcf {
-    pod nodeSelector: 'vcf=secondary'
     publishDir params.OUTDIR, mode:'copy'
     cpus 10
     memory '30 GB'
     container 'alexeyebi/bowtie2_samtools'
 
     input:
-    path bam from remove_duplicates2_ch
+    path bam from sars2_aligned_reads_ch2
     path sars2_fasta from params.SARS2_FA
     path sars2_fasta_fai from params.SARS2_FA_FAI
     val run_id from params.RUN_ID
 
     output:
-    path "${run_id}.vcf.gz" into vcf_ch, vcf2_ch
+    path "${run_id}.vcf.gz" into vcf_ch
     path("${run_id}.stat")
 
     script:
     """
     samtools index ${bam}
-    lofreq indelqual --dindel ${bam} -f ${sars2_fasta} -o ${run_id}_dep_fixed.bam
-    samtools index ${run_id}_dep_fixed.bam
-    lofreq call-parallel --call-indels --pp-threads ${task.cpus} -f ${sars2_fasta} -o ${run_id}.vcf ${run_id}_dep_fixed.bam
+    lofreq indelqual --dindel ${bam} -f ${sars2_fasta} -o ${run_id}_fixed.bam
+    samtools index ${run_id}_fixed.bam
+    lofreq call-parallel --no-default-filter --call-indels --pp-threads ${task.cpus} -f ${sars2_fasta} -o ${run_id}.vcf ${run_id}_fixed.bam
     bgzip ${run_id}.vcf
     tabix ${run_id}.vcf.gz
     bcftools stats ${run_id}.vcf.gz > ${run_id}.stat
     """
 }
 
-process create_consensus_sequence {
-    pod nodeSelector: 'vcf=secondary'
-    publishDir params.OUTDIR, mode:'copy'
-    cpus 1
-    memory '10 GB'
-    container 'alexeyebi/bowtie2_samtools'
-
-    input:
-    path vcf from vcf_ch
-    path sars2_fasta from params.SARS2_FA
-    path sars2_fasta_fai from params.SARS2_FA_FAI
-    val run_id from params.RUN_ID
-
-    output:
-    path("${run_id}.cons.fa")
-
-    script:
-    """
-    bcftools filter -i "DP>50" ${vcf} -o ${run_id}.cfiltered.vcf
-    bgzip ${run_id}.cfiltered.vcf
-    tabix ${run_id}.cfiltered.vcf.gz
-    bcftools filter -i "AF>0.5" ${run_id}.cfiltered.vcf.gz > \
-    ${run_id}.cfiltered_freq.vcf
-    bgzip -c ${run_id}.cfiltered_freq.vcf > ${run_id}.cfiltered_freq.vcf.gz
-    bcftools index ${run_id}.cfiltered_freq.vcf.gz
-    bcftools consensus -f ${sars2_fasta} ${run_id}.cfiltered_freq.vcf.gz > \
-    ${run_id}.cons.fa
-    sed -i "1s/.*/>${run_id}/" ${run_id}.cons.fa
-    rm ${run_id}.cfiltered.vcf.gz
-    rm ${run_id}.cfiltered.vcf.gz.tbi
-    rm ${run_id}.cfiltered_freq.vcf
-    rm ${run_id}.cfiltered_freq.vcf.gz.csi
-    rm ${run_id}.cfiltered_freq.vcf.gz
-    """
-}
-
 process annotate_snps {
-    pod nodeSelector: 'vcf=secondary'
     publishDir params.OUTDIR, mode:'copy'
     cpus 1
     memory '30 GB'
     container 'alexeyebi/snpeff'
 
     input:
-    path vcf from vcf2_ch
+    path vcf from vcf_ch
     val run_id from params.RUN_ID
 
     output:
