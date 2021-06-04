@@ -12,7 +12,7 @@ process quality_control_pre {
     publishDir params.OUTDIR, mode:'copy'
 
     cpus 19
-    memory '50 GB'
+    memory '30 GB'
     container 'biocontainers/fastqc:v0.11.8dfsg-2-deb_cv1'
 
     input:
@@ -53,7 +53,7 @@ process quality_control_post {
     publishDir params.OUTDIR, mode:'copy'
 
     cpus 19
-    memory '50 GB'
+    memory '30 GB'
     container 'biocontainers/fastqc:v0.11.8dfsg-2-deb_cv1'
 
     input:
@@ -94,6 +94,7 @@ process align_reads_to_sars2_genome {
 }
 
 process check_coverage {
+publishDir params.OUTDIR, mode:'copy'
     cpus 1
     memory '10 GB'
     container 'alexeyebi/bowtie2_samtools'
@@ -105,6 +106,7 @@ process check_coverage {
 
     output:
     path "${run_id}.pileup" into check_coverage_ch
+    path("${run_id}.pileup")
 
     script:
     """
@@ -177,7 +179,6 @@ process annotate_snps {
     """
     zcat ${vcf} | sed "s/^NC_045512.2/NC_045512/" > \
     ${run_id}.newchr.vcf
-    java -Xmx4g -jar /data/tools/snpEff/snpEff.jar -v -s ${run_id}.snpEff_summary.html sars.cov.2 \
-    ${run_id}.newchr.vcf > ${run_id}.annot.vcf
+    java -Xmx4g -jar /data/tools/snpEff/snpEff.jar -q -no-downstream -no-upstream -noStats sars.cov.2 ${run_id}.newchr.vcf > ${run_id}.annot.vcf
     """
 }
