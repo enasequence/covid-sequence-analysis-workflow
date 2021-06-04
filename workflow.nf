@@ -94,7 +94,7 @@ process align_reads_to_sars2_genome {
 }
 
 process check_coverage {
-publishDir params.OUTDIR, mode:'copy'
+    publishDir params.OUTDIR, mode:'copy'
     cpus 1
     memory '10 GB'
     container 'alexeyebi/bowtie2_samtools'
