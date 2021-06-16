@@ -156,7 +156,9 @@ process generate_vcf {
     lofreq indelqual --dindel ${bam} -f ${sars2_fasta} -o ${run_id}_fixed.bam
     samtools index ${run_id}_fixed.bam
     lofreq call-parallel --no-default-filter --call-indels --pp-threads ${task.cpus} -f ${sars2_fasta} -o ${run_id}.vcf ${run_id}_fixed.bam
+    lofreq filter --af-min 0.25 -i ${run_id}.vfc -o ${run_id}_filtered.vcf
     bgzip ${run_id}.vcf
+    bgzip ${run_id}_filtered.vcf
     tabix ${run_id}.vcf.gz
     bcftools stats ${run_id}.vcf.gz > ${run_id}.stat
     """
