@@ -70,7 +70,6 @@ process quality_control_post {
 
 process align_reads_to_sars2_genome {
     publishDir params.OUTDIR, mode:'copy'
-    pod nodeSelector: 'vcf=secondary'
     cpus 19
     memory '30 GB'
     container 'alexeyebi/bowtie2_samtools'
@@ -127,6 +126,7 @@ process make_small_file_with_coverage {
 
     output:
     path("${run_id}.coverage")
+    path "${run_id}.coverage" into coverage_ch
 
     script:
     """
@@ -147,8 +147,9 @@ process generate_vcf {
     val run_id from params.RUN_ID
 
     output:
-    path "${run_id}.vcf.gz" into vcf_ch
+    path "${run_id}.vcf.gz" into vcf_ch, vcf_ch2
     path("${run_id}.stat")
+    path("${run_id}_filtered.vcf.gz")
 
     script:
     """
@@ -156,7 +157,7 @@ process generate_vcf {
     lofreq indelqual --dindel ${bam} -f ${sars2_fasta} -o ${run_id}_fixed.bam
     samtools index ${run_id}_fixed.bam
     lofreq call-parallel --no-default-filter --call-indels --pp-threads ${task.cpus} -f ${sars2_fasta} -o ${run_id}.vcf ${run_id}_fixed.bam
-    lofreq filter --af-min 0.25 -i ${run_id}.vfc -o ${run_id}_filtered.vcf
+    lofreq filter --af-min 0.25 -i ${run_id}.vcf -o ${run_id}_filtered.vcf
     bgzip ${run_id}.vcf
     bgzip ${run_id}_filtered.vcf
     tabix ${run_id}.vcf.gz
@@ -182,5 +183,29 @@ process annotate_snps {
     zcat ${vcf} | sed "s/^NC_045512.2/NC_045512/" > \
     ${run_id}.newchr.vcf
     java -Xmx4g -jar /data/tools/snpEff/snpEff.jar -q -no-downstream -no-upstream -noStats sars.cov.2 ${run_id}.newchr.vcf > ${run_id}.annot.vcf
+    """
+}
+
+process create_consensus_sequence {
+    publishDir params.OUTDIR, mode:'copy'
+    cpus 1
+    memory '30 GB'
+    container 'alexeyebi/vcf_to_consensus'
+
+    input:
+    path vcf from vcf_ch2
+    val run_id from params.RUN_ID
+    path sars2_fasta from params.SARS2_FA
+    path sars2_fasta_fai from params.SARS2_FA_FAI
+    path coverage from coverage_ch
+
+    output:
+    path("${run_id}_consensus.fasta.gz")
+
+    script:
+    """
+    tabix ${vcf}
+    python /data/tools/vcf_to_consensus.py -dp 10 -af 0.25 -v ${vcf} -d ${coverage} -o ${run_id}_consensus.fasta -n ${run_id} -r ${sars2_fasta}
+    bgzip ${run_id}_consensus.fasta
     """
 }
