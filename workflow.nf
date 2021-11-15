@@ -1,8 +1,8 @@
 #!/usr/bin/env nextflow
 
 params.OUTDIR = "results"
-params.SARS2_FA = "/data/ref/sars2/fa/NC_045512.2.fa"
-params.SARS2_FA_FAI = "/data/ref/sars2/fa/NC_045512.2.fa.fai"
+params.SARS2_FA = "/data/ref/NC_045512.2.fa"
+params.SARS2_FA_FAI = "/data/ref/NC_045512.2.fa.fai"
 
 Channel
     .fromFilePairs(params.READS, checkIfExists:true)
