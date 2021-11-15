@@ -205,7 +205,7 @@ process create_consensus_sequence {
     script:
     """
     tabix ${vcf}
-    python /data/tools/vcf_to_consensus.py -dp 10 -af 0.25 -v ${vcf} -d ${coverage} -o ${run_id}_consensus.fasta -n ${run_id} -r ${sars2_fasta}
+    vcf_to_consensus.py -dp 10 -af 0.25 -v ${vcf} -d ${coverage} -o ${run_id}_consensus.fasta -n ${run_id} -r ${sars2_fasta}
     bgzip ${run_id}_consensus.fasta
     """
 }
