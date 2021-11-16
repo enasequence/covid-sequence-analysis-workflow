@@ -1,0 +1,122 @@
+
+/*Stylesheet*/
+
+html,body{
+	margin: 0px;
+	padding: 0px;
+}
+
+body{
+	min-height: 100%;
+	font-family: Arial, 'Times New Roman',sans-serif;
+	font-size: 14px;
+	line-height: 1.4em;
+	color: #000;
+	background: #f3f3f3;
+}
+
+
+p{
+	margin:0px 0px 3px;
+}
+
+h1,h2,h3,h4,h5,h6
+{
+	font-family: Verdana;
+}
+
+.container{
+	background: #fff;
+}
+
+/*Header & Organization Section*/
+#organization
+{
+	padding: 10px 0px;
+}
+
+.org_details {
+	color:#808080;
+}
+
+.org_details .title{
+	color:#008080;
+	font-weight: bold;
+}
+
+/*Client Details*/
+#client_details
+{
+	font-weight: bold;
+    background: #f8f8f8;
+	color:#808080;
+	font-size: 15px;
+	border-left: 5px solid #003366;
+	padding:5px 0px 5px 20px;
+}
+
+
+
+#client_details .def_term::after{
+	content: ': ';
+}
+
+/*Introduction*/
+.introduction{
+	padding:5px 0px 8px;
+}
+
+.introduction .intro_title
+{
+	font-weight: bold;
+	/*color: #ff0000;*/
+	color: #1f497c;
+}
+
+/*Report Summary*/
+.report_summary{
+	border-left: 5px solid #008080;
+	padding-left: 10px;
+	padding-bottom:10px;
+	margin-bottom: 10px;
+}
+
+.report_summary ol{
+	padding-left: 15px;
+	margin:0px;
+}
+
+.report_summary ol li{
+
+}
+
+.report_summary .title, .report_summary .summary_head
+{
+	color:#008080;
+	font-weight: bold;
+}
+
+.report_summary .table thead{
+	font-weight: bold;
+	text-align: center;
+	background: #ccc;
+}
+
+@media print {
+	body{
+		font-size: 9px;
+		line-height: 1.1em;
+	}
+
+	#client_details{
+		font-size: 10px;
+	}
+
+	h3{
+		font-size: 12px;
+	}
+
+	h4{
+		font-size: 10px;
+	}
+}

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<title> Clinical report </title>
+	<link rel="stylesheet" type="text/css" href="http://www.dnaminer.com/report/bootstrap/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="http://www.dnaminer.com/report/style.css">
+</head>
+
+<body>
+	<div class="container-fluid">
+		<div class="wrapper">
+			<section id="report_head">
+				<header>
+					<div id="organization" class="row">
+						<div class="col-xs-6">
+							<div class="org_details">
+								<p class="title">${company_name}</p>
+								<div class="address">
+									<p>${company_address}</p>
+									<p>${company_phone}</p>
+									<p><a href="${company_url}">${company_url}</a></p>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-xs-6">
+							<div class="org_logo text-center">
+								<img src="${company_logo}" title="Logo" alt="Logo"/>
+							</div>
+						</div>
+					</div>
+				</header>
+			</section>
+
+			<section>
+				<div id="client_details">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="client_name">
+								<h4> <strong><span class="def_term"> Name </span> <span class="def_value">John Doe </span> </strong></h4>
+							</div>
+
+							<div class="other_details">
+								<div class="row">
+									<div class="col-xs-3">
+										<p> <span class="def_term"> DOB </span> <span class="def_value">01/02/1950</span></p>
+										<p> <span class="def_term"> Sex </span> <span class="def_value">Male</span></p>
+										<p> <span class="def_term"> Race </span> <span class="def_value">Caucasian</span></p>
+									</div>
+
+									<div class="col-xs-4">
+										<p> <span class="def_term"> Accession ID </span> <span class="def_value">0123456789</span></p>
+										<p> <span class="def_term"> Speciment </span> <span class="def_value">Blood, Peripheral</span></p>
+										<p> <span class="def_term"> Received </span> <span class="def_value">01/23/2025</span></p>
+									</div>
+
+									<div class="col-xs-5">
+										<p> <span class="def_term"> Family# </span> <span class="def_value">F12345</span></p>
+										<p> <span class="def_term"> Referring Physician </span> <span class="def_value">John Smith, M.D.</span></p>
+										<p> <span class="def_term"> Referring facility </span> <span class="def_value">Main Hospital</span></p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section>
+				<div class="introduction">
+					<h3 class="text-center intro_title">GENOME REPORT</h3>
+					<p>Sequencing of this individual's genome was performed and variants compared to a reference genome. 
+						These data were analyzed to identify previously reported variants of potential clinical relevance as well as novel variants that could reasonably be assumed to cause disease.
+						All results are summarized on page 1 with further details provided as requested.
+					</p>
+				</div>
+			</section>
+
+			<section>
+				<div class="report_summary">
+					<h3 class="title">Report Summary</h3>
+					<ol type="A">
+						<li> 
+							<h4 class="summary_head"> PATHOGENIC RISK: ${countPathogenic} VARIANT IDENTIFIED </h4>
+							<div class="summary_details"> 
+								<p>This test identified ${countPathogenic} genetic variant that may be responsible for existing disease or the development of disease in this individual's lifetime. </p>
+								<div class="table-responsive">
+									<table class="table table-bordered table-condensed">
+										<thead>
+											<tr>
+												<td>Disease</td>
+												<td>Sources (Revision)</td>
+												<td>Gene</td>
+												<td>Variant</td>
+												<td>Classification</td>
+											</tr>
+										</thead>
+										<tbody>
+											<#list clinVarPathogenic as clinvar>
+												<tr>
+													<td> ${clinvar.dbn} </td>
+													<td> ${clinvar.src} ${clinvar.dsdb} (${clinvar.revStat}) </td>
+													<td> ${clinvar.geneName} </td>
+													<td> ${clinvar.hgvs} </td>
+													<td> ${clinvar.clinSig} </td>
+												</tr>
+											</#list>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</li>
+
+						<li> 
+							<h4 class="summary_head"> LIKELY PATHOGENIC RISK: ${countLikelyPathogenic} VARIANT IDENTIFIED </h4>
+							<div class="summary_details"> 
+								<div class="table-responsive">
+									<table class="table table-bordered table-condensed">
+										<thead>
+											<tr>
+												<td>Disease</td>
+												<td>Sources (Revision)</td>
+												<td>Gene</td>
+												<td>Variant</td>
+												<td>Classification</td>
+											</tr>
+										</thead>
+										<tbody>
+											<#list clinVarLikelyPathogenic as clinvar>
+												<tr>
+													<td> ${clinvar.dbn} </td>
+													<td> ${clinvar.src} ${clinvar.dsdb} (${clinvar.revStat}) </td>
+													<td> ${clinvar.geneName} </td>
+													<td> ${clinvar.hgvs} </td>
+													<td> ${clinvar.clinSig} </td>
+												</tr>
+											</#list>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</li>
+
+						<li> 
+							<h4 class="summary_head">  DRUG RESPONSE: ${countDrugResponse} VARIANT IDENTIFIED </h4>
+							<div class="summary_details"> 
+								<div class="table-responsive">
+									<table class="table table-bordered table-condensed">
+										<thead>
+											<tr>
+												<td>Disease</td>
+												<td>Sources (Revision)</td>
+												<td>Gene</td>
+												<td>Variant</td>
+												<td>Classification</td>
+											</tr>
+										</thead>
+										<tbody>
+											<#list clinVarDrugResponse as clinvar>
+												<tr>
+													<td> ${clinvar.dbn} </td>
+													<td> ${clinvar.src} ${clinvar.dsdb} (${clinvar.revStat}) </td>
+													<td> ${clinvar.geneName} </td>
+													<td> ${clinvar.hgvs} </td>
+													<td> ${clinvar.clinSig} </td>
+												</tr>
+											</#list>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</li>
+
+						<li>
+							<h4 class="summary_head"> LOSS OF FUNCTION: ${countLof} VARIANTS IDENTIFIED </h4>
+							<div class="summary_details"> 
+								<p>This test identified carrier status for ${countLof} putative loss of function variants.</p>
+								<div class="table-responsive">
+									<table class="table table-bordered table-condensed">
+										<thead>
+											<tr>
+												<td>Variant</td>
+												<td>Gene Name</td>
+												<td>Gene ID </td>
+												<td># Transcripts</td>
+												<td>% Affected</td>
+											</tr>
+										</thead>
+										<tbody>
+											<#list vcfLofs as lof>
+												<tr>
+													<td> ${lof.vcfEntry.str} </td>
+													<td> ${lof.geneName} </td>
+													<td> ${lof.geneId} </td>
+													<td> ${lof.numTranscripts} </td>
+													<td> ${lof.percentAffectedStr} % </td>
+												</tr>
+											</#list>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</li>
+
+						<li>
+							<h4 class="summary_head"> HIGH IMPACT: ${countHigh} VARIANTS IDENTIFIED </h4>
+							<div class="summary_details"> 
+								<p>This test identified carrier status for ${countHigh} putative "high" impact variants.</p>
+								<div class="table-responsive">
+									<table class="table table-bordered table-condensed">
+										<thead>
+											<tr>
+												<td>Effects</td>
+												<td>Gene Name</td>
+												<td>Transcript ID</td>
+												<td>HGVS.c</td>
+												<td>HGVS.p</td>
+											</tr>
+										</thead>
+										<tbody>
+											<#list vcfEffects as veff>
+												<tr>
+													<td> ${veff.effectsStrSo} </td>
+													<td> ${veff.geneName} </td>
+													<td> ${veff.featureId} </td>
+													<td> ${veff.hgvsC} </td>
+													<td> ${veff.hgvsP} </td>
+												</tr>
+											</#list>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</li>
+
+					</ol>
+					<p>&nbsp;</p>
+					<p>
+						It should be noted that the disease risk section of this report is limited only to variants with evidence for causing highly
+						penetrant disease, or contributing to highly penetrant disease in a recessive manner. Not all variants identified have been
+						analyzed, and not all regions of the genome have been adequately sequenced. These results should be interpreted in the
+						context of the patient's medical evaluation, family history, and racial/ethnic background. Please note that variant
+						classification and/or interpretation may change over time if more information becomes available. For questions about this
+						report, please contact <a href="emailto:${company_email}">${company_email}</a>.
+					</p>
+				</div>
+			</section>
+
+			<section>
+				
+			</section>
+		</div>
+	</div>
+	<script type="javascript" src="bootstrap/bootstrap.min.js"></script>
+</body>
+</html>

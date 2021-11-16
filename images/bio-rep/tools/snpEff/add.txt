@@ -1,0 +1,3 @@
+# Database for SARS-CoV-2 (NC_045512.2)
+sars.cov.2.genome : SARS-CoV-2
+        sars.cov.2.chromosomes : NC_045512

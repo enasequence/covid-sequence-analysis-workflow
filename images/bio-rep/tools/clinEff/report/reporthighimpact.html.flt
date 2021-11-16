@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<title> ClinEff High Impact variants report </title>
+	<link rel="stylesheet" type="text/css" href="http://www.dnaminer.com/report/bootstrap/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="http://www.dnaminer.com/report/style.css">
+</head>
+<body>
+
+	<div class="container-fluid">
+		<div class="wrapper">
+			<section id="report_head">
+				<header>
+					<div id="organization" class="row">
+						<div class="col-xs-6">
+							<div class="org_details">
+								<p class="title">${company_name}</p>
+								<div class="address">
+									<p>${company_address}</p>
+									<p>${company_phone}</p>
+									<p><a href="${company_url}">${company_url}</a></p>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-xs-6">
+							<div class="org_logo text-center">
+								<img src="${company_logo}" title="Logo" alt="Logo"/>
+							</div>
+						</div>
+					</div>
+				</header>
+			</section>
+
+			<section>
+				<div id="client_details">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="client_name">
+								<h4> <strong><span class="def_term"> Sample Id </span> <span class="def_value">${sampleName} </span> </strong></h4>
+							</div>
+
+							<div class="other_details">
+								<div class="row">
+									<div class="col-xs-3">
+										<table>
+											<tr><td>Sample number        </td><td>: ${sampleNumber}</td></tr>
+											<tr><td>Report module        </td><td>: ${moduleName}</td></tr>
+											<tr><td>VCF lines total      </td><td>: ${vcfEntriesTotalCount}</td></tr>
+											<tr><td>VCF lines reported   </td><td>: ${vcfEntriesCount}</td></tr>
+											<tr><td>Variants reported    </td><td>: ${variantsReportCount}</td></tr>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section>
+				<div class="report_summary">
+					<h3 class="title">Variants having high putative impact</h3>
+							<h4 class="summary_head"> HIGH IMPACT: ${vcfEffectPassCount} Variant annotations identified </h4>
+							<div class="summary_details"> 
+								<div class="table-responsive">
+									<table class="table table-bordered table-condensed">
+										<thead>
+											<tr>
+												<td> Vcf entry </td>
+												<td> Genotype </td>
+												<td> Effects </td>
+												<td> Gene name </td>
+												<td> Transcript Id / Feature Id </td>
+												<td> HGVS.p </td>
+												<td> HGVS.c </td>
+											</tr>
+										</thead>
+										<tbody>
+											<#list variants as var>
+												<tr> 
+													<td> ${var.vcfEntry.toStr()} </td>
+													<td> ${var.vcfEffect.genotype} </td>
+													<td> ${var.vcfEffect.effString} </td>
+													<td> ${var.vcfEffect.geneName} </td>
+													<td> ${var.vcfEffect.featureId}</td>
+													<td> ${var.vcfEffect.hgvsP} </td>
+													<td> ${var.vcfEffect.hgvsC} </td>
+												</tr>
+											</#list>
+										</tbody>
+									</table>
+								</div>
+							</div>
+				</div>
+</table>
+</body>
+</html>
