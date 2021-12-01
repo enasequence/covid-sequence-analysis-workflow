@@ -46,15 +46,15 @@ process trimming_reads {
     container 'davelabhub/trimmomatic:0.39--1'
 
     input:
-    tuple val(sampleId), path(reads)    //path(read1), path(read2)
+    tuple val(sampleId), path(read1), path(read2)    // path(reads)
 
     output:
-    tuple val(sampleId), path("${sampleId}*.fq"), emit: trim_reads_ch, trim_reads2_ch
+    tuple val(sampleId), path("${sampleId}*.fq"), emit: trim_reads_ch   //, trim_reads2_ch
     path("${sampleId}_trim_summary")
 
     script:
     """
-    trimmomatic PE ${reads} ${sampleId}_trim_1.fq ${sampleId}_trim_1_un.fq ${sampleId}_trim_2.fq ${sampleId}_trim_2_un.fq \
+    trimmomatic PE ${read1} ${read2} ${sampleId}_trim_1.fq ${sampleId}_trim_1_un.fq ${sampleId}_trim_2.fq ${sampleId}_trim_2_un.fq \
         -summary ${sampleId}_trim_summary -threads ${task.cpus} SLIDINGWINDOW:5:30 MINLEN:50
     """
 }
