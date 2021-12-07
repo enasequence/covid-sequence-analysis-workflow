@@ -16,6 +16,7 @@ workflow {
 
     download_fastq(data)
     trimming_reads(download_fastq.out)
+    align_reads_to_sars2_genome(trimming_reads.trim_reads_ch)
 }
 
 process download_fastq {
@@ -60,18 +61,21 @@ process trimming_reads {
 }
 
 process align_reads_to_sars2_genome {
+    storeDir params.STOREDIR
     publishDir params.OUTDIR, mode:'copy'
+
     cpus 20
     memory '30 GB'
     container 'alexeyebi/bowtie2_samtools'
 
     input:
-    path trimmed_reads from trim_reads2_ch
-    path sars2_fasta from params.SARS2_FA
-    val sampleId from params.RUN_ID
+    tuple val(sampleId), path(trimmed_reads)
+//    path trimmed_reads from trim_reads2_ch
+    path(sars2_fasta) from params.SARS2_FA
+//    val(sampleId) from params.RUN_ID
 
     output:
-    path "${sampleId}.bam" into sars2_aligned_reads_ch, sars2_aligned_reads_ch2
+    path "${sampleId}.bam", emit: sars2_aligned_reads_ch //into sars2_aligned_reads_ch, sars2_aligned_reads_ch2
     path("${sampleId}.bam")
 
     """
@@ -84,18 +88,20 @@ process align_reads_to_sars2_genome {
 }
 
 process check_coverage {
+    storeDir params.STOREDIR
     publishDir params.OUTDIR, mode:'copy'
+
     cpus 2
     memory '10 GB'
     container 'alexeyebi/bowtie2_samtools'
 
     input:
-    path bam from sars2_aligned_reads_ch
-    val sampleId from params.RUN_ID
-    path sars2_fasta from params.SARS2_FA
+    tuple val(sampleId), path(bam)      // from sars2_aligned_reads_ch
+//    val sampleId from params.RUN_ID
+    path(sars2_fasta) from params.SARS2_FA
 
     output:
-    path "${sampleId}.pileup" into check_coverage_ch
+    path "${sampleId}.pileup", emit: check_coverage_ch
     path("${sampleId}.pileup")
 
     script:
@@ -106,14 +112,16 @@ process check_coverage {
 }
 
 process make_small_file_with_coverage {
+    storeDir params.STOREDIR
     publishDir params.OUTDIR, mode:'copy'
+
     cpus 2
     memory '10 GB'
     container 'alexeyebi/bowtie2_samtools'
 
     input:
-    path pileup from check_coverage_ch
-    val sampleId from params.RUN_ID
+    tuple val(sampleId), path(pileup)       // from check_coverage_ch
+//    val sampleId from params.RUN_ID
 
     output:
     path("${sampleId}.coverage")
@@ -126,16 +134,18 @@ process make_small_file_with_coverage {
 }
 
 process generate_vcf {
+    storeDir params.STOREDIR
     publishDir params.OUTDIR, mode:'copy'
+
     cpus 10
     memory '30 GB'
     container 'alexeyebi/bowtie2_samtools'
 
     input:
-    path bam from sars2_aligned_reads_ch2
+    tuple val(sampleId), path(bam)      // from sars2_aligned_reads_ch2
     path sars2_fasta from params.SARS2_FA
     path sars2_fasta_fai from params.SARS2_FA_FAI
-    val sampleId from params.RUN_ID
+//    val sampleId from params.RUN_ID
 
     output:
     path "${sampleId}.vcf.gz" into vcf_ch, vcf_ch2
@@ -157,14 +167,16 @@ process generate_vcf {
 }
 
 process annotate_snps {
+    storeDir params.STOREDIR
     publishDir params.OUTDIR, mode:'copy'
+
     cpus 2
     memory '30 GB'
     container 'alexeyebi/snpeff'
 
     input:
-    path(vcf) from vcf_ch
-    val sampleId from params.RUN_ID
+    tuple val(sampleId), path(vcf)      // from vcf_ch
+//    val sampleId from params.RUN_ID
 
     output:
     path("${sampleId}.annot.vcf")
@@ -178,14 +190,16 @@ process annotate_snps {
 }
 
 process create_consensus_sequence {
+    storeDir params.STOREDIR
     publishDir params.OUTDIR, mode:'copy'
+
     cpus 2
     memory '30 GB'
     container 'alexeyebi/vcf_to_consensus'
 
     input:
-    path(vcf) from vcf_ch2
-    val sampleId from params.RUN_ID
+    tuple val(sampleId), path(vcf)      // from vcf_ch2
+//    val sampleId from params.RUN_ID
     path(sars2_fasta) from params.SARS2_FA
     path(sars2_fasta_fai) from params.SARS2_FA_FAI
     path(coverage) from coverage_ch
