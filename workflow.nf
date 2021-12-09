@@ -3,10 +3,11 @@
 //params.OUTDIR = "gs://prj-int-dev-covid19-nf-gls/illumina-porting-workdir/results"
 params.SARS2_FA = "gs://prj-int-dev-covid19-nf-gls/illumina-porting-workdir/data/ref/NC_045512.2.fa"
 params.SARS2_FA_FAI = "gs://prj-int-dev-covid19-nf-gls/illumina-porting-workdir/data/ref/NC_045512.2.fa.fai"
-//params.sampels_idxs = "gs://prj-int-dev-covid19-nf-gls/illumina-porting-workdir/data/illumina.index.tsv"
+//params.INDEX = "gs://prj-int-dev-covid19-nf-gls/illumina-porting-workdir/data/illumina.index.tsv"
+//params.STOREDIR = "gs://prj-int-dev-covid19-nf-gls/noncovid/storeDir"
 
 Channel
-    .fromPath(params.sampels_idxs)
+    .fromPath(params.INDEX)
     .splitCsv(header:true, sep:'\t')
     .map{ row-> tuple(row.run_accession, 'ftp://'+row.fastq_ftp.split(';')[0], 'ftp://'+row.fastq_ftp.split(';')[1]) }
     .set { samples_ch }
@@ -16,6 +17,7 @@ process illumina_pipeline {
     memory '8 GB'
     container 'milm/bio-rep:latest'
     publishDir params.OUTDIR, mode:'copy'
+    storeDir params.STOREDIR
 
     input:
     tuple run_id, file(input_file_1), file(input_file_2) from samples_ch
