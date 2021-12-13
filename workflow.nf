@@ -29,11 +29,9 @@ process illumina_pipeline {
     file("${run_id}_output/${run_id}.annot.vcf.gz")
     file("${run_id}_output/${run_id}.bam")
     file("${run_id}_output/${run_id}.coverage.gz")
-    file("${run_id}_output/${run_id}.stat")
     file("${run_id}_output/${run_id}.vcf.gz")
     file("${run_id}_output/${run_id}_consensus.fasta.gz")
     file("${run_id}_output/${run_id}_filtered.vcf.gz")
-    file("${run_id}_output/${run_id}_trim_summary")
 
     script:
     """
@@ -75,17 +73,8 @@ process illumina_pipeline {
     bgzip ${run_id}.annot.vcf
     mkdir -p ${run_id}_output
 
-    fastqc ${run_id}_1.fastq.gz
-    fastqc ${run_id}_2.fastq.gz
-    fastqc ${run_id}_trim_1.fq
-    fastqc ${run_id}_trim_2.fq
-    fastqc ${run_id}_trim_1_un.fq
-    fastqc ${run_id}_trim_2_un.fq
-
-    mv ${run_id}.annot.vcf.gz ${run_id}.bam ${run_id}.coverage.gz ${run_id}.stat ${run_id}.vcf.gz \
-        ${run_id}_consensus.fasta.gz ${run_id}_filtered.vcf.gz ${run_id}_trim_summary \
-        ${run_id}_1_fastqc.html ${run_id}_2_fastqc.html ${run_id}_trim_1_fastqc.html ${run_id}_trim_2_fastqc.html \
-        ${run_id}_trim_1_un_fastqc.html ${run_id}_trim_2_un_fastqc.html ${run_id}_output
+    mv ${run_id}_consensus.fasta.gz ${run_id}_filtered.vcf.gz ${run_id}_output
     tar -zcvf ${run_id}_output.tar.gz ${run_id}_output
+    mv ${run_id}.annot.vcf.gz ${run_id}.bam ${run_id}.coverage.gz ${run_id}.vcf.gz ${run_id}_output
     """
 }
