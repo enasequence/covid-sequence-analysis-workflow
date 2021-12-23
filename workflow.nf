@@ -15,7 +15,7 @@ Channel
 process illumina_pipeline {
     cpus 6
     memory '8 GB'
-    container 'milm/bio-rep:latest'
+    container 'milm/bio-rep:v1'
     publishDir params.OUTDIR, mode:'copy'
     storeDir params.STOREDIR
 
