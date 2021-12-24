@@ -2,9 +2,7 @@
 
 //params.OUTDIR = "gs://prj-int-dev-covid19-nf-gls/illumina-porting-workdir/results"
 params.SARS2_FA = "gs://prj-int-dev-covid19-nf-gls/illumina-porting-workdir/data/ref/NC_045512.2.fa"
-params.SARS2_FA_FAI = "gs://prj-int-dev-covid19-nf-gls/illumina-porting-workdir/data/ref/NC_045512.2.fa.fai"
 //params.INDEX = "gs://prj-int-dev-covid19-nf-gls/illumina-porting-workdir/data/illumina.index.tsv"
-//params.STOREDIR = "gs://prj-int-dev-covid19-nf-gls/noncovid/storeDir"
 
 Channel
     .fromPath(params.INDEX)
@@ -17,12 +15,10 @@ process illumina_pipeline {
     memory '8 GB'
     container 'milm/bio-rep:v1'
     publishDir params.OUTDIR, mode:'copy'
-    storeDir params.STOREDIR
 
     input:
     tuple run_id, file(input_file_1), file(input_file_2) from samples_ch
     path sars2_fasta from params.SARS2_FA
-    path sars2_fasta_fai from params.SARS2_FA_FAI
 
     output:
     file("${run_id}_output.tar.gz")
