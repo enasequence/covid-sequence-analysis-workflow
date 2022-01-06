@@ -5,7 +5,7 @@ RUN micromamba install -y -n base -f /tmp/env.yaml && \
     micromamba clean --all --yes
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
 
-# snpEFf throws a warning if it can't set the system locale to en_US.UTF-8
+# snpEff throws warning if unable to set system locale to en_US.UTF-8
 USER root
 RUN apt-get update && apt-get install -y locales locales-all
 USER micromamba
