@@ -60,7 +60,7 @@ process illumina_pipeline {
     bcftools stats ${run_id}.vcf.gz > ${run_id}.stat
 
     zcat ${run_id}.vcf | sed "s/^NC_045512.2/NC_045512/" > ${run_id}.newchr.vcf
-    java -Xmx4g -jar /data/tools/snpEff/snpEff.jar -q -no-downstream -no-upstream -noStats sars.cov.2 ${run_id}.newchr.vcf > ${run_id}.annot.vcf
+    snpEff -q -no-downstream -no-upstream -noStats sars.cov.2 ${run_id}.newchr.vcf > ${run_id}.annot.vcf
 
     python3 /vcf_to_consensus.py -dp 10 -af 0.25 -v ${run_id}.vcf.gz -d ${run_id}.coverage -o ${run_id}_consensus.fasta -n ${run_id} -r ${sars2_fasta}
     bgzip ${run_id}_consensus.fasta
