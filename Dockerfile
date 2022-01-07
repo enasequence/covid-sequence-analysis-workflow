@@ -20,5 +20,4 @@ RUN echo "# Database for SARS-CoV-2 (NC_045512.2)" >> ${CONFIG} && \
     echo "\t${GENOME}.chromosomes : NC_045512" >> ${CONFIG}
 RUN snpEff build -genbank -v sars.cov.2
 
-COPY --chown=micromamba:micromamba bin/ .
-
+COPY --chown=micromamba:micromamba bin/ /
