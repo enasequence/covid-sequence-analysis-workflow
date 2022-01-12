@@ -1,6 +1,6 @@
 #!/usr/bin/env nextflow
 
-//params.OUTDIR = "gs://prj-int-dev-covid19-nf-gls/illumina-porting-workdir/results"
+//params.OUTDIR = "gs://illumina-ftp/results"
 params.SARS2_FA = "gs://prj-int-dev-covid19-nf-gls/illumina-porting-workdir/data/ref/NC_045512.2.fa"
 //params.INDEX = "gs://prj-int-dev-covid19-nf-gls/illumina-porting-workdir/data/illumina.index.tsv"
 
@@ -26,12 +26,8 @@ process illumina_pipeline {
 
     output:
     file("${run_id}_output.tar.gz")
-    file("${run_id}_output/${run_id}.annot.vcf.gz")
-    file("${run_id}_output/${run_id}.bam")
-    file("${run_id}_output/${run_id}.coverage.gz")
-    file("${run_id}_output/${run_id}.vcf.gz")
-    file("${run_id}_output/${run_id}_consensus.fasta.gz")
     file("${run_id}_output/${run_id}_filtered.vcf.gz")
+    file("${run_id}_output/${run_id}_consensus.fasta.gz")
 
     script:
     """
@@ -69,12 +65,12 @@ process illumina_pipeline {
     python3 /vcf_to_consensus.py -dp 10 -af 0.25 -v ${run_id}.vcf.gz -d ${run_id}.coverage -o ${run_id}_consensus.fasta -n ${run_id} -r ${params.SARS2_FA}
     bgzip ${run_id}_consensus.fasta
 
-    bgzip ${run_id}.coverage
-    bgzip ${run_id}.annot.vcf
     mkdir -p ${run_id}_output
-
-    mv ${run_id}_consensus.fasta.gz ${run_id}_filtered.vcf.gz ${run_id}_output
+    mv ${run_id}_trim_summary ${run_id}.annot.vcf ${run_id}.bam ${run_id}.coverage ${run_id}.stat ${run_id}.vcf.gz ${run_id}_output
     tar -zcvf ${run_id}_output.tar.gz ${run_id}_output
-    mv ${run_id}.annot.vcf.gz ${run_id}.bam ${run_id}.coverage.gz ${run_id}.vcf.gz ${run_id}_output
+
+    rm -rf ${run_id}_output
+    mkdir -p ${run_id}_output
+    mv ${run_id}_filtered.vcf.gz ${run_id}_consensus.fasta.gz ${run_id}_output
     """
 }
