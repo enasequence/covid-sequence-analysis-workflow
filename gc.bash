@@ -20,8 +20,26 @@ if [[ $folder == *"illumina"* ]]; then
     do
         if [[ $subfolder != *".tar.gz"* ]]; then
 
-            RUN_ID_FOLDER=$(echo "${subfolder::-1}" | grep -oP "SRR.*")
+            # for the last subfolder
+            if [[ ${subfolder: -1} == ":" ]]; then
+                subfolder=${subfolder::-1}
+            fi
+
+            RUN_ID_FOLDER=$(echo "${subfolder::-1}" | grep -oP "(SRR.*|ERR.*)")
             ILLUMINA_ID=$(echo "$subfolder" | grep -oP "(illumina_[[:digit:]]+)")
+
+            OUTPUT_VM_FILE="gs://2022-01-25-upd-bucket/$ILLUMINA_ID/results/$RUN_ID_FOLDER.tar.gz"
+            OUTPUT_VM_FOLDER="gs://2022-01-25-upd-bucket/$ILLUMINA_ID/results"
+
+            #checking_file_flag=$(gsutil -q stat $OUTPUT_VM_FILE; echo $?)
+            #checking_folder_flag=$(gsutil -q stat $OUTPUT_VM_FOLDER/$RUN_ID_FOLDER/*; echo $?)
+            #checking_files_count_flag=$(gsutil du $OUTPUT_VM_FOLDER/$RUN_ID_FOLDER/* | wc -l)
+
+            #if [[ checking_file_flag==0 && checking_folder_flag==0 && checking_files_count_flag==2 ]]; then
+            #    echo -e "$OUTPUT_VM_FILE and $OUTPUT_VM_FOLDER/$RUN_ID_FOLDER are already exist\n"
+            #    continue
+            #fi
+
             OUTPUT_LOCAL_FOLDER="/home/mansurova/GC_FILES/$RUN_ID_FOLDER"
 
             FILES_1=$(gsutil ls $subfolder | grep -E ".*(annot|bam|coverage|vcf).*" | grep -vE ".*_filtered.*")
@@ -31,7 +49,6 @@ if [[ $folder == *"illumina"* ]]; then
             cd /home/mansurova/GC_FILES/ && tar -czvf $RUN_ID_FOLDER.tar.gz $RUN_ID_FOLDER
             rm -rf $OUTPUT_LOCAL_FOLDER
 
-            OUTPUT_VM_FILE="gs://2022-01-25-upd-bucket/$ILLUMINA_ID/results/$RUN_ID_FOLDER.tar.gz"
             gsutil -m -h "Content-Type:application/octet-stream" cp /home/mansurova/GC_FILES/$RUN_ID_FOLDER.tar.gz $OUTPUT_VM_FILE
             rm -f /home/mansurova/GC_FILES/$RUN_ID_FOLDER.tar.gz
 
@@ -40,8 +57,7 @@ if [[ $folder == *"illumina"* ]]; then
             mkdir -p $OUTPUT_LOCAL_FOLDER
             gsutil cp $FILES_2 $OUTPUT_LOCAL_FOLDER
 
-            OUTPUT_VM_FOLDER="gs://2022-01-25-upd-bucket/$ILLUMINA_ID/results/"
-            gsutil -m -h "Content-Type:application/octet-stream" cp -r $OUTPUT_LOCAL_FOLDER $OUTPUT_VM_FOLDER
+            gsutil -m -h "Content-Type:application/octet-stream" cp -r $OUTPUT_LOCAL_FOLDER $OUTPUT_VM_FOLDER/
             rm -rf $OUTPUT_LOCAL_FOLDER
         fi
     done
