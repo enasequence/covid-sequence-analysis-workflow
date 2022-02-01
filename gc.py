@@ -1,94 +1,114 @@
 import os
 
 from google.cloud import storage
-from google.cloud.storage import constants
 
 
-def get_paths(client, old_bucket_dir):
-    counter = 0
+def get_paths(client, bucket_dir):
     all_paths = dict()
 
-    for blob in client.list_blobs(old_bucket_dir, prefix='2021-12-13'):
+    for blob in client.list_blobs(bucket_dir):
         folder = os.path.dirname(blob.name)
         if 'illumina' not in folder:
             continue
         else:
             folder_spl = folder.split('/')
-            if len(folder_spl) == 3:
-                key_dir = folder_spl[1]
-                if key_dir not in all_paths:
-                    all_paths[key_dir] = list()
-            elif len(folder_spl) > 3 and '.tar.gz' not in blob.name:
-                all_paths[key_dir].append(blob)
+            key_dir = folder_spl[0]
 
-            if 'results' not in folder:
-                print(folder)
+            if len(folder_spl) in [1, 2, 3] and key_dir not in all_paths:
+                all_paths[key_dir] = {'tar_count': 0, 'folder_files_count': 0, 'folder_files': dict()}
+                print(f"{key_dir} created in dict by folder {folder}")
 
-        counter += 1
-        if counter == 10:
-            break
+            if len(folder_spl) == 1:
+                continue
+            elif len(folder_spl) == 2:
+                if 'results' not in folder:
+                    print(f"'results' not in {folder}")
+                else:
+                    if 'tar' in blob.name:
+                        all_paths[key_dir]['tar_count'] += 1
+                    else:
+                        print(f"current folder is {blob.name}")
+            elif len(folder_spl) == 3:
+                if 'results' not in folder:
+                    print(f"'results' not in {folder}")
+                else:
+                    all_paths[key_dir]['folder_files_count'] += 1
+                    if folder_spl[2] not in all_paths[key_dir]['folder_files']:
+                        all_paths[key_dir]['folder_files'][folder_spl[2]] = 0
+                    all_paths[key_dir]['folder_files'][folder_spl[2]] += 1
+            else:
+                print(f"err with path length: {folder}")
 
     return all_paths
 
 
-def copy_1(source_bucket, destination_bucket):
-    counter = 0
+def get_prev_paths(client, bucket_dir):
+    all_prev_paths = dict()
 
-    for key in all_paths:
-        print(len(all_paths[key]))
-        print(all_paths[key])
-        for blob in all_paths[key]:
+    for blob in client.list_blobs(bucket_dir, prefix='2021-12-13'):
+        folder = os.path.dirname(blob.name)
+        if 'illumina' not in folder:
+            continue
+        else:
+            folder_spl = folder.split('/')
+            key_dir = folder_spl[1]
 
-            new_blob_name = '/'.join(blob.name.split('/')[1:])
-            if blob.name.split('/')[-1].split('.')[1] in ['annot', 'bam', 'coverage', 'vcf']:
-                _ = source_bucket.copy_blob(blob, destination_bucket, new_blob_name)
-            # elif '_consensus' in blob.name or '_filtered' in blob.name:
-            #    print(blob.name, new_blob_name)
-            #    new_blob_name_spl = new_blob_name.split('/')
-            #    new_blob_name_spl[2] = f"{new_blob_name_spl[2]}.tar.gz"
-            #    new_blob_name = '/'.join(new_blob_name_spl)
-            #    _ = source_bucket.copy_blob(blob, destination_bucket, new_blob_name)
+            if len(folder_spl) == 3:
+                if 'results' not in folder:
+                    print(f"'results' not in {folder}")
+                else:
+                    if 'tar' in blob.name:
+                        if key_dir not in all_prev_paths:
+                            all_prev_paths[key_dir] = {'tar_count': 0, 'folder_files_count': 0, 'folder_files': dict()}
+                        all_prev_paths[key_dir]['tar_count'] += 1
+                    else:
+                        print(f"current folder is {blob.name}")
+            elif len(folder_spl) == 4:
+                if 'results' not in folder:
+                    print(f"'results' not in {folder}")
+                else:
+                    all_prev_paths[key_dir]['folder_files_count'] += 1
+                    if folder_spl[3] not in all_prev_paths[key_dir]['folder_files']:
+                        all_prev_paths[key_dir]['folder_files'][folder_spl[3]] = 0
+                    all_prev_paths[key_dir]['folder_files'][folder_spl[3]] += 1
+            else:
+                print(f"err with path length: {folder}")
 
-            counter += 1
-            if counter == 10:
-                break
-
-        break
-
-    return
+    return all_prev_paths
 
 
 if __name__ == "__main__":
     client = storage.Client()
 
-    old_bucket_dir = 'prj-int-dev-covid19-nf-gls'
-    new_bucket_dir = '2022-01-25-upd-bucket'
-
-    all_paths = get_paths(client=client, old_bucket_dir=old_bucket_dir)
+    bucket_dir = '2022-01-25-upd-bucket'
+    all_paths = get_paths(client=client, bucket_dir=bucket_dir)
 
     print(all_paths.keys())
     print(len(all_paths))
     for key in all_paths:
-        print(key, len(all_paths[key]))
+        print(key, all_paths[key]['tar_count'], all_paths[key]['folder_files_count'] / 2)
+        '''if all_paths[key]['tar_count'] != all_paths[key]['folder_files_count'] / 2:
+            dict_test = all_paths[key]['folder_files']
+            for k, v in dict_test.items():
+                if v != 2:
+                    print(k, v)'''
+    print('---------')
 
-    new_bucket = client.bucket(new_bucket_dir)
-    if not new_bucket.exists():
-        new_bucket.create()
+    bucket_prev_dir = 'prj-int-dev-covid19-nf-gls'
+    all_prev_paths = get_prev_paths(client=client, bucket_dir=bucket_prev_dir)
 
-    source_bucket = client.get_bucket(old_bucket_dir)
-    destination_bucket = client.get_bucket(new_bucket_dir)
+    print(all_prev_paths.keys())
+    print(len(all_prev_paths))
+    for key in all_prev_paths:
+        print(key, all_prev_paths[key]['tar_count'], all_prev_paths[key]['folder_files_count'] / 6)
+        '''if all_prev_paths[key]['tar_count'] != all_prev_paths[key]['folder_files_count'] / 6:
+            dict_test = all_prev_paths[key]['folder_files']
+            for k, v in dict_test.items():
+                if v != 6:
+                    print(k, v)'''
+    print('---------')
 
-    copy_1(source_bucket=source_bucket, destination_bucket=destination_bucket)
-
-    destination_bucket.storage_class = constants.ARCHIVE_STORAGE_CLASS
-
-    blobs_names = list()
-    for blob in client.list_blobs(new_bucket_dir):
-        print(blob.name)
-        blob_name = "/".join(blob.name.split('/')[:3])
-        if blob_name not in blobs_names:
-            blobs_names.append(blob_name)
-            # blob.update_storage_class("ARCHIVE")
-            metadata = {'Content-Type': 'application/octet-stream', 'Content-Encoding': 'gzip'}
-            blob.metadata = metadata
-            blob.patch()
+    for key in ['illumina_21', 'illumina_22', 'illumina_23', 'illumina_24', 'illumina_25']:
+        keys_curr = set(all_paths[key]['folder_files'].keys())
+        keys_prev = set(all_prev_paths[key]['folder_files'].keys())
+        print(key, keys_curr-keys_prev, keys_prev-keys_curr)
