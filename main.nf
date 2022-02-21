@@ -93,9 +93,9 @@ process map_to_reference {
     mv ${run_accession}_trim_summary ${run_accession}.annot.vcf ${run_accession}.bam ${run_accession}.coverage ${run_accession}.stat ${run_accession}.vcf.gz ${run_accession}_output
     tar -zcvf ${run_accession}_output.tar.gz ${run_accession}_output
 
-    rm -rf ${run_accession}_output
-    mkdir -p ${run_accession}_output
-    mv ${run_accession}_filtered.vcf.gz ${run_accession}_consensus.fasta.gz ${run_accession}_output
+    #rm -rf ${run_accession}_output
+    #mkdir -p ${run_accession}_output
+    #mv ${run_accession}_filtered.vcf.gz ${run_accession}_consensus.fasta.gz ${run_accession}_output
     """
 }
 
