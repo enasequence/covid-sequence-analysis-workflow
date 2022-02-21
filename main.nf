@@ -12,19 +12,8 @@ params.OUTDIR = "gs://prj-int-dev-covid19-nf-gls/prepro/results"
 
 nextflow.enable.dsl=2
 
-////params.OUTDIR = "gs://illumina-ftp/results"
-//params.SARS2_FA = "gs://prj-int-dev-covid19-nf-gls/illumina-porting-workdir/data/ref/NC_045512.2.fa"
-////params.INDEX = "gs://prj-int-dev-covid19-nf-gls/illumina-porting-workdir/data/illumina.index.tsv"
-
-//Channel
-//    .fromPath(params.INDEX)
-//    .splitCsv(header:true, sep:'\t')
-//    .map{ row-> tuple(row.run_accession, 'ftp://'+row.fastq_ftp.split(';')[0], 'ftp://'+row.fastq_ftp.split(';')[1]) }
-//    .set { samples_ch }
-
 process map_to_reference {
     storeDir params.STOREDIR
-//    publishDir params.OUTDIR, mode:'copy'
 
     cpus 6
     memory '8 GB'
@@ -36,7 +25,6 @@ process map_to_reference {
     path(sars2_fasta_fai)
     path(projects_accounts_csv)
     val(study_accession)
-//    path sars2_fasta from params.SARS2_FA
 
     output:
     val(run_accession)
@@ -92,10 +80,6 @@ process map_to_reference {
     mkdir -p ${run_accession}_output
     mv ${run_accession}_trim_summary ${run_accession}.annot.vcf ${run_accession}.bam ${run_accession}.coverage ${run_accession}.stat ${run_accession}.vcf.gz ${run_accession}_output
     tar -zcvf ${run_accession}_output.tar.gz ${run_accession}_output
-
-    #rm -rf ${run_accession}_output
-    #mkdir -p ${run_accession}_output
-    #mv ${run_accession}_filtered.vcf.gz ${run_accession}_consensus.fasta.gz ${run_accession}_output
     """
 }
 
