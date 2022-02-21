@@ -147,6 +147,6 @@ workflow {
             .splitCsv(header: true, sep: '\t')
             .map { row -> tuple(row.run_accession, row.sample_accession, 'ftp://' + row.fastq_ftp.split(';')[0], 'ftp://' + row.fastq_ftp.split(';')[1]) }
 
-    illumina_pipeline(data, params.SARS2_FA, params.SARS2_FA_FAI, params.SECRETS, params.STUDY)
+    map_to_reference(data, params.SARS2_FA, params.SARS2_FA_FAI, params.SECRETS, params.STUDY)
     ena_analysis_submit(map_to_reference.out, params.SECRETS, params.STUDY)
 }
