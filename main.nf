@@ -58,7 +58,6 @@ process map_to_reference {
     rm ${run_accession}_paired.bam ${run_accession}_unpaired.bam
 
     samtools mpileup -a -A -Q 30 -d 8000 -f ${sars2_fasta} ${run_accession}.bam > ${run_accession}.pileup
-
     cat ${run_accession}.pileup | awk '{print \$2,","\$3,","\$4}' > ${run_accession}.coverage
 
     samtools index ${run_accession}.bam
@@ -71,10 +70,7 @@ process map_to_reference {
     tabix ${run_accession}.vcf.gz
     bcftools stats ${run_accession}.vcf.gz > ${run_accession}.stat
 
-    # zcat ${run_accession}.vcf | sed "s/^NC_045512.2/NC_045512/" > ${run_accession}.newchr.vcf
-    # snpEff -q -no-downstream -no-upstream -noStats sars.cov.2 ${run_accession}.newchr.vcf > ${run_accession}.annot.vcf
-    snpEff -q -no-downstream -no-upstream -noStats sars.cov.2 ${run_accession}.vcf > ${run_accession}.annot.vcf
-
+    snpEff -q -no-downstream -no-upstream -noStats NC_045512.2 ${run_accession}.vcf > ${run_accession}.annot.vcf
     python3 /vcf_to_consensus.py -dp 10 -af 0.25 -v ${run_accession}.vcf.gz -d ${run_accession}.coverage -o ${run_accession}_consensus.fasta -n ${run_accession} -r ${sars2_fasta}
     bgzip ${run_accession}_consensus.fasta
 
@@ -84,6 +80,7 @@ process map_to_reference {
     """
 }
 
+// Same process duplicated in both pipelines due to a limitation in Nextflow
 process ena_analysis_submit {
     publishDir params.OUTDIR, mode: 'move'
     storeDir params.STOREDIR
