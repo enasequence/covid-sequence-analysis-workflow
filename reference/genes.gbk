@@ -1,4 +1,4 @@
-LOCUS       NC_045512              29903 bp ss-RNA     linear   VRL 30-MAR-2020
+LOCUS       NC_045512              29903 bp ss-RNA     linear   VRL 18-JUL-2020
 DEFINITION  Severe acute respiratory syndrome coronavirus 2 isolate Wuhan-Hu-1,
             complete genome.
 ACCESSION   NC_045512
@@ -10,33 +10,34 @@ SOURCE      Severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2)
             Viruses; Riboviria; Orthornavirae; Pisuviricota; Pisoniviricetes;
             Nidovirales; Cornidovirineae; Coronaviridae; Orthocoronavirinae;
             Betacoronavirus; Sarbecovirus.
-REFERENCE   1  (bases 13476 to 13503)
+REFERENCE   1  (bases 1 to 29903)
+  AUTHORS   Wu,F., Zhao,S., Yu,B., Chen,Y.M., Wang,W., Song,Z.G., Hu,Y.,
+            Tao,Z.W., Tian,J.H., Pei,Y.Y., Yuan,M.L., Zhang,Y.L., Dai,F.H.,
+            Liu,Y., Wang,Q.M., Zheng,J.J., Xu,L., Holmes,E.C. and Zhang,Y.Z.
+  TITLE     A new coronavirus associated with human respiratory disease in
+            China
+  JOURNAL   Nature 579 (7798), 265-269 (2020)
+   PUBMED   32015508
+  REMARK    Erratum:[Nature. 2020 Apr;580(7803):E7. PMID: 32296181]
+REFERENCE   2  (bases 13476 to 13503)
   AUTHORS   Baranov,P.V., Henderson,C.M., Anderson,C.B., Gesteland,R.F.,
             Atkins,J.F. and Howard,M.T.
   TITLE     Programmed ribosomal frameshifting in decoding the SARS-CoV genome
   JOURNAL   Virology 332 (2), 498-510 (2005)
    PUBMED   15680415
-REFERENCE   2  (bases 29728 to 29768)
+REFERENCE   3  (bases 29728 to 29768)
   AUTHORS   Robertson,M.P., Igel,H., Baertsch,R., Haussler,D., Ares,M. Jr. and
             Scott,W.G.
   TITLE     The structure of a rigorously conserved RNA element within the SARS
             virus genome
-  JOURNAL   PLoS Biol. 3 (1), e5 (2005)
+  JOURNAL   PLoS Biol 3 (1), e5 (2005)
    PUBMED   15630477
-REFERENCE   3  (bases 29609 to 29657)
+REFERENCE   4  (bases 29609 to 29657)
   AUTHORS   Williams,G.D., Chang,R.Y. and Brian,D.A.
   TITLE     A phylogenetically conserved hairpin-type 3' untranslated region
             pseudoknot functions in coronavirus RNA replication
-  JOURNAL   J. Virol. 73 (10), 8349-8355 (1999)
+  JOURNAL   J Virol 73 (10), 8349-8355 (1999)
    PUBMED   10482585
-REFERENCE   4  (bases 1 to 29903)
-  AUTHORS   Wu,F., Zhao,S., Yu,B., Chen,Y.-M., Wang,W., Hu,Y., Song,Z.-G.,
-            Tao,Z.-W., Tian,J.-H., Pei,Y.-Y., Yuan,M.L., Zhang,Y.-L.,
-            Dai,F.-H., Liu,Y., Wang,Q.-M., Zheng,J.-J., Xu,L., Holmes,E.C. and
-            Zhang,Y.-Z.
-  TITLE     A novel coronavirus associated with a respiratory disease in Wuhan
-            of Hubei province, China
-  JOURNAL   Unpublished
 REFERENCE   5  (bases 1 to 29903)
   CONSRTM   NCBI Genome Project
   TITLE     Direct Submission
@@ -492,7 +493,7 @@ FEATURES             Location/Qualifiers
                      /gene="ORF1ab"
                      /locus_tag="GU280_gp01"
                      /inference="COORDINATES:
-                     profile:profile:Rfam-release-14.1:RF00507,Infernal:1.1.2"
+                     profile:Rfam-release-14.1:RF00507,Infernal:1.1.2"
                      /function="Coronavirus frameshifting stimulation element
                      stem-loop 2"
      gene            21563..25384

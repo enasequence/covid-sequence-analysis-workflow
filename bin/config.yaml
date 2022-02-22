@@ -1,0 +1,9 @@
+CENTER_NAME: ENA
+ALIAS: ELTE_CSAW
+TITLE: 'Analysis generated from the processing of raw read sequencing data through the COVID-19 Sequence Analysis Workflow pipeline, developed in collaboration with VEO.'
+DESCRIPTION: 'Analysis generated from processing of raw read sequencing data through the COVID-19 Sequence Analysis Workflow pipeline. For more information on the pipeline, please visit: https://github.com/enasequence/covid-sequence-analysis-workflow. This pipeline has been integrated into EMBL-EBI ENA/COMPARE Data Hubs system, for more information on data hubs, please visit: http://europepmc.org/article/PMC/6927095, for more information on VEO, visit: https://www.veo-europe.eu/.'
+PIPELINE_NAME: COVID-19 Sequence Analysis Workflow
+PIPELINE_VERSION: v1
+SUBMISSION_TOOL: ENA_Analysis_Submitter
+SUBMISSION_TOOL_VERSION: 2.0.0
+ACTION: ADD
