@@ -1,6 +1,6 @@
 // Same process duplicated in both pipelines due to a limitation in Nextflow
 process ena_analysis_submit {
-    publishDir params.OUTDIR, mode: 'move'
+    publishDir params.OUTDIR, mode: 'copy'
     storeDir params.STOREDIR
 
     container 'davidyuyuan/ena-analysis-submitter:2.0'
