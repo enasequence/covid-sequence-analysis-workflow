@@ -17,7 +17,7 @@ process map_to_reference {
 
     cpus 6
     memory '8 GB'
-    container 'milm/bio-rep:v1'
+    container 'davidyuyuan/ena-sars-cov2-illumina:1.0'
 
     input:
     tuple val(run_accession), val(sample_accession), file(input_file_1), file(input_file_2) //from samples_ch
@@ -71,8 +71,9 @@ process map_to_reference {
     tabix ${run_accession}.vcf.gz
     bcftools stats ${run_accession}.vcf.gz > ${run_accession}.stat
 
-    zcat ${run_accession}.vcf | sed "s/^NC_045512.2/NC_045512/" > ${run_accession}.newchr.vcf
-    snpEff -q -no-downstream -no-upstream -noStats sars.cov.2 ${run_accession}.newchr.vcf > ${run_accession}.annot.vcf
+    # zcat ${run_accession}.vcf | sed "s/^NC_045512.2/NC_045512/" > ${run_accession}.newchr.vcf
+    # snpEff -q -no-downstream -no-upstream -noStats sars.cov.2 ${run_accession}.newchr.vcf > ${run_accession}.annot.vcf
+    snpEff -q -no-downstream -no-upstream -noStats sars.cov.2 ${run_accession}.vcf > ${run_accession}.annot.vcf
 
     python3 /vcf_to_consensus.py -dp 10 -af 0.25 -v ${run_accession}.vcf.gz -d ${run_accession}.coverage -o ${run_accession}_consensus.fasta -n ${run_accession} -r ${sars2_fasta}
     bgzip ${run_accession}_consensus.fasta
