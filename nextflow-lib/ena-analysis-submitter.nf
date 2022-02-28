@@ -18,7 +18,7 @@ process ena_analysis_submit {
     file("${run_accession}_output/${study_accession}/${run_accession}_output.tar.gz")
     file("${run_accession}_output/${study_accession}/${run_accession}_filtered.vcf.gz")
     file("${run_accession}_output/${study_accession}/${run_accession}_consensus.fasta.gz")
-    file("${run_accession}_output/${study_accession}/successful_submissions.txt")
+    file("${run_accession}_output/${study_accession}/${run_accession}_submissions.txt")
 
     script:
     """
@@ -38,6 +38,7 @@ process ena_analysis_submit {
         analysis_submission.py -t -o ${run_accession}_output/${study_accession} -p ${study_accession} -s ${sample_accession} -r ${run_accession} -f ${consensus_fasta_gz} -a COVID19_CONSENSUS -au \${webin_id} -ap \${webin_password}
     fi
     mv ${output_tgz} ${filtered_vcf_gz} ${consensus_fasta_gz} ${run_accession}_output/${study_accession}
+    mv ${run_accession}_output/${study_accession}/successful_submissions.txt ${run_accession}_output/${study_accession}/${run_accession}_submissions.txt
     """
 }
 
