@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-j=${1:-'0'}
+batch_index=${1:-'0'}
 snapshot_date=${2:-'2022-02-25'}
 pipeline=${3:-'nanopore'}
 dataset_name=${4:-'sarscov2_metadata'}
@@ -35,8 +35,10 @@ function gen_metadata {
 ##################################
 # Update submission_metadata table
 ##################################
-gen_metadata "${output_dir}/${snapshot_date}_${pipeline}_${j}_receipts.tsv" "${DIR}/results/${snapshot_date}/${table_name}_${j}.tsv" "${output_dir}/${pipeline}_metadata_${j}.tsv" "${snapshot_date}"
-gsutil -m cp "${output_dir}/${pipeline}_metadata_${j}.tsv" "gs://${dataset_name}/${pipeline}_metadata_${j}.tsv"
+gen_metadata "${output_dir}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv" \
+  "${DIR}/results/${snapshot_date}/${table_name}_${batch_index}.tsv" \
+  "${output_dir}/${pipeline}_metadata_${batch_index}.tsv" "${snapshot_date}"
+gsutil -m cp "${output_dir}/${pipeline}_metadata_${batch_index}.tsv" "gs://${dataset_name}/${pipeline}_metadata_${batch_index}.tsv"
 bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_leading_rows=1 --field_delimiter=tab \
-  --autodetect "${dataset_name}.submission_metadata" "gs://${dataset_name}/${pipeline}_metadata_${j}.tsv" \
+  --autodetect "${dataset_name}.submission_metadata" "gs://${dataset_name}/${pipeline}_metadata_${batch_index}.tsv" \
   "run_id,platform,model,first_public,first_created,country,collection_date,snapshot_date"
