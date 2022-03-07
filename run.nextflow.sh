@@ -22,6 +22,7 @@ mkdir -p "${output_dir}"
 ##############################
 # Retrieve and reserve a batch
 ##############################
+echo "Retrieve and reserve batch ${batch_index} with the size of ${batch_size} from the offset of ${offset}."
 sql="SELECT * FROM ${project_id}.${dataset_name}.${table_name} LIMIT ${batch_size} OFFSET ${offset}"
 bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false --max_rows="${batch_size}" "${sql}" \
   | awk 'BEGIN{ FS=","; OFS="\t" }{$1=$1; print $0 }' > "${output_dir}/${table_name}_${batch_index}.tsv"
@@ -32,6 +33,7 @@ gsutil -m cp "${output_dir}/${table_name}_${batch_index}.tsv" "gs://${dataset_na
 #################################
 # Process the batch with Nextflow
 #################################
+echo "Processing with ${DIR}/${pipeline}/main.nf."
 nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/main.nf" -profile "${profile}" \
       --TEST_SUBMISSION "${test_submission}" \
       --INDEX "${output_dir}/${table_name}_${batch_index}.tsv" \
