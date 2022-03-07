@@ -35,7 +35,7 @@ function gen_metadata {
 ##################################
 # Update submission_metadata table
 ##################################
-echo "Update ${dataset_name}.submission_metadata table."
+echo "** Updating ${dataset_name}.submission_metadata table. **"
 gen_metadata "${output_dir}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv" \
   "${DIR}/results/${snapshot_date}/${table_name}_${batch_index}.tsv" \
   "${output_dir}/${pipeline}_metadata_${batch_index}.tsv" "${snapshot_date}"
