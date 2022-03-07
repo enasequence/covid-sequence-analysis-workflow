@@ -42,3 +42,4 @@ gsutil -m cp "${output_dir}/${pipeline}_metadata_${batch_index}.tsv" "gs://${dat
 bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_leading_rows=1 --field_delimiter=tab \
   --autodetect "${dataset_name}.submission_metadata" "gs://${dataset_name}/${pipeline}_metadata_${batch_index}.tsv" \
   "run_id,platform,model,first_public,first_created,country,collection_date,snapshot_date"
+rm "${output_dir}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv"

@@ -42,4 +42,3 @@ bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_
   "analysis_accession:STRING,file_submitted:STRING,time_submitted,snapshot_date"
 sql="UPDATE ${dataset_name}.submission_receipts SET snapshot_date = '""${snapshot_date}""' WHERE snapshot_date is NULL"
 bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}"
-rm "${output_dir}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv"
