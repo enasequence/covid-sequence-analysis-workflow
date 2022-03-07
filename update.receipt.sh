@@ -20,6 +20,7 @@ mkdir -p "${output_dir}"
 # Analysis archived: ${output_dir}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv
 ###########################################################################################
 echo "** Getting ${snapshot_date}_${pipeline}_${batch_index}_receipts. **"
+
 printf '%s\t%s\t%s\t%s\n' "analysis_accession" "file_submitted" "time_submitted" "snapshot_date" > \
   "${output_dir}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv"
 if [ "${profile}" = 'gls' ]; then
@@ -38,12 +39,16 @@ fi
 # upload receipts and update  the rows with snapshot_date
 #########################################################
 echo "** Updating ${dataset_name}.submission_receipts table. **"
+
 gsutil -m cp "${output_dir}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv" \
-  "gs://${dataset_name}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv"
-bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_leading_rows=1 --field_delimiter=tab \
+  "gs://${dataset_name}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv" && \
+  bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_leading_rows=1 --field_delimiter=tab \
   --autodetect "${dataset_name}.submission_receipts" "gs://${dataset_name}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv" \
   "analysis_accession:STRING,file_submitted:STRING,time_submitted,snapshot_date"
+
 sql="UPDATE ${dataset_name}.submission_receipts SET snapshot_date = '""${snapshot_date}""' WHERE snapshot_date is NULL"
+bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}"
+sql="CREATE OR REPLACE TABLE ${dataset_name}.submission_receipts AS SELECT DISTINCT * FROM ${dataset_name}.submission_receipts"
 bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}"
 
 function gen_metadata {
@@ -53,25 +58,28 @@ function gen_metadata {
   local timestamp=$4
 
   printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "run_id"	"platform"	"model"	"first_public"	"first_created"	"country"	"collection_date"	"snapshot_date" > "${metadata}"
-  true > "${metadata}.tmp"
   sed 1d "${input_file}" | while IFS="" read -r receipt || [ -n "$f" ]
   do
     run_accession=$(echo "${receipt}" | cut -f 2 | cut -d '_' -f 1 )
     sample_accession=$(grep "${run_accession}" "${index_tsv}" | cut -f3-4,10-13)
-    printf '%s\t%s\t%s\n' "${run_accession}" "${sample_accession}" "${timestamp}" >> "${metadata}.tmp"
+    printf '%s\t%s\t%s\n' "${run_accession}" "${sample_accession}" "${timestamp}" >> "${metadata}"
   done
-  sort -u "${metadata}.tmp" >> "${metadata}" && rm "${metadata}.tmp"
 }
 
 ##################################
 # Update submission_metadata table
 ##################################
 echo "** Updating ${dataset_name}.submission_metadata table. **"
+
 gen_metadata "${output_dir}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv" \
   "${DIR}/results/${snapshot_date}/${pipeline}_to_be_processed_${batch_index}.tsv" \
   "${output_dir}/${pipeline}_metadata_${batch_index}.tsv" "${snapshot_date}"
-gsutil -m cp "${output_dir}/${pipeline}_metadata_${batch_index}.tsv" "gs://${dataset_name}/${pipeline}_metadata_${batch_index}.tsv"
-bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_leading_rows=1 --field_delimiter=tab \
+gsutil -m cp "${output_dir}/${pipeline}_metadata_${batch_index}.tsv" "gs://${dataset_name}/${pipeline}_metadata_${batch_index}.tsv" && \
+  bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_leading_rows=1 --field_delimiter=tab \
   --autodetect "${dataset_name}.submission_metadata" "gs://${dataset_name}/${pipeline}_metadata_${batch_index}.tsv" \
   "run_id,platform,model,first_public,first_created,country,collection_date,snapshot_date"
+
+sql="CREATE OR REPLACE TABLE ${dataset_name}.submission_metadata AS SELECT DISTINCT * FROM ${dataset_name}.submission_metadata"
+bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}"
+
 rm "${output_dir}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv"
