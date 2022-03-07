@@ -14,7 +14,6 @@ mkdir -p "${output_dir}"
 
 table_name="${pipeline}_to_be_processed"
 
-# Results and metadata
 function gen_metadata {
   local input_file=$1
   local index_tsv=$2
