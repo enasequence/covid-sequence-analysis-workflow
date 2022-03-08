@@ -18,7 +18,7 @@ process map_to_reference {
 
     cpus 6
     memory '8 GB'
-    container 'davidyuyuan/ena-sars-cov2-illumina:1.0'
+    container 'davidyuyuan/ena-sars-cov2-illumina:2.0'
 
     input:
     tuple val(run_accession), val(sample_accession), file(input_file_1), file(input_file_2) //from samples_ch
@@ -83,7 +83,7 @@ process map_to_reference {
     """
 }
 
-include { ena_analysis_submit } from './nextflow-lib/ena-analysis-submitter.nf'
+include { ena_analysis_submit } from '../nextflow-lib/ena-analysis-submitter.nf'
 workflow {
     data = Channel
             .fromPath(params.INDEX)
