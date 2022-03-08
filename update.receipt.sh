@@ -79,7 +79,7 @@ gsutil -m cp "${output_dir}/${pipeline}_metadata_${batch_index}.tsv" "gs://${dat
   --autodetect "${dataset_name}.submission_metadata" "gs://${dataset_name}/${pipeline}_metadata_${batch_index}.tsv" \
   "run_id,platform,model,first_public,first_created,country,collection_date,snapshot_date"
 
-sql="CREATE OR REPLACE TABLE ${dataset_name}.submission_metadata AS SELECT DISTINCT * FROM ${dataset_name}.submission_metadata"
+sql="CREATE OR REPLACE TABLE ${dataset_name}.submission_metadata AS SELECT DISTINCT * FROM ${dataset_name}.submission_metadata WHERE platform IS NOT NULL"
 bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}"
 
 rm "${output_dir}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv"
