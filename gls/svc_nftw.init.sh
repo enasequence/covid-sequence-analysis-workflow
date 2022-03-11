@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+##############################
+# Run once per client machine
+# Not required for Cloud Shell
+##############################
+
 PROJECT=${1:-'prj-int-dev-covid19-nf-gls'}
 
 # Service account key for NF Tower
@@ -12,3 +17,6 @@ gcloud iam service-accounts keys create --project "${PROJECT}" \
   --key-file-type=json ${SERVICE_ACCOUNT_KEY}
 export SERVICE_ACCOUNT_KEY_FILE=${DIR}/${SERVICE_ACCOUNT_KEY}
 export GOOGLE_APPLICATION_CREDENTIALS=${DIR}/${SERVICE_ACCOUNT_KEY}
+
+#https://www.nextflow.io/docs/latest/google.html?highlight=auth
+gcloud auth application-default login
