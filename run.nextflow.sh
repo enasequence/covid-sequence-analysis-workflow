@@ -3,12 +3,12 @@
 # DIR where the current script resides
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-batch_index=${1:-'0'}
-snapshot_date=${2:-'2022-02-25'}
-batch_size=${3:-'1'}
-test_submission=${4:-'true'}
-pipeline=${5:-'nanopore'}
-profile=${6:-'gls'}
+pipeline=${1:-'nanopore'}
+profile=${2:-'gls'}
+batch_index=${3:-'0'}
+snapshot_date=${4:-'2022-03-22'}
+batch_size=${5:-'1'}
+test_submission=${6:-'true'}
 root_dir=${7:-'gs://prj-int-dev-covid19-nf-gls'}
 dataset_name=${8:-'sarscov2_metadata'}
 project_id=${9:-'prj-int-dev-covid19-nf-gls'}
