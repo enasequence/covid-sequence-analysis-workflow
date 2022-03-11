@@ -5,12 +5,12 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 pipeline=${1:-'nanopore'}
 profile=${2:-'gls'}
-batch_index=${3:-'0'}
-snapshot_date=${4:-'2022-03-22'}
-batch_size=${5:-'1'}
-test_submission=${6:-'true'}
-study_accession=${7:-'PRJEB45555'}
-root_dir=${8:-'gs://prj-int-dev-covid19-nf-gls'}
+root_dir=${3:-'gs://prj-int-dev-covid19-nf-gls'}
+batch_index=${4:-'0'}
+snapshot_date=${5:-'2022-03-22'}
+batch_size=${6:-'1'}
+test_submission=${7:-'true'}
+study_accession=${8:-'PRJEB45555'}
 dataset_name=${9:-'sarscov2_metadata'}
 project_id=${10:-'prj-int-dev-covid19-nf-gls'}
 
@@ -38,11 +38,10 @@ echo "** Processing samples with ${DIR}/${pipeline}/main.nf. **"
 
 pipeline_dir="${root_dir}/${snapshot_date}/${pipeline}_${batch_index}"
 nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/main.nf" -profile "${profile}" \
-      --STUDY "${study_accession}" \
+      --TEST_SUBMISSION "${test_submission}" --STUDY "${study_accession}" \
       --SECRETS "${DIR}/data/projects_accounts.csv" \
       --SARS2_FA "${DIR}/data/NC_045512.2.fa" \
       --SARS2_FA_FAI "${DIR}/data/NC_045512.2.fa.fai"\
-      --TEST_SUBMISSION "${test_submission}" \
       --INDEX "${output_dir}/${table_name}_${batch_index}.tsv" \
       --OUTDIR "${pipeline_dir}/publishDir" \
       --STOREDIR "${pipeline_dir}/storeDir" \
