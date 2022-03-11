@@ -29,7 +29,8 @@ process ena_analysis_submit {
     webin_password="\$(echo \${line} | cut -d ',' -f 5)"
     
     mkdir -p ${run_accession}_output/${study_accession}
-    cp ${config_yaml} ${run_accession}_output/${study_accession}
+    # cp ${config_yaml} ${run_accession}_output/${study_accession}
+    cat ${config_yaml} > ${run_accession}_output/${study_accession}/config.yaml
     if [ "${study_accession}" = 'PRJEB45555' ]; then
         analysis_submission.py -t ${test_submission} -o ${run_accession}_output/${study_accession} -p PRJEB43947 -s ${sample_accession} -r ${run_accession} -f ${output_tgz} -a PATHOGEN_ANALYSIS -au \${webin_id} -ap \${webin_password}
         analysis_submission.py -t ${test_submission} -o ${run_accession}_output/${study_accession} -p PRJEB45554 -s ${sample_accession} -r ${run_accession} -f ${filtered_vcf_gz} -a COVID19_FILTERED_VCF -au \${webin_id} -ap \${webin_password}
