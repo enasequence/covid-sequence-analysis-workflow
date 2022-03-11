@@ -39,6 +39,7 @@ echo "** Processing samples with ${DIR}/${pipeline}/main.nf. **"
 pipeline_dir="${root_dir}/${snapshot_date}/${pipeline}_${batch_index}"
 nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/main.nf" -profile "${profile}" \
       --TEST_SUBMISSION "${test_submission}" --STUDY "${study_accession}" \
+      --CONFIG_YAML "${DIR}/${pipeline}/config.yaml" \
       --SECRETS "${DIR}/data/projects_accounts.csv" \
       --SARS2_FA "${DIR}/data/NC_045512.2.fa" \
       --SARS2_FA_FAI "${DIR}/data/NC_045512.2.fa.fai"\
