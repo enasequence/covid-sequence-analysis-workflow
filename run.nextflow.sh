@@ -4,12 +4,12 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 pipeline=${1:-'nanopore'}
-profile=${2:-'gls'}
+profile=${2:-'codon'}
 root_dir=${3:-'gs://prj-int-dev-covid19-nf-gls'}
 batch_index=${4:-'0'}
 snapshot_date=${5:-'2022-03-22'}
 batch_size=${6:-'1'}
-test_submission=${7:-'true'}
+test_submission=${7:-'false'}
 study_accession=${8:-'PRJEB45555'}
 dataset_name=${9:-'sarscov2_metadata'}
 project_id=${10:-'prj-int-dev-covid19-nf-gls'}
