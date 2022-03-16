@@ -9,7 +9,7 @@ root_dir=${3:-'/nfs/production/cochrane/ena/users/davidyuan/covid-sequence-analy
 snapshot_date=${4:-'2022-03-22'}
 queue_size=${5:-'2'}      # as defined as queueSize in nextflow.config
 batch_size=${6:-'3000'}
-concurrency=${7:-'150'}   # Maximum concurrency determined by the bottleneck - the submission server at present
+concurrency=${7:-'160'}   # Maximum concurrency determined by the bottleneck - the submission server at present
 dataset_name=${8:-'sarscov2_metadata'}
 project_id=${9:-'prj-int-dev-covid19-nf-gls'}
 
