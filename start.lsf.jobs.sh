@@ -8,8 +8,8 @@ profile=${2:-'codon'}
 root_dir=${3:-'/nfs/production/cochrane/ena/users/davidyuan/covid-sequence-analysis-workflow'}
 snapshot_date=${4:-'2022-03-22'}
 queue_size=${5:-'2'}      # as defined as queueSize in nextflow.config
-batch_size=${6:-'1000'}
-concurrency=${7:-'200'}   # Maximum concurrency determined by the bottleneck - the submission server at present
+batch_size=${6:-'3000'}
+concurrency=${7:-'150'}   # Maximum concurrency determined by the bottleneck - the submission server at present
 dataset_name=${8:-'sarscov2_metadata'}
 project_id=${9:-'prj-int-dev-covid19-nf-gls'}
 
@@ -21,9 +21,11 @@ row_count=$(bq --project_id="${project_id}" --format=csv query --use_legacy_sql=
 batches=$(( row_count / batch_size + 1 ))
 num_of_jobs=$(( concurrency / queue_size ))
 
-for((i=0; i<batches; i+=num_of_jobs)); do
-  for ((j=i; j<i+num_of_jobs&&j<batches; j++)); do
-    bsub -n 2 -M 4096 -q production "${DIR}/run.nextflow.sh" "${pipeline}" "${profile}" "${root_dir}" "${j}" "${snapshot_date}" "${batch_size}"
-  done
+#for((i=0; i<batches; i+=num_of_jobs)); do
+#  for ((j=i; j<i+num_of_jobs&&j<batches; j++)); do
+for ((j=0; j<num_of_jobs&&j<batches; j++)); do
+  bsub -n 2 -M 4096 -q production "${DIR}/run.nextflow.sh" "${pipeline}" "${profile}" "${root_dir}" "${j}" "${snapshot_date}" "${batch_size}"
 done
+#sleep 12h
+#done
 echo "Row count: ${row_count}. Total number of batches: ${batches}, Number of jobs: ${num_of_jobs}."
