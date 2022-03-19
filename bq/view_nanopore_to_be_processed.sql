@@ -17,4 +17,10 @@ AS SELECT
        T3.run_accession
      FROM
        `prj-int-dev-covid19-nf-gls.sarscov2_metadata.sra_processing` T3)
-     ORDER BY run_accession DESC
+     AND T1.run_accession NOT IN (
+     SELECT
+       T4.run_id
+     FROM
+       `prj-int-dev-covid19-nf-gls.sarscov2_metadata.submission_metadata` T4)
+   ORDER BY
+     run_accession DESC
