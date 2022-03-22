@@ -34,10 +34,10 @@ gsutil -m cp "${output_dir}/${table_name}_${batch_index}.tsv" "gs://${dataset_na
 #################################
 # Process the batch with Nextflow
 #################################
-echo "** Processing samples with ${DIR}/${pipeline}/main.nf. **"
+echo "** Processing samples with ${DIR}/${pipeline}/${pipeline}.nf. **"
 
 pipeline_dir="${root_dir}/${snapshot_date}/${pipeline}_${batch_index}"
-nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/main.nf" -profile "${profile}" \
+nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/${pipeline}.nf" -profile "${profile}" \
       --TEST_SUBMISSION "${test_submission}" --STUDY "${study_accession}" \
       --CONFIG_YAML "${DIR}/${pipeline}/config.yaml" \
       --SECRETS "${DIR}/data/projects_accounts.csv" \
