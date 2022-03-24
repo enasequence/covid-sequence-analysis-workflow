@@ -28,7 +28,7 @@ num_of_jobs=$(( concurrency / queue_size ))
 #  for (( j=i; j<i+num_of_jobs&&j<batches; j++ )); do
 for (( j=0; j<num_of_jobs&&j<batches; j++ )); do
 #  bsub -n 2 -M 4096 -q production
-  "${DIR}/run.nextflow.sh" "${pipeline}" "${profile}" "${root_dir}" "${j}" "${snapshot_date}" "${batch_size}"
+  "${DIR}/run.nextflow.sh" "${pipeline}" "${profile}" "${root_dir}" "${j}" "${snapshot_date}" "${batch_size}" &
 done
 #sleep 12h
 #done
