@@ -19,7 +19,7 @@ curl -X POST -H "Content-Type: application/x-www-form-urlencoded" \
   "https://www.ebi.ac.uk/ena/portal/api/search" > "${DIR}/illumina_index.tsv" && \
   gsutil -m cp "${DIR}/illumina_index.tsv" "gs://${dataset_name}/illumina_index.tsv" && \
   bq --project_id="${project_id}" load --source_format=CSV --replace=true --skip_leading_rows=1 --field_delimiter=tab \
-  --autodetect --max_bad_records=0 "${dataset_name}.sra_index" "gs://${dataset_name}/illumina_index.tsv" &
+  --autodetect --max_bad_records=0 "${dataset_name}.sra_index" "gs://${dataset_name}/illumina_index.tsv"
 
 # It is possible that ILLUMINA raw reads are mislabeled as OXFORD_NANOPORE: "grep '_2.fastq.gz' nanopore_index.tsv | wc -l" returns 296
 curl -X POST -H "Content-Type: application/x-www-form-urlencoded" \
@@ -27,8 +27,7 @@ curl -X POST -H "Content-Type: application/x-www-form-urlencoded" \
   "https://www.ebi.ac.uk/ena/portal/api/search" > "${DIR}/nanopore_index.tsv" && \
   gsutil -m cp "${DIR}/nanopore_index.tsv" "gs://${dataset_name}/nanopore_index.tsv" && \
   bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_leading_rows=1 --field_delimiter=tab \
-  --max_bad_records=296 "${dataset_name}.sra_index" "gs://${dataset_name}/nanopore_index.tsv" &
-wait
+  --max_bad_records=296 "${dataset_name}.sra_index" "gs://${dataset_name}/nanopore_index.tsv"
 
 ########################################
 # copy table schema if it does not exist
