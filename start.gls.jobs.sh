@@ -7,8 +7,8 @@ pipeline=${1:-'illumina'}
 profile=${2:-'gls'}
 root_dir=${3:-'gs://prj-int-dev-covid19-nf-gls'}
 snapshot_date=${4:-'2022-04-12'}
-concurrency=${5:-'12'}   # 120 Maximum concurrency determined by the bottleneck - the submission server at present
-batch_size=${6:-'9'}   # 9000 takes 12 hours if 2 jobs, 72 hours if 40 jobs
+concurrency=${5:-'120'}   # 120 Maximum concurrency determined by the bottleneck - the submission server at present
+batch_size=${6:-'9000'}   # 9000 takes 12 hours if 2 jobs, 72 hours if 40 jobs
 dataset_name=${7:-'sarscov2_metadata'}
 project_id=${8:-'prj-int-dev-covid19-nf-gls'}
 
@@ -27,7 +27,8 @@ num_of_jobs=$(( concurrency / queue_size ))
 #for(( i=0; i<batches; i+=num_of_jobs )); do
 #  for (( j=i; j<i+num_of_jobs&&j<batches; j++ )); do
 for (( j=0; j<num_of_jobs&&j<batches; j++ )); do
-  bsub -n 2 -M 4096 -q production "${DIR}/run.nextflow.sh" "${pipeline}" "${profile}" "${root_dir}" "${j}" "${snapshot_date}" "${batch_size}"
+#  bsub -n 2 -M 4096 -q production
+  "${DIR}/run.nextflow.sh" "${pipeline}" "${profile}" "${root_dir}" "${j}" "${snapshot_date}" "${batch_size}"
 done
 #sleep 12h
 #done
