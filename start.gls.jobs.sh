@@ -7,8 +7,8 @@ pipeline=${1:-'illumina'}
 profile=${2:-'gls'}
 root_dir=${3:-'gs://prj-int-dev-covid19-nf-gls'}
 snapshot_date=${4:-'2022-04-12'}
-concurrency=${5:-'12'}   # Maximum concurrency determined by the bottleneck - the submission server at present
-batch_size=${6:-'900'}   # takes 12 hours if 2 jobs, 72 hours if 40 jobs
+concurrency=${5:-'12'}   # 120 Maximum concurrency determined by the bottleneck - the submission server at present
+batch_size=${6:-'9'}   # 9000 takes 12 hours if 2 jobs, 72 hours if 40 jobs
 dataset_name=${7:-'sarscov2_metadata'}
 project_id=${8:-'prj-int-dev-covid19-nf-gls'}
 

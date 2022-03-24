@@ -38,9 +38,10 @@ row_count=$(bq --project_id="${project_id}" --format=csv query --use_legacy_sql=
 if [ "${row_count}" = "0" ]; then
   sql="SELECT * FROM ${dataset_name}.sra_index LIMIT 0"
   bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false --destination_table "${dataset_name}.sra_processing" "${sql}"
-else
-  sql="TRUNCATE TABLE ${dataset_name}.sra_processing"
-  bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}"
+# Truncate sra_processing manually instead
+#else
+#  sql="TRUNCATE TABLE ${dataset_name}.sra_processing"
+#  bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}"
 fi
 
 #######################
@@ -56,6 +57,7 @@ row_count=$(bq --project_id="${project_id}" --format=csv query --use_legacy_sql=
 if [ "${row_count}" = "0" ]; then
   bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false < "${DIR}/bq/view_nanopore_to_be_processed.sql"
 fi
+
 sql="SELECT COUNT(*) AS total FROM ${dataset_name}.__TABLES_SUMMARY__ WHERE table_id = '""illumina_to_be_processed'"
 row_count=$(bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}" | grep -v total)
 if [ "${row_count}" = "0" ]; then
