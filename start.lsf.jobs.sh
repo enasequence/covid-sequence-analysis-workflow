@@ -32,7 +32,6 @@ for (( j=0; j<num_of_jobs&&j<batches; j++ )); do
   bsub -n 2 -M 4096 -q production "${DIR}/run.nextflow.sh" "${pipeline}" "${profile}" "${root_dir}" "${j}" "${snapshot_date}" "${batch_size}"
 done
 #done
-cd "${DIR}" || exit
 
 #max_mem avg_mem swap stat exit_code exec_cwd exec_host
 #bjobs -u all -d -o "jobid job_name user submit_time start_time finish_time run_time cpu_used slots min_req_proc max_req_proc nthreads delimiter='^'" > jobs.csv
