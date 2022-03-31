@@ -7,8 +7,8 @@ pipeline=${1:-'illumina'}   # nanopore
 profile=${2:-'codon'}
 root_dir=${3:-'/nfs/production/cochrane/ena/users/davidyuan/covid-sequence-analysis-workflow'}
 snapshot_date=${4:-'2022-04-12'}
-concurrency=${5:-'120'}   # Maximum concurrency determined by the bottleneck - the submission server at present
-batch_size=${6:-'5000'}   # 4000 takes 12 hours if 2 jobs, 72 hours if 40 jobs
+concurrency=${5:-'200'}   # 120 Maximum concurrency determined by the bottleneck - the submission server at present
+batch_size=${6:-'10000'}   # 5000
 dataset_name=${7:-'sarscov2_metadata'}
 project_id=${8:-'prj-int-dev-covid19-nf-gls'}
 
@@ -20,7 +20,7 @@ row_count=$(bq --project_id="${project_id}" --format=csv query --use_legacy_sql=
 ############################################
 # as defined as queueSize in nextflow.config
 ############################################
-queue_size=4
+queue_size=10     # 4
 batches=$(( row_count / batch_size + 1 ))
 num_of_jobs=$(( concurrency / queue_size ))
 
