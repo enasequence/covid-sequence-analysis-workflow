@@ -1,9 +1,5 @@
 #!/usr/bin/env nextflow
 
-//params.SARS2_FA = "gs://prj-int-dev-covid19-nf-gls/data/NC_045512.2.fa"
-//params.SARS2_FA_FAI = "gs://prj-int-dev-covid19-nf-gls/data/NC_045512.2.fa.fai"
-//params.SECRETS = "gs://prj-int-dev-covid19-nf-gls/prepro/projects_accounts.csv"
-
 params.INDEX = "gs://prj-int-dev-covid19-nf-gls/prepro/illumina.index.tsv"
 params.STOREDIR = "gs://prj-int-dev-covid19-nf-gls/prepro/storeDir"
 params.OUTDIR = "gs://prj-int-dev-covid19-nf-gls/prepro/results"
@@ -88,8 +84,9 @@ workflow {
     data = Channel
             .fromPath(params.INDEX)
             .splitCsv(header: true, sep: '\t')
-            .map { row -> tuple(row.run_accession, row.sample_accession, 'ftp://' + row.fastq_ftp.split(';')[0], 'ftp://' + row.fastq_ftp.split(';')[1]) }
+            .map { row -> tuple(row.run_accession, row.sample_accession, 'ftp://' + row.fastq_ftp.split(';').takeRight(2)[0], 'ftp://' + row.fastq_ftp.split(';').takeRight(2)[1]) }
+//            .map { row -> tuple(row.run_accession, row.sample_accession, 'ftp://' + row.fastq_ftp.split(';')[0], 'ftp://' + row.fastq_ftp.split(';')[1]) }
 
     map_to_reference(data, params.SARS2_FA, params.SARS2_FA_FAI, params.SECRETS, params.STUDY)
-    ena_analysis_submit(map_to_reference.out, params.SECRETS, params.STUDY, params.TEST_SUBMISSION)
+    ena_analysis_submit(map_to_reference.out, params.SECRETS, params.STUDY, params.TEST_SUBMISSION, params.CONFIG_YAML)
 }

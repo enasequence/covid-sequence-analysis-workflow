@@ -99,5 +99,5 @@ workflow {
             .map { row -> tuple(row.run_accession, row.sample_accession, 'ftp://' + row.fastq_ftp) }
 
     map_to_reference(data, params.SARS2_FA, params.SARS2_FA_FAI, params.SECRETS, params.STUDY)
-    ena_analysis_submit(map_to_reference.out, params.SECRETS, params.STUDY, params.TEST_SUBMISSION)
+    ena_analysis_submit(map_to_reference.out, params.SECRETS, params.STUDY, params.TEST_SUBMISSION, params.CONFIG_YAML)
 }
