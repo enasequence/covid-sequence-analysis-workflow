@@ -5,7 +5,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 pipeline=${1:-'illumina'}   # nanopore
 profile=${2:-'codon'}
-root_dir=${3:-'/nfs/production/cochrane/ena/users/davidyuan/covid-sequence-analysis-workflow'}
+root_dir=${3:-'/hps/nobackup/cochrane/ena/users/davidyuan/nextflow'}
 snapshot_date=${4:-'2022-04-12'}
 concurrency=${5:-'200'}   # 120 Maximum concurrency determined by the bottleneck - the submission server at present
 batch_size=${6:-'10000'}   # 5000
@@ -27,7 +27,7 @@ num_of_jobs=$(( concurrency / queue_size ))
 #for(( i=0; i<batches; i+=num_of_jobs )); do
 #  for (( j=i; j<i+num_of_jobs&&j<batches; j++ )); do
 for (( j=0; j<num_of_jobs&&j<batches; j++ )); do
-  bsub -n 2 -M 4096 -q production "${DIR}/run.nextflow.sh" "${pipeline}" "${profile}" "${root_dir}" "${j}" "${snapshot_date}" "${batch_size}"
+  echo bsub -n 2 -M 4096 -q production "${DIR}/run.nextflow.sh" "${pipeline}" "${profile}" "${root_dir}" "${j}" "${snapshot_date}" "${batch_size}"
 done
 #done
 
