@@ -8,11 +8,11 @@ profile=${2:-'codon'}
 root_dir=${3:-'/hps/nobackup/cochrane/ena/users/davidyuan/nextflow'}
 snapshot_date=${4:-'2022-04-12'}
 concurrency=${5:-'200'}   # 120 Maximum concurrency determined by the bottleneck - the submission server at present
-batch_size=${6:-'5000'}   # 10000 for Nanopore
+batch_size=${6:-'5000'}   # 10000 for nanopore
 dataset_name=${7:-'sarscov2_metadata'}
 project_id=${8:-'prj-int-dev-covid19-nf-gls'}
 
-declare -A mem_limit; mem_limit['nanopore']=4096;mem_limit['illumina']=8192
+declare -A mem_limit; mem_limit['nanopore']=8192;mem_limit['illumina']=4096
 
 # Row count and batches
 table_name="${pipeline}_to_be_processed"
