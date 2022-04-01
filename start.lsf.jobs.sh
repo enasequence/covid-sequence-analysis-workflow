@@ -8,9 +8,11 @@ profile=${2:-'codon'}
 root_dir=${3:-'/hps/nobackup/cochrane/ena/users/davidyuan/nextflow'}
 snapshot_date=${4:-'2022-04-12'}
 concurrency=${5:-'200'}   # 120 Maximum concurrency determined by the bottleneck - the submission server at present
-batch_size=${6:-'10000'}   # 5000
+batch_size=${6:-'5000'}   # 10000 for Nanopore
 dataset_name=${7:-'sarscov2_metadata'}
 project_id=${8:-'prj-int-dev-covid19-nf-gls'}
+
+declare -A mem_limit; mem_limit['nanopore']=4096;mem_limit['illumina']=8192
 
 # Row count and batches
 table_name="${pipeline}_to_be_processed"
@@ -29,7 +31,7 @@ cd "${root_dir}/${pipeline}" || exit
 #for(( i=0; i<batches; i+=num_of_jobs )); do
 #  for (( j=i; j<i+num_of_jobs&&j<batches; j++ )); do
 for (( j=0; j<num_of_jobs&&j<batches; j++ )); do
-  bsub -n 2 -M 4096 -q production "${DIR}/run.nextflow.sh" "${pipeline}" "${profile}" "${root_dir}" "${j}" "${snapshot_date}" "${batch_size}"
+  bsub -n 2 -M ${mem_limit[$pipeline]} -q production "${DIR}/run.nextflow.sh" "${pipeline}" "${profile}" "${root_dir}" "${j}" "${snapshot_date}" "${batch_size}"
 done
 #done
 
