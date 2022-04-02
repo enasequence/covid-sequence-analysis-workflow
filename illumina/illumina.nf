@@ -12,7 +12,7 @@ nextflow.enable.dsl = 2
 process map_to_reference {
     storeDir params.STOREDIR
 
-    cpus 6
+    cpus 8
     memory '8 GB'
     container 'davidyuyuan/ena-sars-cov2-illumina:2.0'
 
