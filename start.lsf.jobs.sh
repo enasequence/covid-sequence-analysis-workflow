@@ -7,8 +7,8 @@ pipeline=${1:-'illumina'}   # nanopore
 profile=${2:-'codon'}
 root_dir=${3:-'/hps/nobackup/cochrane/ena/users/davidyuan/nextflow'}
 snapshot_date=${4:-'2022-04-12'}
-concurrency=${5:-'100'}   # 120 Maximum concurrency determined by the bottleneck - the submission server at present
-batch_size=${6:-'5000'}   # 10000 for nanopore
+concurrency=${5:-'100'}   # Maximum concurrency determined by the bottleneck - the submission server at present
+batch_size=${6:-'10000'}
 dataset_name=${7:-'sarscov2_metadata'}
 project_id=${8:-'prj-int-dev-covid19-nf-gls'}
 
@@ -30,10 +30,11 @@ mkdir -p "${root_dir}/${pipeline}"
 cd "${root_dir}/${pipeline}" || exit
 #for(( i=0; i<batches; i+=num_of_jobs )); do
 #  for (( j=i; j<i+num_of_jobs&&j<batches; j++ )); do
+#  done
+#done
 for (( j=0; j<num_of_jobs&&j<batches; j++ )); do
   bsub -n 2 -M ${mem_limit[$pipeline]} -q production "${DIR}/run.nextflow.sh" "${pipeline}" "${profile}" "${root_dir}" "${j}" "${snapshot_date}" "${batch_size}"
 done
-#done
 
 #max_mem avg_mem swap stat exit_code exec_cwd exec_host
 #bjobs -u all -d -o "jobid job_name user submit_time start_time finish_time run_time cpu_used slots min_req_proc max_req_proc nthreads delimiter='^'" > jobs.csv
