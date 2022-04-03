@@ -12,6 +12,7 @@ mkdir -p "${output_dir}"
 ###########################################################
 # Get all analyses archived under parent_study = PRJEB45555
 ###########################################################
+echo ""
 echo "** Updating ${dataset_name}.analysis_archived table. **"
 
 ## PRJEB43947 output_tgz
@@ -33,6 +34,7 @@ gsutil -m cp "${output_dir}/analysis_archived.tsv" "gs://${dataset_name}/analysi
 #################################
 # delete runs from sra_processing
 #################################
+echo ""
 echo "** Updating ${dataset_name}.sra_processing table. **"
 
 sql="DELETE FROM ${dataset_name}.sra_processing T1 WHERE T1.run_accession IN (SELECT T2.run_id FROM ${dataset_name}.submission_metadata T2) OR T1.run_accession IN (SELECT T3.run_ref FROM ${dataset_name}.analysis_archived T3)"

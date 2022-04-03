@@ -18,6 +18,7 @@ project_id=${10:-'prj-int-dev-covid19-nf-gls'}
 # Retrieve and reserve a batch
 ##############################
 offset=$((batch_index * batch_size))
+echo ""
 echo "** Retrieving and reserving batch ${batch_index} with the size of ${batch_size} from the offset of ${offset}. **"
 
 output_dir="${DIR}/results/${snapshot_date}"
@@ -34,6 +35,7 @@ gsutil -m cp "${output_dir}/${table_name}_${batch_index}.tsv" "gs://${dataset_na
 #################################
 # Process the batch with Nextflow
 #################################
+echo ""
 echo "** Processing samples with ${DIR}/${pipeline}/${pipeline}.nf. **"
 
 pipeline_dir="${root_dir}/${snapshot_date}/${pipeline}_${batch_index}"

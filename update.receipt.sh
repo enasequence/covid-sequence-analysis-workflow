@@ -20,6 +20,7 @@ mkdir -p "${output_dir}"
 # Concatenate the receipts in a batch
 # Analysis archived: ${output_dir}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv
 ###########################################################################################
+echo ""
 echo "** Getting ${snapshot_date}_${pipeline}_${batch_index}_receipts. **"
 
 printf '%s\t%s\t%s\t%s\n' "analysis_accession" "file_submitted" "time_submitted" "snapshot_date" > \
@@ -39,6 +40,7 @@ fi
 ########################################################
 # upload receipts and update the rows with snapshot_date
 ########################################################
+echo ""
 echo "** Updating ${dataset_name}.submission_receipts table. **"
 
 gsutil -m cp "${output_dir}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv" \
