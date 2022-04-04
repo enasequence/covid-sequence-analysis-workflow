@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 batch_index=${1:-'0'}
-snapshot_date=${2:-'2022-02-25'}
+snapshot_date=${2:-'2022-03-22'}
 pipeline=${3:-'nanopore'}
-profile=${4:-'gls'}
-root_dir=${5:-'gs://prj-int-dev-covid19-nf-gls'}
+profile=${4:-'codon'}   # gls
+root_dir=${5:-'/nfs/production/cochrane/ena/users/davidyuan/covid-sequence-analysis-workflow'}   # gs://prj-int-dev-covid19-nf-gls
 dataset_name=${6:-'sarscov2_metadata'}
 project_id=${7:-'prj-int-dev-covid19-nf-gls'}
 
