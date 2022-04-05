@@ -8,7 +8,7 @@ profile=${2:-'codon'}
 root_dir=${3:-'/hps/nobackup/cochrane/ena/users/davidyuan/nextflow'}
 snapshot_date=${4:-'2022-04-12'}
 concurrency=${5:-'100'}   # Maximum concurrency determined by the bottleneck - the submission server at present
-batch_size=${6:-'10000'}
+batch_size=${6:-'25000'}       # 10000
 dataset_name=${7:-'sarscov2_metadata'}
 project_id=${8:-'prj-int-dev-covid19-nf-gls'}
 
@@ -22,7 +22,7 @@ row_count=$(bq --project_id="${project_id}" --format=csv query --use_legacy_sql=
 ############################################
 # as defined as queueSize in nextflow.config
 ############################################
-queue_size=10     # 4
+queue_size=25     # 4   10
 batches=$(( row_count / batch_size + 1 ))
 num_of_jobs=$(( concurrency / queue_size ))
 
