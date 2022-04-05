@@ -12,7 +12,7 @@ batch_size=${6:-'25000'}       # 10000
 dataset_name=${7:-'sarscov2_metadata'}
 project_id=${8:-'prj-int-dev-covid19-nf-gls'}
 
-declare -A mem_limit; mem_limit['nanopore']=8192;mem_limit['illumina']=4096
+declare -A mem_limit; mem_limit['nanopore']=8192;mem_limit['illumina']=8192   # 4096
 
 # Row count and batches
 table_name="${pipeline}_to_be_processed"
