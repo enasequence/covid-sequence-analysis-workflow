@@ -8,11 +8,11 @@ profile=${2:-'codon'}
 root_dir=${3:-'/hps/nobackup/cochrane/ena/users/davidyuan/nextflow'}
 snapshot_date=${4:-'2022-04-12'}
 concurrency=${5:-'100'}   # Maximum concurrency determined by the bottleneck - the submission server at present
-batch_size=${6:-'25000'}       # 10000
+batch_size=${6:-'10000'}
 dataset_name=${7:-'sarscov2_metadata'}
 project_id=${8:-'prj-int-dev-covid19-nf-gls'}
 
-declare -A mem_limit; mem_limit['nanopore']=8192;mem_limit['illumina']=8192   # 4096
+declare -A mem_limit; mem_limit['nanopore']=8192;mem_limit['illumina']=4096
 
 # Row count and batches
 table_name="${pipeline}_to_be_processed"
@@ -22,18 +22,19 @@ row_count=$(bq --project_id="${project_id}" --format=csv query --use_legacy_sql=
 ############################################
 # as defined as queueSize in nextflow.config
 ############################################
-queue_size=50     # 4   10
+queue_size=20     # 4   10
 batches=$(( row_count / batch_size + 1 ))
 num_of_jobs=$(( concurrency / queue_size ))
 
-mkdir -p "${root_dir}/${pipeline}"
-cd "${root_dir}/${pipeline}" || exit
+echo mkdir -p "${root_dir}/${pipeline}"
+echo cd "${root_dir}/${pipeline}" || exit
+
 #for(( i=0; i<batches; i+=num_of_jobs )); do
 #  for (( j=i; j<i+num_of_jobs&&j<batches; j++ )); do
 #  done
 #done
 for (( j=0; j<num_of_jobs&&j<batches; j++ )); do
-  bsub -n 2 -M ${mem_limit[$pipeline]} -q production "${DIR}/run.nextflow.sh" "${pipeline}" "${profile}" "${root_dir}" "${j}" "${snapshot_date}" "${batch_size}"
+  echo bsub -n 2 -M ${mem_limit[$pipeline]} -q production "${DIR}/run.nextflow.sh" "${pipeline}" "${profile}" "${root_dir}" "${j}" "${snapshot_date}" "${batch_size}"
 done
 
 #max_mem avg_mem swap stat exit_code exec_cwd exec_host
