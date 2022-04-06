@@ -26,15 +26,15 @@ queue_size=20     # 4   10
 batches=$(( row_count / batch_size + 1 ))
 num_of_jobs=$(( concurrency / queue_size ))
 
-echo mkdir -p "${root_dir}/${pipeline}"
-echo cd "${root_dir}/${pipeline}" || exit
+mkdir -p "${root_dir}/${pipeline}"
+cd "${root_dir}/${pipeline}" || exit
 
 #for(( i=0; i<batches; i+=num_of_jobs )); do
 #  for (( j=i; j<i+num_of_jobs&&j<batches; j++ )); do
 #  done
 #done
 for (( j=0; j<num_of_jobs&&j<batches; j++ )); do
-  echo bsub -n 2 -M ${mem_limit[$pipeline]} -q production "${DIR}/run.nextflow.sh" "${pipeline}" "${profile}" "${root_dir}" "${j}" "${snapshot_date}" "${batch_size}"
+  bsub -n 2 -M ${mem_limit[$pipeline]} -q production "${DIR}/run.nextflow.sh" "${pipeline}" "${profile}" "${root_dir}" "${j}" "${snapshot_date}" "${batch_size}"
 done
 
 #max_mem avg_mem swap stat exit_code exec_cwd exec_host
