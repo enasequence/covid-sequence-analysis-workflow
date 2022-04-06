@@ -3,14 +3,15 @@
 # DIR where the current script resides
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-pipeline=${1:-'illumina'}   # nanopore
-profile=${2:-'codon'}
-root_dir=${3:-'/hps/nobackup/cochrane/ena/users/davidyuan/nextflow'}
-snapshot_date=${4:-'2022-04-12'}
-concurrency=${5:-'100'}   # Maximum concurrency determined by the bottleneck - the submission server at present
-batch_size=${6:-'10000'}
-dataset_name=${7:-'sarscov2_metadata'}
-project_id=${8:-'prj-int-dev-covid19-nf-gls'}
+skip=${1:-'0'}
+pipeline=${2:-'illumina'}   # nanopore
+profile=${3:-'codon'}
+root_dir=${4:-'/hps/nobackup/cochrane/ena/users/davidyuan/nextflow'}
+snapshot_date=${5:-'2022-04-12'}
+concurrency=${6:-'100'}   # Maximum concurrency determined by the bottleneck - the submission server at present
+batch_size=${7:-'10000'}
+dataset_name=${8:-'sarscov2_metadata'}
+project_id=${9:-'prj-int-dev-covid19-nf-gls'}
 
 declare -A mem_limit; mem_limit['nanopore']=8192;mem_limit['illumina']=4096
 
@@ -33,7 +34,7 @@ cd "${root_dir}/${pipeline}" || exit
 #  for (( j=i; j<i+num_of_jobs&&j<batches; j++ )); do
 #  done
 #done
-for (( j=0; j<num_of_jobs&&j<batches; j++ )); do
+for (( j=skip; j<skip+num_of_jobs&&j<batches; j++ )); do
   bsub -n 2 -M ${mem_limit[$pipeline]} -q production "${DIR}/run.nextflow.sh" "${pipeline}" "${profile}" "${root_dir}" "${j}" "${snapshot_date}" "${batch_size}"
 done
 
