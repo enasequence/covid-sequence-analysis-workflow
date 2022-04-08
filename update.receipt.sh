@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 batch_index=${1:-'0'}
-snapshot_date=${2:-'2022-04-12'}
+snapshot_date=${2:-'2022-05-23'}
 pipeline=${3:-'illumina'}       # nanopore
 profile=${4:-'codon'}   # gls
 root_dir=${5:-'/hps/nobackup/cochrane/ena/users/davidyuan/nextflow'}   # gs://prj-int-dev-covid19-nf-gls /nfs/production/cochrane/ena/users/davidyuan/covid-sequence-analysis-workflow

@@ -7,13 +7,13 @@ skip=${1:-'0'}
 pipeline=${2:-'illumina'}   # nanopore
 profile=${3:-'codon'}
 root_dir=${4:-'/hps/nobackup/cochrane/ena/users/davidyuan/nextflow'}
-snapshot_date=${5:-'2022-04-12'}
+snapshot_date=${5:-'2022-05-23'}  # 2022-03-22 2022-04-12 2022-05-23 2022-06-27
 concurrency=${6:-'200'}   # Maximum concurrency determined by the bottleneck - the submission server at present
-batch_size=${7:-'5000'}
+batch_size=${7:-'5000'}   # minimum batch size 2500
 dataset_name=${8:-'sarscov2_metadata'}
 project_id=${9:-'prj-int-dev-covid19-nf-gls'}
 
-declare -A mem_limit; mem_limit['nanopore']=8192;mem_limit['illumina']=4096
+mem_limit=$(( batch_size / 2500 * 2048));mem_limit=$(( mem_limit > 2048 ? mem_limit : 2048 ))
 
 # Row count and batches
 table_name="${pipeline}_to_be_processed"
@@ -30,12 +30,24 @@ num_of_jobs=$(( concurrency / queue_size ))
 mkdir -p "${root_dir}/${pipeline}"
 cd "${root_dir}/${pipeline}" || exit
 
-#for(( i=0; i<batches; i+=num_of_jobs )); do
-#  for (( j=i; j<i+num_of_jobs&&j<batches; j++ )); do
-#  done
-#done
-for (( j=skip; j<skip+num_of_jobs&&j<batches; j++ )); do
-  bsub -n 2 -M ${mem_limit[$pipeline]} -q production "${DIR}/run.nextflow.sh" "${pipeline}" "${profile}" "${root_dir}" "${j}" "${snapshot_date}" "${batch_size}"
+for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batch_index++ )); do
+  offset=$((batch_index * batch_size))
+  echo ""
+  echo "** Retrieving and reserving batch ${batch_index} with the size of ${batch_size} from the offset of ${offset}. **"
+
+  output_dir="${DIR}/results/${snapshot_date}"
+  mkdir -p "${output_dir}"
+
+  table_name="${pipeline}_to_be_processed"
+  sql="SELECT * FROM ${project_id}.${dataset_name}.${table_name} LIMIT ${batch_size} OFFSET ${offset}"
+  bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false --max_rows="${batch_size}" "${sql}" \
+    | awk 'BEGIN{ FS=","; OFS="\t" }{$1=$1; print $0 }' > "${output_dir}/${table_name}_${batch_index}.tsv"
+  gsutil -m cp "${output_dir}/${table_name}_${batch_index}.tsv" "gs://${dataset_name}/${table_name}_${batch_index}.tsv" && \
+    bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_leading_rows=1 --field_delimiter=tab \
+    --max_bad_records=0 "${dataset_name}.sra_processing" "gs://${dataset_name}/${table_name}_${batch_index}.tsv"
+
+  bsub -n 2 -M "${mem_limit}" -q production "${DIR}/run.nextflow.sh" "${output_dir}/${table_name}_${batch_index}.tsv" \
+    "${pipeline}" "${profile}" "${root_dir}" "${batch_index}" "${snapshot_date}"
 done
 
 #max_mem avg_mem swap stat exit_code exec_cwd exec_host
