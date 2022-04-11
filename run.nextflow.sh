@@ -34,7 +34,7 @@ nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/${pipe
       -with-tower
 
 ########################################################################################
-# Update submission receipt and submission metadata as well as all the analyses archived
+# Update submission receipt and submission metadata [as well as all the analyses archived]
 ########################################################################################
 "${DIR}/update.receipt.sh" "${batch_index}" "${snapshot_date}" "${pipeline}" "${profile}" "${root_dir}" "${dataset_name}" "${project_id}"
-"${DIR}/set.archived.sh" "${dataset_name}" "${project_id}"
+#"${DIR}/set.archived.sh" "${dataset_name}" "${project_id}"
