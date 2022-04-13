@@ -13,8 +13,6 @@ batch_size=${7:-'5000'}   # minimum batch size 2500
 dataset_name=${8:-'sarscov2_metadata'}
 project_id=${9:-'prj-int-dev-covid19-nf-gls'}
 
-mem_limit=$(( batch_size / 2500 * 2048));mem_limit=$(( mem_limit > 2048 ? mem_limit : 2048 ))
-
 # Row count and batches
 table_name="${pipeline}_to_be_processed"
 sql="SELECT count(*) AS total FROM ${project_id}.${dataset_name}.${table_name}"
@@ -26,29 +24,29 @@ row_count=$(bq --project_id="${project_id}" --format=csv query --use_legacy_sql=
 queue_size=10     # 4
 batches=$(( row_count / batch_size + 1 ))
 num_of_jobs=$(( concurrency / queue_size ))
+#mem_limit=$(( batch_size / 2500 * 2048));mem_limit=$(( mem_limit > 2048 ? mem_limit : 2048 ))
 
-mkdir -p "${root_dir}/${pipeline}"
-cd "${root_dir}/${pipeline}" || exit
+mkdir -p "${root_dir}/${pipeline}"; cd "${root_dir}/${pipeline}" || exit
+input_dir="${DIR}/data/${snapshot_date}"; mkdir -p "${input_dir}"
 
 for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batch_index++ )); do
   offset=$((batch_index * batch_size))
   echo ""
   echo "** Retrieving and reserving batch ${batch_index} with the size of ${batch_size} from the offset of ${offset}. **"
 
-  output_dir="${DIR}/results/${snapshot_date}"
-  mkdir -p "${output_dir}"
-
-  table_name="${pipeline}_to_be_processed"
   sql="SELECT * FROM ${project_id}.${dataset_name}.${table_name} LIMIT ${batch_size} OFFSET ${offset}"
   bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false --max_rows="${batch_size}" "${sql}" \
-    | awk 'BEGIN{ FS=","; OFS="\t" }{$1=$1; print $0 }' > "${output_dir}/${table_name}_${batch_index}.tsv"
-  gsutil -m cp "${output_dir}/${table_name}_${batch_index}.tsv" "gs://${dataset_name}/${table_name}_${batch_index}.tsv" && \
+    | awk 'BEGIN{ FS=","; OFS="\t" }{$1=$1; print $0 }' >> "${input_dir}/${table_name}_${batch_index}.tsv"
+  gsutil -m cp "${input_dir}/${table_name}_${batch_index}.tsv" "gs://${dataset_name}/${table_name}_${batch_index}.tsv" && \
     bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_leading_rows=1 --field_delimiter=tab \
     --max_bad_records=0 "${dataset_name}.sra_processing" "gs://${dataset_name}/${table_name}_${batch_index}.tsv"
 
-  bsub -n 2 -M "${mem_limit}" -q production "${DIR}/run.nextflow.sh" "${output_dir}/${table_name}_${batch_index}.tsv" \
+  bsub -n 2 -M 4096 -q production "${DIR}/run.nextflow.sh" "${input_dir}/${table_name}_${batch_index}.tsv" \
     "${pipeline}" "${profile}" "${root_dir}" "${batch_index}" "${snapshot_date}"
 done
+
+sql="CREATE OR REPLACE TABLE ${dataset_name}.sra_processing AS SELECT DISTINCT * FROM ${dataset_name}.sra_processing"
+bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}"
 
 #max_mem avg_mem swap stat exit_code exec_cwd exec_host
 #bjobs -u all -d -o "jobid job_name user submit_time start_time finish_time run_time cpu_used slots min_req_proc max_req_proc nthreads delimiter='^'" > jobs.csv

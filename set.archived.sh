@@ -6,8 +6,7 @@ project_id=${2:-'prj-int-dev-covid19-nf-gls'}
 # DIR where the current script resides
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-output_dir="${DIR}/results/"
-mkdir -p "${output_dir}"
+output_dir="${DIR}/results/"; mkdir -p "${output_dir}"
 
 ###########################################################
 # Get all analyses archived under parent_study = PRJEB45555
