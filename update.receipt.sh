@@ -12,9 +12,7 @@ project_id=${7:-'prj-int-dev-covid19-nf-gls'}
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 pipeline_dir="${root_dir}/${snapshot_date}/${pipeline}_${batch_index}"
-output_dir="${DIR}/results/${snapshot_date}/output"
-rm -R "${output_dir}"
-mkdir -p "${output_dir}"
+output_dir="${DIR}/results/${snapshot_date}/output"; rm -R "${output_dir}"; mkdir -p "${output_dir}"
 
 ###########################################################################################
 # Concatenate the receipts in a batch
