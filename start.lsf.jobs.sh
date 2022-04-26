@@ -26,10 +26,11 @@ batches=$(( row_count / batch_size + 1 ))
 num_of_jobs=$(( concurrency / queue_size ))
 #mem_limit=$(( batch_size / 2500 * 2048));mem_limit=$(( mem_limit > 2048 ? mem_limit : 2048 ))
 
-mkdir -p "${root_dir}/${pipeline}"; cd "${root_dir}/${pipeline}" || exit
 input_dir="${DIR}/data/${snapshot_date}"; mkdir -p "${input_dir}"
 
 for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batch_index++ )); do
+  mkdir -p "${root_dir}/${pipeline}_${batch_index}"; cd "${root_dir}/${pipeline}_${batch_index}" || exit
+
   offset=$((batch_index * batch_size))
   echo ""
   echo "** Retrieving and reserving batch ${batch_index} with the size of ${batch_size} from the offset of ${offset}. **"
