@@ -40,3 +40,4 @@ nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/${pipe
 "${DIR}/set.archived.sh" "${dataset_name}" "${project_id}"
 
 rm "${batch_input}"
+rm -R "${pipeline_dir}/workDir"
