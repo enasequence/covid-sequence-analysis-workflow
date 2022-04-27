@@ -9,7 +9,7 @@ profile=${3:-'codon'}
 root_dir=${4:-'/hps/nobackup/cochrane/ena/users/davidyuan/nextflow'}
 snapshot_date=${5:-'2022-05-23'}  # 2022-03-22 2022-04-12 2022-05-23 2022-06-27
 concurrency=${6:-'100'}   # Maximum concurrency determined by the bottleneck - the submission server at present
-batch_size=${7:-'50000'}   # 5000
+batch_size=${7:-'25000'}   # 5000
 dataset_name=${8:-'sarscov2_metadata'}
 project_id=${9:-'prj-int-dev-covid19-nf-gls'}
 
