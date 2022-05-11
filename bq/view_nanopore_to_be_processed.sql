@@ -23,4 +23,4 @@ AS SELECT
      FROM
        `prj-int-dev-covid19-nf-gls.sarscov2_metadata.submission_metadata` T4)
    ORDER BY
-     run_accession DESC
+     T1.run_accession DESC

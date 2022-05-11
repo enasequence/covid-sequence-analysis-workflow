@@ -4,12 +4,12 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 skip=${1:-'0'}
-pipeline=${2:-'illumina'}   # nanopore
-profile=${3:-'codon'}
-root_dir=${4:-'/hps/nobackup/cochrane/ena/users/analyser/nextflow'}
-snapshot_date=${5:-'2022-05-23'}  # 2022-03-22 2022-04-12 2022-05-23 2022-06-27
-concurrency=${6:-'100'}   # Maximum concurrency determined by the bottleneck - the submission server at present
-batch_size=${7:-'5000'}   # minimum batch size 2500
+concurrency=${2:-'400'}   # 300 Maximum concurrency determined by the bottleneck - the submission server and storage space
+pipeline=${3:-'illumina'}   # nanopore
+root_dir=${4:-'/hps/nobackup/tburdett/ena/users/davidyuan/nextflow'}  # /hps/nobackup/cochrane/ena/users/davidyuan/nextflow
+batch_size=${5:-'15000'}
+profile=${6:-'codon'}
+snapshot_date=${7:-'2022-05-23'}  # 2022-03-22 2022-04-12 2022-05-23 2022-06-27
 dataset_name=${8:-'sarscov2_metadata'}
 project_id=${9:-'prj-int-dev-covid19-nf-gls'}
 
@@ -21,22 +21,23 @@ row_count=$(bq --project_id="${project_id}" --format=csv query --use_legacy_sql=
 ############################################
 # as defined as queueSize in nextflow.config
 ############################################
-queue_size=10     # 4
+queue_size=100     # 4
 batches=$(( row_count / batch_size + 1 ))
 num_of_jobs=$(( concurrency / queue_size ))
 #mem_limit=$(( batch_size / 2500 * 2048));mem_limit=$(( mem_limit > 2048 ? mem_limit : 2048 ))
 
-mkdir -p "${root_dir}/${pipeline}"; cd "${root_dir}/${pipeline}" || exit
 input_dir="${DIR}/data/${snapshot_date}"; mkdir -p "${input_dir}"
 
 for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batch_index++ )); do
+  mkdir -p "${root_dir}/${pipeline}_${batch_index}"; cd "${root_dir}/${pipeline}_${batch_index}" || exit
+
   offset=$((batch_index * batch_size))
   echo ""
   echo "** Retrieving and reserving batch ${batch_index} with the size of ${batch_size} from the offset of ${offset}. **"
 
   sql="SELECT * FROM ${project_id}.${dataset_name}.${table_name} LIMIT ${batch_size} OFFSET ${offset}"
   bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false --max_rows="${batch_size}" "${sql}" \
-    | awk 'BEGIN{ FS=","; OFS="\t" }{$1=$1; print $0 }' >> "${input_dir}/${table_name}_${batch_index}.tsv"
+    | awk 'BEGIN{ FS=","; OFS="\t" }{$1=$1; print $0 }' > "${input_dir}/${table_name}_${batch_index}.tsv"
   gsutil -m cp "${input_dir}/${table_name}_${batch_index}.tsv" "gs://${dataset_name}/${table_name}_${batch_index}.tsv" && \
     bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_leading_rows=1 --field_delimiter=tab \
     --max_bad_records=0 "${dataset_name}.sra_processing" "gs://${dataset_name}/${table_name}_${batch_index}.tsv"
