@@ -1,8 +1,8 @@
 #!/usr/bin/env nextflow
 
-//params.SARS2_FA = "gs://prj-int-dev-covid19-nf-gls/data/NC_045512.2.fa"
-//params.SARS2_FA_FAI = "gs://prj-int-dev-covid19-nf-gls/data/NC_045512.2.fa.fai"
-//params.SECRETS = "gs://prj-int-dev-covid19-nf-gls/prepro/projects_accounts.csv"
+params.SARS2_FA = "/hps/nobackup/cochrane/ena/users/sands/100/1k/ENA_SARS_Cov2_nanopore/NC_045512.2.fa"
+params.SARS2_FA_FAI = "/hps/nobackup/cochrane/ena/users/sands/100/1k/ENA_SARS_Cov2_nanopore/NC_045512.2.fa.fai"
+params.SECRETS = "/hps/nobackup/cochrane/ena/users/sands/100/1k/ENA_SARS_Cov2_nanopore/prepro_projects_accounts.csv"
 
 //params.INDEX = "gs://prj-int-dev-covid19-nf-gls/prepro/nanopore.index.tsv"
 //params.STOREDIR = "gs://prj-int-dev-covid19-nf-gls/prepro/storeDir"
