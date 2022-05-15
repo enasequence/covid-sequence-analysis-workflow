@@ -4,7 +4,7 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 skip=${1:-'0'}
-concurrency=${2:-'400'}   # 300 Maximum concurrency determined by the bottleneck - the submission server and storage space
+concurrency=${2:-'400'}   # Maximum concurrency determined by the bottleneck - the submission server and storage space
 pipeline=${3:-'illumina'}   # nanopore
 root_dir=${4:-'/hps/nobackup/tburdett/ena/users/davidyuan/nextflow'}  # /hps/nobackup/cochrane/ena/users/davidyuan/nextflow
 batch_size=${5:-'15000'}

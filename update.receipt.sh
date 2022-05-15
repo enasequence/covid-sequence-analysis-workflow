@@ -4,7 +4,7 @@ batch_index=${1:-'0'}
 snapshot_date=${2:-'2022-05-23'}
 pipeline=${3:-'illumina'}       # nanopore
 profile=${4:-'codon'}   # gls
-root_dir=${5:-'/hps/nobackup/cochrane/ena/users/davidyuan/nextflow'}   # gs://prj-int-dev-covid19-nf-gls
+root_dir=${5:-'/hps/nobackup/tburdett/ena/users/davidyuan/nextflow'}   # gs://prj-int-dev-covid19-nf-gls
 dataset_name=${6:-'sarscov2_metadata'}
 project_id=${7:-'prj-int-dev-covid19-nf-gls'}
 
