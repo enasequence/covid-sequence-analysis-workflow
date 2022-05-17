@@ -11,7 +11,7 @@ params.SECRETS = "/hps/nobackup/cochrane/ena/users/sands/100/1k/ENA_SARS_Cov2_na
 params.INDEX = "/hps/nobackup/cochrane/ena/users/sands/100/1k/nanopore_10.tsv"
 params.STOREDIR = "/hps/nobackup/cochrane/ena/users/sands/100/1k/storeDir"
 params.OUTDIR = "/hps/nobackup/cochrane/ena/users/sands/100/1k/results"
-params.NXF_HOME = "/hps/nobackup/cochrane/ena/users/sands/1k/100/"
+params.NXF_HOME = "/hps/nobackup/cochrane/ena/users/sands/1k"
 
 params.STUDY = 'PRJEB45555'
 params.TEST_SUBMISSION = 'true'
