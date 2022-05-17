@@ -38,7 +38,7 @@ process map_to_reference {
 
     cpus 4 /* more is better, parallelizes very well*/
     memory '8 GB'
-    container 'sands0/ena-analysis-submitter:1'
+    container 'sands0/ena-analysis-submitter:1.7'
 
     input:
     tuple val(run_accession), val(sample_accession), file(input_file)
