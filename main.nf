@@ -8,7 +8,7 @@ params.SECRETS = "/hps/nobackup/cochrane/ena/users/sands/100/1k/ENA_SARS_Cov2_na
 //params.STOREDIR = "gs://prj-int-dev-covid19-nf-gls/prepro/storeDir"
 //params.OUTDIR = "gs://prj-int-dev-covid19-nf-gls/prepro/results"
 
-params.INDEX = "/hps/nobackup/cochrane/ena/users/sands/100/1k/nanopore_to_be_processed_1k.tsv"
+params.INDEX = "/hps/nobackup/cochrane/ena/users/sands/100/1k/nanopore_10.tsv"
 params.STOREDIR = "/hps/nobackup/cochrane/ena/users/sands/100/1k/storeDir"
 params.OUTDIR = "/hps/nobackup/cochrane/ena/users/sands/100/1k/results"
 params.NXF_HOME = "/hps/nobackup/cochrane/ena/users/sands/1k/100/"
