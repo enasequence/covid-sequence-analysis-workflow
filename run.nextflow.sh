@@ -39,4 +39,8 @@ nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/${pipe
 "${DIR}/update.receipt.sh" "${batch_index}" "${snapshot_date}" "${pipeline}" "${profile}" "${root_dir}" "${dataset_name}" "${project_id}"
 "${DIR}/set.archived.sh" "${dataset_name}" "${project_id}"
 
-rm -R "${pipeline_dir}/workDir"
+rm -R "${pipeline_dir}/workDir" &
+rm -R "${pipeline_dir}/storeDir" &
+rm -R "${pipeline_dir}/publishDir" &
+wait
+rm -R "${pipeline_dir}"
