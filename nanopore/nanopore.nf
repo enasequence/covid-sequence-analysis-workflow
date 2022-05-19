@@ -1,12 +1,26 @@
 #!/usr/bin/env nextflow
 
-//params.SARS2_FA = "gs://prj-int-dev-covid19-nf-gls/data/NC_045512.2.fa"
-//params.SARS2_FA_FAI = "gs://prj-int-dev-covid19-nf-gls/data/NC_045512.2.fa.fai"
-//params.SECRETS = "gs://prj-int-dev-covid19-nf-gls/prepro/projects_accounts.csv"
+params.SARS2_FA = "gs://prj-int-dev-covid19-nf-gls/data/NC_045512.2.fa"
+params.SARS2_FA_FAI = "gs://prj-int-dev-covid19-nf-gls/data/NC_045512.2.fa.fai"
+params.SECRETS = "gs://prj-int-dev-covid19-nf-gls/prepro/projects_accounts.csv"
 
-params.INDEX = "gs://prj-int-dev-covid19-nf-gls/prepro/nanopore.index.tsv"
-params.STOREDIR = "gs://prj-int-dev-covid19-nf-gls/prepro/storeDir"
-params.OUTDIR = "gs://prj-int-dev-covid19-nf-gls/prepro/results"
+//params.SARS2_FA = "/hps/nobackup/cochrane/ena/users/sands/100/1k/ENA_SARS_Cov2_nanopore/NC_045512.2.fa"
+//params.SARS2_FA_FAI = "/hps/nobackup/cochrane/ena/users/sands/100/1k/ENA_SARS_Cov2_nanopore/NC_045512.2.fa.fai"
+//params.SECRETS = "/hps/nobackup/cochrane/ena/users/sands/100/1k/ENA_SARS_Cov2_nanopore/prepro_projects_accounts.csv"
+
+//params.INDEX = "gs://prj-int-dev-covid19-nf-gls/prepro/nanopore.index.tsv"
+//params.STOREDIR = "gs://prj-int-dev-covid19-nf-gls/prepro/storeDir"
+//params.OUTDIR = "gs://prj-int-dev-covid19-nf-gls/prepro/results"
+
+//params.INDEX = "/hps/nobackup/cochrane/ena/users/sands/100/1k/nanopore_10.tsv"
+//params.STOREDIR = "/hps/nobackup/cochrane/ena/users/sands/100/1k/storeDir"
+//params.OUTDIR = "/hps/nobackup/cochrane/ena/users/sands/100/1k/results"
+//params.NXF_HOME = "/hps/nobackup/cochrane/ena/users/sands/1k"
+
+params.INDEX = "gs://sands-nf-tower/nanopore10.tsv"
+params.STOREDIR = "gs://sands-nf-tower/storeDir"
+params.OUTDIR = "gs://sands-nf-tower/results"
+params.CONFIG_YAML = "gs://sands-nf-tower/config.yaml"
 
 params.STUDY = 'PRJEB45555'
 params.TEST_SUBMISSION = 'true'
@@ -33,7 +47,7 @@ process map_to_reference {
 
     cpus 4 /* more is better, parallelizes very well*/
     memory '8 GB'
-    container 'davidyuyuan/ena-sars-cov2-nanopore:2.0'
+    container 'sands0/ena-analysis-submitter:1.8'
 
     input:
     tuple val(run_accession), val(sample_accession), file(input_file)
@@ -61,14 +75,11 @@ process map_to_reference {
         wget -t 0 -O ${run_accession}_1.fastq.gz \$(cat ${input_file}) --user=\${ftp_id} --password=\${ftp_password}
     fi
     cutadapt -u 30 -u -30 -o ${run_accession}.trimmed.fastq ${run_accession}_1.fastq.gz -m 75 -j ${task.cpus} --quiet
-
     minimap2 -Y -t ${task.cpus} -x map-ont -a ${sars2_fasta} ${run_accession}.trimmed.fastq | samtools view -bF 4 - | samtools sort -@ ${task.cpus} - > ${run_accession}.bam
     samtools index -@ ${task.cpus} ${run_accession}.bam
-
     bam_to_vcf.py -b ${run_accession}.bam -r ${sars2_fasta} --mindepth 30 --minAF 0.1 -c ${task.cpus} -o ${run_accession}.vcf
     filtervcf.py -i ${run_accession}.vcf -o ${run_accession}_filtered.vcf
     bgzip ${run_accession}_filtered.vcf
-
     samtools mpileup -a -A -Q 0 -d 8000 -f ${sars2_fasta} ${run_accession}.bam > ${run_accession}.pileup
     cat ${run_accession}.pileup | awk '{print \$2,","\$3,","\$4}' > ${run_accession}.coverage
     tabix ${run_accession}_filtered.vcf.gz
@@ -77,11 +88,9 @@ process map_to_reference {
     fix_consensus_header.py headless_consensus.fasta > ${run_accession}_consensus.fasta
     bgzip ${run_accession}.coverage
     bgzip ${run_accession}_consensus.fasta
-
     java -Xmx4g -jar /opt/conda/share/snpeff-5.0-1/snpEff.jar -q -no-downstream -no-upstream -noStats NC_045512.2 ${run_accession}.vcf > ${run_accession}.annot.vcf
     bgzip ${run_accession}.vcf
     bgzip ${run_accession}.annot.vcf
-
     mkdir -p ${run_accession}_output
     mv ${run_accession}.bam ${run_accession}.coverage.gz ${run_accession}.annot.vcf.gz ${run_accession}_output
     tar -zcvf ${run_accession}_output.tar.gz ${run_accession}_output
