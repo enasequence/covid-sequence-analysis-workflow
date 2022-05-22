@@ -4,12 +4,12 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 skip=${1:-'0'}
-concurrency=${2:-'400'}   # Maximum concurrency determined by the bottleneck - the submission server and storage space
+concurrency=${2:-'500'}   # Maximum concurrency determined by the bottleneck - the submission server and storage space
 pipeline=${3:-'illumina'}   # nanopore
 root_dir=${4:-'/hps/nobackup/tburdett/ena/users/analyser/nextflow'}  # /hps/nobackup/cochrane/ena/users/analyser/nextflow
 batch_size=${5:-'15000'}
 profile=${6:-'codon'}
-snapshot_date=${7:-'2022-05-23'}  # 2022-03-22 2022-04-12 2022-05-23 2022-06-27
+snapshot_date=${7:-'2022-06-27'}  # 2022-03-22 2022-04-12 2022-05-23 2022-06-27
 dataset_name=${8:-'sarscov2_metadata'}
 project_id=${9:-'prj-int-dev-covid19-nf-gls'}
 
