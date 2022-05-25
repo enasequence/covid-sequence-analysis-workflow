@@ -1,6 +1,8 @@
 # covid-sequence-analysis-workflow
 
-This is the official repository of the SARS-CoV-2 variant surveillance pipeline developed under the [Versatile Emerging infectious disease Observatory (VEO)](https://www.globalsurveillance.eu/projects/veo-versatile-emerging-infectious-disease-observatory) project. The project consists of 20 European partners. It is funded by the European Commission.
+This is the official repository of the SARS-CoV-2 variant surveillance pipeline developed by Danish Technical University (DTU), Eotvos Lorand University (ELTE), EMBL-EBI, Erasmus Medical Center (EMC) under the [Versatile Emerging infectious disease Observatory (VEO)](https://www.globalsurveillance.eu/projects/veo-versatile-emerging-infectious-disease-observatory) project. The project consists of 20 European partners. It is funded by the European Commission.
+
+The pipeline has been integrated on EMBL-EBI infrastructure to automatically process raw SARS-CoV-2 read data, presenting in the COVID-19 Data Portal: https://www.covid19dataportal.org/sequences?db=sra-analysis-covid19&size=15&crossReferencesOption=all#search-content.
 
 ## Architecture
 
