@@ -23,7 +23,7 @@ echo "** Updating ${dataset_name}.analysis_archived table. **"
 ## PRJEB45619 consensus_fasta_gz
 #curl -X POST -H "Content-Type: application/x-www-form-urlencoded" -d 'result=analysis&query=study_accession%3D%22PRJEB45619%22&fields=sample_accession%2Crun_ref&format=tsv&limit=0' \
 #  "https://www.ebi.ac.uk/ena/portal/api/search" > ./archived_consensus_fasta.tsv
-curl -X POST -H "Content-Type: application/x-www-form-urlencoded" -d 'result=analysis&query=parent_study%3D%22PRJEB45555%22&fields=sample_accession%2Crun_ref&format=tsv&limit=0' \
+curl -X POST -H "Content-Type: application/x-www-form-urlencoded" -d 'result=analysis&query=parent_study%3D%22PRJEB45555%22&fields=sample_accession%2Crun_ref%2Canalysis_date&format=tsv&limit=0' \
   "https://www.ebi.ac.uk/ena/portal/api/search" > "${output_dir}/analysis_archived.tsv"
 gsutil -m cp "${output_dir}/analysis_archived.tsv" "gs://${dataset_name}/analysis_archived.tsv" && \
   bq --project_id="${project_id}" load --source_format=CSV --replace=true --skip_leading_rows=1 --field_delimiter=tab \
