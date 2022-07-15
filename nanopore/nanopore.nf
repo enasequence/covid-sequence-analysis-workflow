@@ -84,7 +84,7 @@ process map_to_reference {
 
     mkdir -p ${run_accession}_output
     #Custom ELTE code start
-    #This is done to separately submit .coverage and .annot.vcf files for ELTE to download
+    #This is done to separately submit .coverage and .vcf files for ELTE to download
     mkdir -p ${run_accession}_elte_output
     cp ${run_accession}.vcf.gz ${run_accession}.coverage.gz ${run_accession}_elte_output
     tar -zcvf ${run_accession}_elte_output.tar.gz ${run_accession}_elte_output
