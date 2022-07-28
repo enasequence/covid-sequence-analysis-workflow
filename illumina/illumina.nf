@@ -27,7 +27,6 @@ process map_to_reference {
     val(run_accession)
     val(sample_accession)
     file("${run_accession}_output.tar.gz")
-    file("${run_accession}_elte_output.tar.gz")
     file("${run_accession}_filtered.vcf.gz")
     file("${run_accession}_consensus.fasta.gz")
 
@@ -77,12 +76,6 @@ process map_to_reference {
     mkdir -p ${run_accession}_output
     mv ${run_accession}_trim_summary ${run_accession}.annot.vcf ${run_accession}.bam ${run_accession}.coverage ${run_accession}.stat ${run_accession}.vcf.gz ${run_accession}_output
     tar -zcvf ${run_accession}_output.tar.gz ${run_accession}_output
-    #Custom ELTE code start
-    #This is done to separately submit .coverage and .vcf files for ELTE to download
-    mkdir -p ${run_accession}_elte_output
-    cp ${run_accession}.vcf ${run_accession}.coverage ${run_accession}_elte_output
-    tar -zcvf ${run_accession}_elte_output.tar.gz ${run_accession}_elte_output
-    #Custom ELTE code ends
     """
 }
 
