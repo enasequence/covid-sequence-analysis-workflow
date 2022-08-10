@@ -51,4 +51,4 @@ sql="UPDATE ${dataset_name}.submission_receipts SET snapshot_date = '""${snapsho
 bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}"
 sql="CREATE OR REPLACE TABLE ${dataset_name}.submission_receipts AS SELECT DISTINCT * FROM ${dataset_name}.submission_receipts"
 bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}"
-rm "${output_dir}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv"
+#rm "${output_dir}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv"
