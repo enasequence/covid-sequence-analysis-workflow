@@ -26,7 +26,9 @@ process map_to_reference {
     output:
     val(run_accession)
     val(sample_accession)
-    file("${run_accession}_output.tar.gz")
+    file("${run_accession}.bam")
+    file("${run_accession}.coverage.gz")
+    file("${run_accession}.annot.vcf.gz")
     file("${run_accession}_filtered.vcf.gz")
     file("${run_accession}_consensus.fasta.gz")
 
@@ -72,10 +74,8 @@ process map_to_reference {
     vcf_to_consensus.py -dp 10 -af 0.25 -v ${run_accession}.vcf.gz -d ${run_accession}.coverage -o headless_consensus.fasta -n ${run_accession} -r ${sars2_fasta}
     fix_consensus_header.py headless_consensus.fasta > ${run_accession}_consensus.fasta
     bgzip ${run_accession}_consensus.fasta
-
-    mkdir -p ${run_accession}_output
-    mv ${run_accession}_trim_summary ${run_accession}.annot.vcf ${run_accession}.bam ${run_accession}.coverage ${run_accession}.stat ${run_accession}.vcf.gz ${run_accession}_output
-    tar -zcvf ${run_accession}_output.tar.gz ${run_accession}_output
+    bgzip ${run_accession}.coverage
+    bgzip ${run_accession}.annot.vcf
     """
 }
 
