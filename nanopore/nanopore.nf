@@ -44,7 +44,9 @@ process map_to_reference {
     output:
     val(run_accession)
     val(sample_accession)
-    file("${run_accession}_output.tar.gz")
+    file("${run_accession}.bam")
+    file("${run_accession}.coverage.gz")
+    file("${run_accession}.annot.vcf.gz")
     file("${run_accession}_filtered.vcf.gz")
     file("${run_accession}_consensus.fasta.gz")
 
@@ -78,12 +80,8 @@ process map_to_reference {
     bgzip ${run_accession}_consensus.fasta
 
     java -Xmx4g -jar /opt/conda/share/snpeff-5.0-1/snpEff.jar -q -no-downstream -no-upstream -noStats NC_045512.2 ${run_accession}.vcf > ${run_accession}.annot.vcf
-    bgzip ${run_accession}.vcf
+    #bgzip ${run_accession}.vcf
     bgzip ${run_accession}.annot.vcf
-
-    mkdir -p ${run_accession}_output
-    mv ${run_accession}.bam ${run_accession}.coverage.gz ${run_accession}.annot.vcf.gz ${run_accession}_output
-    tar -zcvf ${run_accession}_output.tar.gz ${run_accession}_output
     """
 }
 
