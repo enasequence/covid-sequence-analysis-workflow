@@ -9,7 +9,7 @@ pipeline=${3:-'illumina'}   # nanopore
 root_dir=${4:-'/hps/nobackup/tburdett/ena/users/analyser/nextflow'}  # /hps/nobackup/cochrane/ena/users/analyser/nextflow
 batch_size=${5:-'15000'}
 profile=${6:-'codon'}
-snapshot_date=${7:-'2022-08-22'}  # 2022-09-26 2022-10-24 2022-11-21 2022-12-19
+snapshot_date=${7:-'2022-09-26'}  # 2022-10-24 2022-11-21 2022-12-19
 dataset_name=${8:-'sarscov2_metadata'}
 project_id=${9:-'prj-int-dev-covid19-nf-gls'}
 
