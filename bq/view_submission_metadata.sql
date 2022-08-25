@@ -8,8 +8,22 @@ AS SELECT
   T2.country,
   T2.collection_date,
   T1.time_submitted,
-  T1.snapshot_date,
-  -- IFNULL(T1.snapshot_date, '2022-06-27') AS snapshot_date,
+  -- T1.snapshot_date,
+  (CASE
+    WHEN T3.analysis_date IS NULL THEN NULL
+    WHEN T3.analysis_date < '2022-03-22' THEN '2022-03-22'
+    WHEN T3.analysis_date >= '2022-03-22' AND T3.analysis_date < '2022-04-12' THEN '2022-04-12'
+    WHEN T3.analysis_date >= '2022-04-12' AND T3.analysis_date < '2022-05-23' THEN '2022-05-23'
+    WHEN T3.analysis_date >= '2022-05-23' AND T3.analysis_date < '2022-06-27' THEN '2022-06-27'
+    WHEN T3.analysis_date >= '2022-06-27' AND T3.analysis_date < '2022-07-25' THEN '2022-07-25'
+    WHEN T3.analysis_date >= '2022-07-25' AND T3.analysis_date < '2022-08-22' THEN '2022-08-22'
+    WHEN T3.analysis_date >= '2022-08-22' AND T3.analysis_date < '2022-09-26' THEN '2022-09-26'
+    WHEN T3.analysis_date >= '2022-09-26' AND T3.analysis_date < '2022-10-24' THEN '2022-10-24'
+    WHEN T3.analysis_date >= '2022-10-24' AND T3.analysis_date < '2022-11-21' THEN '2022-11-21'
+    WHEN T3.analysis_date >= '2022-11-21' AND T3.analysis_date < '2022-12-19' THEN '2022-12-19'
+    ELSE 'TBD'
+  END
+    ) AS snapshot_date,
   T3.analysis_accession,
   T3.sample_accession,
   T3.submitted_bytes,
