@@ -22,7 +22,14 @@ row_count=$(bq --project_id="${project_id}" --format=csv query --use_legacy_sql=
 # as defined as queueSize in nextflow.config
 ############################################
 queue_size=100     # 4
-batches=$(( row_count / batch_size + 1 ))
+
+if [[ $row_count < $(( batch_size + 1 )) ]]
+then
+  batches=1
+else
+  batches=$(( row_count / batch_size + 1 ))
+fi
+
 num_of_jobs=$(( concurrency / queue_size ))
 #mem_limit=$(( batch_size / 2500 * 2048));mem_limit=$(( mem_limit > 2048 ? mem_limit : 2048 ))
 
