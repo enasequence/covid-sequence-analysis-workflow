@@ -22,8 +22,15 @@ row_count=$(bq --project_id="${project_id}" --format=csv query --use_legacy_sql=
 # as defined as queueSize in nextflow.config
 ############################################
 queue_size=100     # 4
-batches=$(( row_count / batch_size + 1 ))
-num_of_jobs=$(( concurrency / queue_size ))
+
+batches=$(( (row_count + batch_size - 1) / batch_size ))
+
+echo "row_count is: $row_count"
+echo "batch_size is: $batch_size"
+echo "count of batches is: $batches"
+
+num_of_jobs=$(( (concurrency + queue_size - 1) / queue_size ))
+echo "num_of_jobs is: $num_of_jobs"
 #mem_limit=$(( batch_size / 2500 * 2048));mem_limit=$(( mem_limit > 2048 ? mem_limit : 2048 ))
 
 input_dir="${DIR}/data/${snapshot_date}"; mkdir -p "${input_dir}"
