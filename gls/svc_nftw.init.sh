@@ -7,6 +7,9 @@
 
 PROJECT=${1:-'prj-int-dev-covid19-nf-gls'}
 
+# DIR where the current script resides
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
 # Service account key for NF Tower
 export SERVICE_ACCOUNT_NAME=nextflow-service-account
 export SERVICE_ACCOUNT_ADDRESS=${SERVICE_ACCOUNT_NAME}@${PROJECT}.iam.gserviceaccount.com
