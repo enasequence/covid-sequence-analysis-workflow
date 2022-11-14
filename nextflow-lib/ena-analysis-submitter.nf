@@ -3,7 +3,7 @@ process ena_analysis_submit {
     publishDir params.OUTDIR, mode: 'copy'
     storeDir params.STOREDIR
 
-    container 'davidyuyuan/ena-analysis-submitter:2.0'
+    container 'sands0/ena-analysis-submitter:2.3'
 
     input:
     val(run_accession)
