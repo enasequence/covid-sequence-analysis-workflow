@@ -19,13 +19,13 @@ curl -X POST -H "Content-Type: application/x-www-form-urlencoded" -d 'result=ana
 gsutil -m cp "${output_dir}/analysis_archived.tsv" "gs://${dataset_name}/analysis_archived.tsv" && \
   bq --project_id="${project_id}" load --source_format=CSV --replace=true --skip_leading_rows=1 --field_delimiter=tab \
   --autodetect "${dataset_name}.analysis_archived" "gs://${dataset_name}/analysis_archived.tsv" \
-  "analysis_accession:STRING,sample_accession:STRING,run_ref:STRING,analysis_date:DATE,submitted_bytes:NUMERIC"
+  "analysis_accession:STRING,sample_accession:STRING,run_ref:STRING,analysis_date:DATE,submitted_bytes:STRING"
 curl -X POST -H "Content-Type: application/x-www-form-urlencoded" -d 'result=analysis&query=parent_study%3D%22PRJEB55357%22&fields=sample_accession%2Crun_ref%2Canalysis_date%2Csubmitted_bytes&format=tsv&limit=0' \
   "https://www.ebi.ac.uk/ena/portal/api/search" > "${output_dir}/analysis_archived.tsv"
 gsutil -m cp "${output_dir}/analysis_archived.tsv" "gs://${dataset_name}/analysis_archived.tsv" && \
   bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_leading_rows=1 --field_delimiter=tab \
   --autodetect "${dataset_name}.analysis_archived" "gs://${dataset_name}/analysis_archived.tsv" \
-  "analysis_accession:STRING,sample_accession:STRING,run_ref:STRING,analysis_date:DATE,submitted_bytes:NUMERIC"
+  "analysis_accession:STRING,sample_accession:STRING,run_ref:STRING,analysis_date:DATE,submitted_bytes:STRING"
 
 #################################
 # delete runs from sra_processing
