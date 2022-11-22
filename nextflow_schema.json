@@ -52,6 +52,7 @@
                     "default": "gs://prj-int-dev-covid19-nf-gls-poc/data/NC_045512.2.fa"
                 },
                 "SARS2_FA_FAI":{ 
+                    "hidden": true,
                     "type": "string",
                     "default": "gs://prj-int-dev-covid19-nf-gls-poc/data/NC_045512.2.fa.fai"
                 },
