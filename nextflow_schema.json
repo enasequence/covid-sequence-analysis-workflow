@@ -5,38 +5,47 @@
     "description": "RNA sequencing analysis pipeline for gene/isoform quantification and extensive quality control.",
     "type": "object",
     "definitions": {
-        "TEST_SUBMISSION": {
-            "type": "boolean",
-            "fa_icon": "fas fa-file-csv",
-            "default": true
-        },
-        "STUDY": {
-            "type": "string",
-            "hidden": true,
-            "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
-            "fa_icon": "fas fa-folder-open",
-            "default": "PRJEB45555"
-        },
-        "snapshot_date": {
-            "type": "string",
-            "enum": [
-                "2022-06-26",
-                "2022-10-24",
-                "2022-11-21",
-                "2022-12-19"
-            ]
-        },
-        "pipeline": {
-            "type": "string",
-            "enum": [
-                "illumina",
-                "nanopore"
-            ]
+        "workflow_settings": {
+            "title": "Workflow options",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "Define where the pipeline should find input data and save output data.",
+            "required": ["outdir"],
+            "properties": {
+                "TEST_SUBMISSION": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-file-csv",
+                    "default": true
+                },
+                "STUDY": {
+                    "type": "string",
+                    "hidden": true,
+                    "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
+                    "fa_icon": "fas fa-folder-open",
+                    "default": "PRJEB45555"
+                },
+                "snapshot_date": {
+                    "type": "string",
+                    "enum": [
+                        "2022-06-26",
+                        "2022-10-24",
+                        "2022-11-21",
+                        "2022-12-19"
+                    ]
+                },
+                "pipeline": {
+                    "type": "string",
+                    "enum": [
+                        "illumina",
+                        "nanopore"
+                    ]
+                }
+            }
         }
     },
     "allOf": [
         {
-            "$ref": "#/definitions",
+            "$ref": "#/definitions/workflow_settings",
                 "$map": {
                     "INDEX": {
                         "type": "string",
