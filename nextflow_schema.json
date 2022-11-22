@@ -4,6 +4,11 @@
     "title": "nf-core/rnaseq pipeline parameters",
     "description": "RNA sequencing analysis pipeline for gene/isoform quantification and extensive quality control.",
     "type": "object",
+    "properties": {
+        "INDEX": {
+            "$ref": "gs://sarscov2_metadata_poc/{#/definitions/workflow_settings/pipeline}_to_be_processed.tsv"
+        }
+    },
     "definitions": {
         "umi_options": {
             "title": "UMI options",
