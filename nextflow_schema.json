@@ -42,11 +42,28 @@
                     ]
                 }
             }
+        },
+        "hidden_param": {
+            "title": "Workflow options",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "Define where the pipeline should find input data and save output data.",
+            "required": [],
+            "properties": {
+                "INDEX": {
+                    "type": "string",
+                    "hidden": true,
+                    "$ref": "gs://sarscov2_metadata_poc/{#/definitions/workflow_settings/pipeline}_to_be_processed.tsv"
+                }
+            }
         }
     },
     "allOf": [
         {
             "$ref": "#/definitions/workflow_settings"
+        },
+        {
+            "$ref": "#/definitions/hidden_param"
         }
     ]
 }
