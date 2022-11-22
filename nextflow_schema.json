@@ -5,6 +5,22 @@
     "description": "RNA sequencing analysis pipeline for gene/isoform quantification and extensive quality control.",
     "type": "object",
     "definitions": {
+        "umi_options": {
+            "title": "UMI options",
+            "type": "object",
+            "description": "Options for processing reads with unique molecular identifiers",
+            "default": "",
+            "properties": {
+                "with_umi": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-barcode",
+                    "description": "Enable UMI-based read deduplication."
+                },
+                "INDEX": {
+                    "$ref": "gs://sarscov2_metadata_poc/{#/definitions/workflow_settings/pipeline}_to_be_processed.tsv"
+                }
+            }
+        },
         "workflow_settings": {
             "title": "Workflow options",
             "type": "object",
@@ -42,18 +58,6 @@
                     ]
                 }
             }
-        },
-        "hidden_param": {
-            "title": "Workflow options",
-            "type": "object",
-            "fa_icon": "fas fa-terminal",
-            "description": "Define where the pipeline should find input data and save output data.",
-            "required": [],
-            "properties": {
-                "INDEX": {
-                    "$ref": "gs://sarscov2_metadata_poc/{#/definitions/workflow_settings/pipeline}_to_be_processed.tsv"
-                }
-            }
         }
     },
     "allOf": [
@@ -61,7 +65,7 @@
             "$ref": "#/definitions/workflow_settings"
         },
         {
-            "$ref": "#/definitions/hidden_param"
+            "$ref": "#/definitions/umi_options"
         }
     ]
 }
