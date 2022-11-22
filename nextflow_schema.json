@@ -1,0 +1,61 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://raw.githubusercontent.com/YOUR_PIPELINE/master/nextflow_schema.json",
+    "title": "Nextflow pipeline parameters",
+    "description": "This pipeline uses Nextflow and processes some kind of data. The JSON Schema was built using the nf-core pipeline schema builder.",
+    "type": "object",
+    "properties": {
+        "OUTDIR": {
+            "type": "string",
+            "default": "gs://prj-int-dev-covid19-nf-gls-poc/${snapshot_date}/${pipeline}/publishDir",
+            "hidden": true
+        },
+        "TEST_SUBMISSION": {
+            "type": "boolean",
+            "default": true
+        },
+        "STUDY": {
+            "type": "string",
+            "default": "PRJEB45555"
+        },
+        "CONFIG_YAML": {
+            "type": "string",
+            "default": "gs://sarscov2_metadata_poc/$pipeline/config.yaml",
+            "hidden": true
+        },
+        "INDEX": {
+            "type": "string",
+            "default": "gs://sarscov2_metadata_poc/$pipeline_to_be_processed.tsv",
+            "hidden": true
+        },
+        "profile": {
+            "type": "string",
+            "default": "gls"
+        },
+        "snapshot_date": {
+            "type": "string",
+            "enum": [
+                "2022-06-26",
+                "2022-10-24",
+                "2022-11-21",
+                "2022-12-19"
+            ]
+        },
+        "pipeline": {
+            "type": "string",
+            "enum": [
+                "illumina",
+                "nanopore"
+            ]
+        }
+    },
+    "required": [
+        "STUDY",
+        "CONFIG_YAML",
+        "INDEX",
+        "profile",
+        "snapshot_date",
+        "pipeline",
+        "OUTDIR"
+    ]
+}
