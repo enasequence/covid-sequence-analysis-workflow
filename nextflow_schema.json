@@ -60,15 +60,9 @@
                     "CONFIG_YAML":{
                         "$ref": "gs://sarscov2_metadata_poc/{/pipeline}/config.yaml"
                     },
-                    "SECRETS":{
-                        "default": "gs://prj-int-dev-covid19-nf-gls-poc/data/projects_accounts.csv"
-                    },
-                    "SARS2_FA":{
-                        "default": "gs://prj-int-dev-covid19-nf-gls-poc/data/NC_045512.2.fa"
-                    },
-                    "SARS2_FA_FAI":{
-                        "default": "gs://prj-int-dev-covid19-nf-gls-poc/data/NC_045512.2.fa.fai"
-                    },
+                    "SECRETS": "gs://prj-int-dev-covid19-nf-gls-poc/data/projects_accounts.csv",
+                    "SARS2_FA":"gs://prj-int-dev-covid19-nf-gls-poc/data/NC_045512.2.fa",
+                    "SARS2_FA_FAI":"gs://prj-int-dev-covid19-nf-gls-poc/data/NC_045512.2.fa.fai",
                     "OUTDIR":{
                         "$ref": "gs://prj-int-dev-covid19-nf-gls-poc/{/snapshot_date}/{/pipeline}/publishDir"
                     },
