@@ -4,7 +4,7 @@
     "title": "nf-core/rnaseq pipeline parameters",
     "description": "RNA sequencing analysis pipeline for gene/isoform quantification and extensive quality control.",
     "type": "object",
-    "properties": {
+    "definitions": {
         "TEST_SUBMISSION": {
             "type": "boolean",
             "fa_icon": "fas fa-file-csv",
@@ -36,7 +36,7 @@
     },
     "allOf": [
         {
-            "$ref": "#/properties",
+            "$ref": "#/definitions",
                 "$map": {
                     "INDEX": {
                         "type": "string",
