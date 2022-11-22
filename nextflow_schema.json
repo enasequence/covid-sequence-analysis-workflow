@@ -7,6 +7,36 @@
     "properties": {
         "INDEX": {
             "$ref": "gs://sarscov2_metadata_poc/{#/definitions/workflow_settings/pipeline}_to_be_processed.tsv"
+        },
+        "TEST_SUBMISSION":{
+            "$ref": "/TEST_SUBMISSION"
+        },
+        "STUDY":{
+            "$ref": "/STUDY"
+        },
+        "CONFIG_YAML":{
+            "$ref": "gs://sarscov2_metadata_poc/{#/definitions/workflow_settings/pipeline}/config.yaml"
+        },
+        "SECRETS":{ 
+            "type": "string",
+            "default": "gs://prj-int-dev-covid19-nf-gls-poc/data/projects_accounts.csv"
+        },
+        "SARS2_FA":{ 
+            "type": "string",
+            "default": "gs://prj-int-dev-covid19-nf-gls-poc/data/NC_045512.2.fa"
+        },
+        "SARS2_FA_FAI":{ 
+            "type": "string",
+            "default": "gs://prj-int-dev-covid19-nf-gls-poc/data/NC_045512.2.fa.fai"
+        },
+        "OUTDIR":{
+            "$ref": "gs://prj-int-dev-covid19-nf-gls-poc/{#/definitions/workflow_settings/snapshot_date}/{#/definitions/workflow_settings/pipeline}/publishDir"
+        },
+        "STOREDIR":{
+            "$ref": "gs://prj-int-dev-covid19-nf-gls-poc/{#/definitions/workflow_settings/snapshot_date}/{#/definitions/workflow_settings/pipeline}/storeDir"
+        },
+        "WORKDIR":{
+            "$ref":  "gs://prj-int-dev-covid19-nf-gls-poc/{#/definitions/workflow_settings/snapshot_date}/{#/definitions/workflow_settings/pipeline}/workDir"
         }
     },
     "definitions": {
