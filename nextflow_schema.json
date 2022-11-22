@@ -15,9 +15,6 @@
                     "type": "boolean",
                     "fa_icon": "fas fa-barcode",
                     "description": "Enable UMI-based read deduplication."
-                },
-                "INDEX": {
-                    "$ref": "gs://sarscov2_metadata_poc/{#/definitions/workflow_settings/pipeline}_to_be_processed.tsv"
                 }
             }
         },
