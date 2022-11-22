@@ -18,6 +18,17 @@ process ena_analysis_submit {
     val(test_submission)
     path(config_yaml)
 
+    stub:
+    """
+    mkdir -p ${run_accession}_output/${study_accession}/
+    touch ${run_accession}_output/${study_accession}/${run_accession}.bam
+    touch ${run_accession}_output/${study_accession}/${run_accession}.coverage.gz
+    touch ${run_accession}_output/${study_accession}/${run_accession}.annot.vcf.gz
+    touch ${run_accession}_output/${study_accession}/${run_accession}_filtered.vcf.gz
+    touch ${run_accession}_output/${study_accession}/${run_accession}_consensus.fasta.gz
+    touch ${run_accession}_output/${study_accession}/${run_accession}_submissions.txt
+    """
+
     output:
     file("${run_accession}_output/${study_accession}/${run_accession}.bam")
     file("${run_accession}_output/${study_accession}/${run_accession}.coverage.gz")

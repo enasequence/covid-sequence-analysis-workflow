@@ -23,6 +23,15 @@ process map_to_reference {
     path(projects_accounts_csv)
     val(study_accession)
 
+    stub:
+    """
+    touch ${run_accession}.bam
+    touch ${run_accession}.coverage.gz 
+    touch ${run_accession}.annot.vcf.gz 
+    touch ${run_accession}_filtered.vcf.gz 
+    touch ${run_accession}_consensus.fasta.gz
+    """
+    
     output:
     val(run_accession)
     val(sample_accession)

@@ -1,0 +1,6 @@
+.nextflow/*
+work/*
+.env
+*.log.*
+*/projects_accounts.csv
+*.tsv
