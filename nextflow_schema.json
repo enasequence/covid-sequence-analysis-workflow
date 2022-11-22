@@ -4,44 +4,13 @@
     "title": "nf-core/rnaseq pipeline parameters",
     "description": "RNA sequencing analysis pipeline for gene/isoform quantification and extensive quality control.",
     "type": "object",
-    "properties": {
-        "$ref": "#/definitions/workflow_settings",
-        "$map": {
-            "INDEX": {
-                "type": "string",
-                "$ref": "gs://sarscov2_metadata_poc/{/pipeline}_to_be_processed.tsv"
-            },
-            "TEST_SUBMISSION":{
-                "$ref": "/TEST_SUBMISSION"
-            },
-            "STUDY":{
-                "$ref": "/STUDY"
-            },
-            "CONFIG_YAML":{
-                "$ref": "gs://sarscov2_metadata_poc/{/pipeline}/config.yaml"
-            },
-            "SECRETS": "gs://prj-int-dev-covid19-nf-gls-poc/data/projects_accounts.csv",
-            "SARS2_FA":"gs://prj-int-dev-covid19-nf-gls-poc/data/NC_045512.2.fa",
-            "SARS2_FA_FAI":"gs://prj-int-dev-covid19-nf-gls-poc/data/NC_045512.2.fa.fai",
-            "OUTDIR":{
-                "$ref": "gs://prj-int-dev-covid19-nf-gls-poc/{/snapshot_date}/{/pipeline}/publishDir"
-            },
-            "STOREDIR":{
-                "$ref": "gs://prj-int-dev-covid19-nf-gls-poc/{/snapshot_date}/{/pipeline}/storeDir"
-            },
-            "WORKDIR":{
-                "$ref":  "gs://prj-int-dev-covid19-nf-gls-poc/{/snapshot_date}/{/pipeline}/workDir"
-            }
-
-        }
-    },
     "definitions": {
         "workflow_settings": {
             "title": "Workflow options",
             "type": "object",
             "fa_icon": "fas fa-terminal",
             "description": "Define where the pipeline should find input data and save output data.",
-            "required": ["outdir"],
+            "required": ["TEST_SUBMISSION"],
             "properties": {
                 "TEST_SUBMISSION": {
                     "type": "boolean",
@@ -56,7 +25,7 @@
                     "default": "PRJEB45555"
                 },
                 "snapshot_date": {
-                    "type": "string",
+                    "type": "string", 
                     "enum": [
                         "2022-06-26",
                         "2022-10-24",
@@ -66,6 +35,7 @@
                 },
                 "pipeline": {
                     "type": "string",
+                    "default": "illumina",
                     "enum": [
                         "illumina",
                         "nanopore"
@@ -75,6 +45,35 @@
         }
     },
     "allOf": [
-        {}
+        {
+            "$ref": "#/definitions/workflow_settings",
+            "$map": {
+                "INDEX": {
+                    "type": "string",
+                    "$ref": "gs://sarscov2_metadata_poc/{/pipeline}_to_be_processed.tsv"
+                },
+                "TEST_SUBMISSION":{
+                    "$ref": "/TEST_SUBMISSION"
+                },
+                "STUDY":{
+                    "$ref": "/STUDY"
+                },
+                "CONFIG_YAML":{
+                    "$ref": "gs://sarscov2_metadata_poc/{/pipeline}/config.yaml"
+                },
+                "SECRETS": "gs://prj-int-dev-covid19-nf-gls-poc/data/projects_accounts.csv",
+                "SARS2_FA":"gs://prj-int-dev-covid19-nf-gls-poc/data/NC_045512.2.fa",
+                "SARS2_FA_FAI":"gs://prj-int-dev-covid19-nf-gls-poc/data/NC_045512.2.fa.fai",
+                "OUTDIR":{
+                    "$ref": "gs://prj-int-dev-covid19-nf-gls-poc/{/snapshot_date}/{/pipeline}/publishDir"
+                },
+                "STOREDIR":{
+                    "$ref": "gs://prj-int-dev-covid19-nf-gls-poc/{/snapshot_date}/{/pipeline}/storeDir"
+                },
+                "WORKDIR":{
+                    "$ref":  "gs://prj-int-dev-covid19-nf-gls-poc/{/snapshot_date}/{/pipeline}/workDir"
+                }
+            }
+        }
     ]
 }
