@@ -4,61 +4,73 @@
     "title": "nf-core/rnaseq pipeline parameters",
     "description": "RNA sequencing analysis pipeline for gene/isoform quantification and extensive quality control.",
     "type": "object",
-    "definitions": {
-        "input_output_options": {
-            "title": "Input/output options",
-            "type": "object",
-            "fa_icon": "fas fa-terminal",
-            "description": "Define where the pipeline should find input data and save output data.",
-            "required": ["TEST_SUBMISSION"],
-            "properties": {
-                "TEST_SUBMISSION": {
-                    "type": "boolean",
-                    "fa_icon": "fas fa-file-csv",
-                    "default": true
-                },
-                "STUDY": {
-                    "type": "string",
-                    "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
-                    "fa_icon": "fas fa-folder-open",
-                    "default": "PRJEB45555"
-                },
-                "CONFIG_YAML": {
-                    "type": "string",
-                    "default": "gs://sarscov2_metadata_poc/$pipeline/config.yaml",
-                    "hidden": true
-                },
-                "INDEX": {
-                    "type": "string",
-                    "default": "gs://sarscov2_metadata_poc/$pipeline_to_be_processed.tsv",
-                    "hidden": true
-                },
-                "profile": {
-                    "type": "string",
-                    "default": "gls"
-                },
-                "snapshot_date": {
-                    "type": "string",
-                    "enum": [
-                        "2022-06-26",
-                        "2022-10-24",
-                        "2022-11-21",
-                        "2022-12-19"
-                    ]
-                },
-                "pipeline": {
-                    "type": "string",
-                    "enum": [
-                        "illumina",
-                        "nanopore"
-                    ]
-                }
-            }
+    "properties": {
+        "TEST_SUBMISSION": {
+            "type": "boolean",
+            "fa_icon": "fas fa-file-csv",
+            "default": true
+        },
+        "STUDY": {
+            "type": "string",
+            "hidden": true,
+            "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
+            "fa_icon": "fas fa-folder-open",
+            "default": "PRJEB45555"
+        },
+        "snapshot_date": {
+            "type": "string",
+            "enum": [
+                "2022-06-26",
+                "2022-10-24",
+                "2022-11-21",
+                "2022-12-19"
+            ]
+        },
+        "pipeline": {
+            "type": "string",
+            "enum": [
+                "illumina",
+                "nanopore"
+            ]
         }
     },
     "allOf": [
         {
-            "$ref": "#/definitions/input_output_options"
+            "$ref": "#/properties",
+                "$map": {
+                    "INDEX": {
+                        "type": "string",
+                        "$ref": "gs://sarscov2_metadata_poc/{/pipeline}_to_be_processed.tsv"
+                    },
+                    "TEST_SUBMISSION":{
+                        "$ref": "/TEST_SUBMISSION"
+                    },
+                    "STUDY":{
+                        "$ref": "/STUDY"
+                    },
+                    "CONFIG_YAML":{
+                        "$ref": "gs://sarscov2_metadata_poc/{/pipeline}/config.yaml"
+                    },
+                    "SECRETS":{
+                        "default": "gs://prj-int-dev-covid19-nf-gls-poc/data/projects_accounts.csv"
+                    },
+                    "SARS2_FA":{
+                        "default": "gs://prj-int-dev-covid19-nf-gls-poc/data/NC_045512.2.fa"
+                    },
+                    "SARS2_FA_FAI":{
+                        "default": "gs://prj-int-dev-covid19-nf-gls-poc/data/NC_045512.2.fa.fai"
+                    },
+                    "OUTDIR":{
+                        "$ref": "gs://prj-int-dev-covid19-nf-gls-poc/{/snapshot_date}/{/pipeline}/publishDir"
+                    },
+                    "STOREDIR":{
+                        "$ref": "gs://prj-int-dev-covid19-nf-gls-poc/{/snapshot_date}/{/pipeline}/storeDir"
+                    },
+                    "WORKDIR":{
+                        "$ref":  "gs://prj-int-dev-covid19-nf-gls-poc/{/snapshot_date}/{/pipeline}/workDir"
+                    }
+
+                }
         }
     ]
 }
