@@ -51,8 +51,6 @@
             "required": [],
             "properties": {
                 "INDEX": {
-                    "type": "string",
-                    "hidden": true,
                     "$ref": "gs://sarscov2_metadata_poc/{#/definitions/workflow_settings/pipeline}_to_be_processed.tsv"
                 }
             }
@@ -61,6 +59,9 @@
     "allOf": [
         {
             "$ref": "#/definitions/workflow_settings"
+        },
+        {
+            "$ref": "#/definitions/hidden_param"
         }
     ]
 }
