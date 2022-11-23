@@ -60,7 +60,6 @@
                     "type": "string",
                     "default": "gs://sarscov2_metadata_poc/${pipeline}_to_be_processed.tsv"
                 },
-                "CONFIG_YAML":{ "$ref": "gs://sarscov2_metadata_poc/{#/definitions/workflow_settings/pipeline}/config.yaml" },
                 "OUTDIR":{ 
                     "type": "string",
                     "default": "gs://prj-int-dev-covid19-nf-gls-poc/${snapshot_date}/{#/pipeline}/publishDir"
