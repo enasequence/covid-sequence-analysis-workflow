@@ -61,10 +61,7 @@
                     "default": "gs://sarscov2_metadata_poc/${pipeline}_to_be_processed.tsv"
                 },
                 "CONFIG_YAML":{ 
-                    "type": "string",
-                    "$vars": {
-                        "default": {"$ref": "gs://sarscov2_metadata_poc/{1/pipeline}/config.yaml"}
-                    }
+                    "$ref": "gs://sarscov2_metadata_poc/{1/pipeline}/config.yaml"
                 },
                 "OUTDIR":{ 
                     "type": "string",
