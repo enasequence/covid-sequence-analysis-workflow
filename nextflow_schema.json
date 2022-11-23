@@ -4,90 +4,32 @@
     "title": "nf-core/rnaseq pipeline parameters",
     "description": "RNA sequencing analysis pipeline for gene/isoform quantification and extensive quality control.",
     "type": "object",
-    "definitions": {
-        "workflow_settings": {
-            "title": "Workflow options",
-            "type": "object",
-            "fa_icon": "fas fa-terminal",
-            "description": "Define where the pipeline should find input data and save output data.",
-            "required": ["TEST_SUBMISSION"],
-            "properties": {
-                "TEST_SUBMISSION": {
-                    "type": "boolean",
-                    "fa_icon": "fas fa-file-csv",
-                    "default": true
-                },
-                "STUDY": {
-                    "type": "string",
-                    "hidden": true,
-                    "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
-                    "fa_icon": "fas fa-folder-open",
-                    "default": "PRJEB45555"
-                },
-                "snapshot_date": {
-                    "type": "string", 
-                    "enum": [
-                        "2022-06-26",
-                        "2022-10-24",
-                        "2022-11-21",
-                        "2022-12-19"
-                    ]
-                },
-                "pipeline": {
-                    "type": "string",
-                    "default": "illumina",
-                    "enum": [
-                        "illumina",
-                        "nanopore"
-                    ]
-                },
-                "SECRETS":{ 
-                    "hidden": true,
-                    "type": "string",
-                    "default": "gs://prj-int-dev-covid19-nf-gls-poc/data/projects_accounts.csv"
-                },
-                "SARS2_FA":{ 
-                    "hidden": true,
-                    "type": "string",
-                    "default": "gs://prj-int-dev-covid19-nf-gls-poc/data/NC_045512.2.fa"
-                },
-                "SARS2_FA_FAI":{ 
-                    "hidden": true,
-                    "type": "string",
-                    "default": "gs://prj-int-dev-covid19-nf-gls-poc/data/NC_045512.2.fa.fai"
-                },
-                "INDEX": {
-                    "hidden": true,
-                    "$ref": "gs://sarscov2_metadata_poc/{#/definitions/workflow_settings/pipeline}_to_be_processed.tsv"
-                    
-                },
-                "CONFIG_YAML":{
-                    "hidden": true,
-                    "default":{
-                        "$ref": "gs://sarscov2_metadata_poc/{#/definitions/workflow_settings/pipeline}/config.yaml"
-                    }
-                },
-                "OUTDIR":{ 
-                    "hidden": true,
-                    "$ref": "gs://prj-int-dev-covid19-nf-gls-poc/{#/definitions/workflow_settings/snapshot_date}/{#/definitions/workflow_settings/pipeline}/publishDir"
-                    
-                },
-                "STOREDIR":{
-                    "hidden": true,
-                    "$ref": "gs://prj-int-dev-covid19-nf-gls-poc/{#/definitions/workflow_settings/snapshot_date}/{#/definitions/workflow_settings/pipeline}/storeDir"
-                    
-                },
-                "WORKDIR":{
-                     "hidden": true,
-                     "$ref":  "gs://prj-int-dev-covid19-nf-gls-poc/{#/definitions/workflow_settings/snapshot_date}/{#/definitions/workflow_settings/pipeline}/workDir"
-                     
-                }
-            }
+    "properties": {
+        "username": {"$ref": "#/$defs/custom-username"},
+        "aliases": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/custom-username"}
+        },
+        "primary_email": {"$ref": "#/$defs/custom-email"},
+        "other_emails": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/custom-email"}
+        }
+    },
+    "$defs": {
+        "custom-username": {
+          "type": "string",
+          "minLength":3
+        },
+        "custom-email": {
+          "type": "string",
+          "format": "email",
+          "pattern": "\\.com$"
         }
     },
     "allOf": [
         {
-            "$ref": "#/definitions/workflow_settings"
+            "$ref": "#/$defs"
         }
     ]
 }
