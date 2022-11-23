@@ -57,10 +57,13 @@
                 },
                 "INDEX": {
                     "type": "string",
-                    "default": "gs://sarscov2_metadata_poc/${pipeline}_to_be_processed.tsv"
+                    "default": {
+                        "$ref":"gs://sarscov2_metadata_poc/{1/pipeline}_to_be_processed.tsv"
+                    }
                 },
                 "CONFIG_YAML":{ 
-                    "$ref": "gs://sarscov2_metadata_poc/{1/pipeline}/config.yaml"
+                    "type": "string",
+                    "default": "gs://sarscov2_metadata_poc/${pipeline}/config.yaml"
                 },
                 "OUTDIR":{ 
                     "type": "string",
