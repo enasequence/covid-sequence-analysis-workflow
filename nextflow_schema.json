@@ -19,27 +19,9 @@
                 },
                 "STUDY": {
                     "type": "string",
-                    "hidden": true,
                     "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
                     "fa_icon": "fas fa-folder-open",
                     "default": "PRJEB45555"
-                },
-                "snapshot_date": {
-                    "type": "string", 
-                    "enum": [
-                        "2022-06-26",
-                        "2022-10-24",
-                        "2022-11-21",
-                        "2022-12-19"
-                    ]
-                },
-                "pipeline": {
-                    "type": "string",
-                    "default": "illumina",
-                    "enum": [
-                        "illumina",
-                        "nanopore"
-                    ]
                 },
                 "SECRETS":{ 
                     "hidden": true,
@@ -52,38 +34,16 @@
                     "default": "gs://prj-int-dev-covid19-nf-gls-poc/data/NC_045512.2.fa"
                 },
                 "SARS2_FA_FAI":{ 
+                    "hidden": true,
                     "type": "string",
                     "default": "gs://prj-int-dev-covid19-nf-gls-poc/data/NC_045512.2.fa.fai"
-                },
-                "INDEX": {
-                    "type": "string",
-                    "default": "gs://sarscov2_metadata_poc/${pipeline}_to_be_processed.tsv"
-                },
-                "CONFIG_YAML":{ 
-                    "type": "string",
-                    "default": "gs://sarscov2_metadata_poc/${pipeline}/config.yaml"
-                },
-                "OUTDIR":{ 
-                    "type": "string",
-                    "default": "gs://prj-int-dev-covid19-nf-gls-poc/${snapshot_date}/${pipeline}/publishDir"
-                },
-                "STOREDIR":{
-                    "type": "string",
-                    "default": "gs://prj-int-dev-covid19-nf-gls-poc/${snapshot_date}/${pipeline}/storeDir"
-                },
-                "WORKDIR":{
-                    "type": "string",
-                    "default":"gs://prj-int-dev-covid19-nf-gls-poc/${snapshot_date}/${pipeline}/workDir"
                 }
             }
         }
     },
     "allOf": [
         {
-            "$ref": "#/definitions/workflow_settings",
-            "$map": {
-                "WORKDIR": {"$ref": "1/pipeline"}
-            }
+            "$ref": "#/definitions/workflow_settings"
         }
     ]
 }
