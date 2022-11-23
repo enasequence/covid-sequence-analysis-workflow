@@ -84,7 +84,7 @@
         {
             "$ref": "#/definitions/workflow_settings",
             "$map": {
-                "WORKDIR": {"$ref": "/firstName"}
+                "WORKDIR": {"$ref": "/pipeline"}
             }
         }
     ]
