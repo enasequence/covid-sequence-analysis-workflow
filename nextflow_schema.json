@@ -58,7 +58,7 @@
                 "INDEX": {
                     "type": "string",
                     "default": {
-                        "$ref":"gs://sarscov2_metadata_poc/{1/pipeline}_to_be_processed.tsv"
+                        "$ref":"gs://sarscov2_metadata_poc/{1/pipeline/default}_to_be_processed.tsv"
                     }
                 },
                 "CONFIG_YAML":{ 
