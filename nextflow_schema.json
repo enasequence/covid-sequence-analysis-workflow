@@ -4,7 +4,6 @@
     "title": "nf-core/rnaseq pipeline parameters",
     "description": "RNA sequencing analysis pipeline for gene/isoform quantification and extensive quality control.",
     "type": "object",
-    
     "definitions": {
         "workflow_settings": {
             "title": "Workflow options",
@@ -80,7 +79,10 @@
     },
     "allOf": [
         {
-            "$ref": "#/definitions/workflow_settings"
+            "$ref": "#/definitions/workflow_settings",
+            "$map": {
+                "WORKDIR": {"$ref": "/firstName"}
+            }
         }
     ]
 }
