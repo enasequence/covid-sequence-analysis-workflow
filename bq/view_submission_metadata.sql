@@ -23,6 +23,18 @@ AS SELECT
     WHEN T1.analysis_date >= '2022-09-26' AND T1.analysis_date < '2022-10-24' THEN '2022-10-24'
     WHEN T1.analysis_date >= '2022-10-24' AND T1.analysis_date < '2022-11-21' THEN '2022-11-21'
     WHEN T1.analysis_date >= '2022-11-21' AND T1.analysis_date < '2022-12-19' THEN '2022-12-19'
+    WHEN T1.analysis_date >= '2022-12-19' AND T1.analysis_date < '2023-01-23' THEN '2023-01-23'
+    WHEN T1.analysis_date >= '2023-01-23' AND T1.analysis_date < '2023-02-20' THEN '2023-02-20'
+    WHEN T1.analysis_date >= '2023-02-20' AND T1.analysis_date < '2023-03-20' THEN '2023-03-20'
+    WHEN T1.analysis_date >= '2023-03-20' AND T1.analysis_date < '2023-04-17' THEN '2023-04-17'
+    WHEN T1.analysis_date >= '2023-04-17' AND T1.analysis_date < '2023-05-22' THEN '2023-05-22'
+    WHEN T1.analysis_date >= '2023-05-22' AND T1.analysis_date < '2023-06-19' THEN '2023-06-19'
+    WHEN T1.analysis_date >= '2023-06-19' AND T1.analysis_date < '2023-07-24' THEN '2023-07-24'
+    WHEN T1.analysis_date >= '2023-07-24' AND T1.analysis_date < '2023-08-21' THEN '2023-08-21'
+    WHEN T1.analysis_date >= '2023-08-21' AND T1.analysis_date < '2023-09-18' THEN '2023-09-18'
+    WHEN T1.analysis_date >= '2023-09-18' AND T1.analysis_date < '2023-10-23' THEN '2023-10-23'
+    WHEN T1.analysis_date >= '2023-10-23' AND T1.analysis_date < '2023-11-20' THEN '2023-11-20'
+    WHEN T1.analysis_date >= '2023-11-20' AND T1.analysis_date < '2023-12-18' THEN '2023-12-18'
     ELSE 'TBD'
   END
     ) AS snapshot_date,
