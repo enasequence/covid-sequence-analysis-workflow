@@ -45,15 +45,8 @@ for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batc
 #   gsutil -m cp "${input_dir}/${table_name}_${batch_index}.tsv" "gs://${dataset_name}/${table_name}_${batch_index}_test.tsv" && \
 #     bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_leading_rows=1 --field_delimiter=tab \
 #     --max_bad_records=0 "${dataset_name}.sra_processing_test" "gs://${dataset_name}/${table_name}_${batch_index}_test.tsv"
-  
-  # sbcast -f ${DIR}/test.nextflow.sh /tmp/run.nextflow.sh && \ 
-  # sbcast -f ${DIR}/nextflow-lib/nextflow.config /tmp/nextflow-lib/nextflow.config && \
-  # sbcast -f ${DIR}/nextflow-lib/ena-analysis-submitter.nf /tmp/nextflow-lib/ena-analysis-submitter.nf && \
-  # sbcast -f ${DIR}/${pipeline}/${pipeline}.nf /tmp/${pipeline}/${pipeline}.nf && sbcast -f ${DIR}/${pipeline}/config.yaml /tmp/${pipeline}/config.yaml && \
-  # sbcast -f ${DIR}/data/projects_accounts.csv /tmp/data/projects_accounts.csv && sbcast -f ${DIR}/data/NC_045512.2.fa /tmp/data/NC_045512.2.fa && \
-  # sbcast -f ${DIR}/data/NC_045512.2.fa.fai /tmp/data/NC_045512.2.fa.fai 
-  
-  srun -N 1 -p standard --mem 4096 --export ALL -t 00:30:00 "${DIR}/test.nextflow.sh" "${input_dir}/${table_name}_${batch_index}.tsv" \
+
+  srun -N 2 -p standard --mem 4096 --export ALL -t 00:30:00 "${DIR}/test.nextflow.sh" "${input_dir}/${table_name}_${batch_index}.tsv" \
     "${pipeline}" "${profile}" "${root_dir}" "${batch_index}" "${snapshot_date}" "${test_submission}"
     
   # bsub -n 2 -M 4096 -q production "${DIR}/run.nextflow.sh" "${input_dir}/${table_name}_${batch_index}.tsv" \
