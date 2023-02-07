@@ -5,18 +5,18 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 export $(grep -v '^#' .env | xargs)
 
 skip=${1:-'0'}
-# concurrency=${2:-'500'}   # Maximum concurrency determined by the bottleneck - the submission server and storage space
-concurrency=${2:-'5'}
-pipeline=${3:-'illumina'}   # nanopore
-# root_dir=${4:-'/hps/nobackup/tburdett/ena/users/analyser/nextflow'}  # /hps/nobackup/cochrane/ena/users/analyser/nextflow
-root_dir=${4:-"${DIR}/nextflow"} 
+concurrency=${2:-'500'}   # Maximum concurrency determined by the bottleneck - the submission server and storage space
+# concurrency=${2:-'5'}
+pipeline=${3:-'nanopore'}   # nanopore
+root_dir=${4:-'/hps/nobackup/tburdett/ena/users/analyser/nextflow'}  # /hps/nobackup/cochrane/ena/users/analyser/nextflow
+# root_dir=${4:-"${DIR}/nextflow"} 
 # batch_size=${5:-'15000'}
-batch_size=${5:-'5'}
+batch_size=${5:-'500'}
 profile=${6:-'slurm'}
 snapshot_date=${7:-'2022-12-19'}  #2022-09-26 2022-10-24 2022-11-21 2022-12-19
 dataset_name=${8:-'sarscov2_metadata'}
 project_id=${9:-'prj-int-dev-covid19-nf-gls'}
-test_submission='true'
+test_submission='false'
 # Row count and batches
 table_name="${pipeline}_to_be_processed"
 # sql="SELECT count(*) AS total FROM ${project_id}.${dataset_name}.${table_name}"
@@ -39,22 +39,19 @@ for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batc
   echo ""
   echo "** Retrieving and reserving batch ${batch_index} with the size of ${batch_size} from the offset of ${offset}. **"
 
-#   sql="SELECT * FROM ${project_id}.${dataset_name}.${table_name} LIMIT ${batch_size} OFFSET ${offset}"
-#   bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false --max_rows="${batch_size}" "${sql}" \
-#     | awk 'BEGIN{ FS=","; OFS="\t" }{$1=$1; print $0 }' > "${input_dir}/${table_name}_${batch_index}.tsv"
-#   gsutil -m cp "${input_dir}/${table_name}_${batch_index}.tsv" "gs://${dataset_name}/${table_name}_${batch_index}_test.tsv" && \
-#     bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_leading_rows=1 --field_delimiter=tab \
-#     --max_bad_records=0 "${dataset_name}.sra_processing_test" "gs://${dataset_name}/${table_name}_${batch_index}_test.tsv"
+  sql="SELECT * FROM ${project_id}.${dataset_name}.${table_name} LIMIT ${batch_size} OFFSET ${offset}"
+  bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false --max_rows="${batch_size}" "${sql}" \
+    | awk 'BEGIN{ FS=","; OFS="\t" }{$1=$1; print $0 }' > "${input_dir}/${table_name}_${batch_index}.tsv"
+  gsutil -m cp "${input_dir}/${table_name}_${batch_index}.tsv" "gs://${dataset_name}/${table_name}_${batch_index}.tsv" && \
+    bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_leading_rows=1 --field_delimiter=tab \
+    --max_bad_records=0 "${dataset_name}.sra_processing" "gs://${dataset_name}/${table_name}_${batch_index}.tsv"
 
-  srun -N 2 -p standard --mem 4096 --export ALL -t 00:30:00 "${DIR}/test.nextflow.sh" "${input_dir}/${table_name}_${batch_index}.tsv" \
+  sbatch -N 2 -p standard --mem 4096 --export ALL -t 24:00:00 "${DIR}/run.nextflow.slurm.sh" "${input_dir}/${table_name}_${batch_index}.tsv" \
     "${pipeline}" "${profile}" "${root_dir}" "${batch_index}" "${snapshot_date}" "${test_submission}"
-    
-  # bsub -n 2 -M 4096 -q production "${DIR}/run.nextflow.sh" "${input_dir}/${table_name}_${batch_index}.tsv" \
-  #   "${pipeline}" "${profile}" "${root_dir}" "${batch_index}" "${snapshot_date}"
 done
 
-# sql="CREATE OR REPLACE TABLE ${dataset_name}.sra_processing AS SELECT DISTINCT * FROM ${dataset_name}.sra_processing"
-# bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}"
+sql="CREATE OR REPLACE TABLE ${dataset_name}.sra_processing AS SELECT DISTINCT * FROM ${dataset_name}.sra_processing"
+bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}"
 
 #max_mem avg_mem swap stat exit_code exec_cwd exec_host
 #bjobs -u all -d -o "jobid job_name user submit_time start_time finish_time run_time cpu_used slots min_req_proc max_req_proc nthreads delimiter='^'" > jobs.csv
