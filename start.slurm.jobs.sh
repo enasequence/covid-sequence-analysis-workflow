@@ -19,9 +19,9 @@ project_id=${9:-'prj-int-dev-covid19-nf-gls'}
 test_submission='false'
 # Row count and batches
 table_name="${pipeline}_to_be_processed"
-# sql="SELECT count(*) AS total FROM ${project_id}.${dataset_name}.${table_name}"
-# row_count=$(bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}" | grep -v total)
-row_count=10000
+sql="SELECT count(*) AS total FROM ${project_id}.${dataset_name}.${table_name}"
+row_count=$(bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}" | grep -v total)
+# row_count=10000
 ############################################
 # as defined as queueSize in nextflow.config
 ############################################
