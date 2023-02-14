@@ -24,9 +24,9 @@ echo "** Getting ${snapshot_date}_${pipeline}_${batch_index}_receipts. **"
 printf '%s\t%s\t%s\t%s\n' "analysis_accession" "file_submitted" "time_submitted" "snapshot_date" > \
   "${output_dir}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv"
 if [ "${profile}" = 'gls' ]; then
-#  gsutil -o "GSUtil:parallel_process_count=1" -m ls "${pipeline_dir}/publishDir/**/*_submissions.txt" > "${output_dir}/${pipeline}_receipts_${batch_index}.txt"
-  gsutil -o "GSUtil:parallel_process_count=1" -m cp "${pipeline_dir}/publishDir/**/*_submissions.txt" "${output_dir}"
-#  gsutil -o "GSUtil:parallel_process_count=1" -m cp "gs://prj-int-dev-covid19-nf-gls/prepro/results/**/*_submissions.txt" "${output_dir}"
+#  gsutil -m ls "${pipeline_dir}/publishDir/**/*_submissions.txt" > "${output_dir}/${pipeline}_receipts_${batch_index}.txt"
+  gsutil -m cp "${pipeline_dir}/publishDir/**/*_submissions.txt" "${output_dir}"
+#  gsutil -m cp "gs://prj-int-dev-covid19-nf-gls/prepro/results/**/*_submissions.txt" "${output_dir}"
   find "${output_dir}" -type f -name '*_submissions.txt' -exec cat {} + >> "${output_dir}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv"
 else
 #  find "${pipeline_dir}/publishDir/" -type f -name '*_submissions.txt' > "${output_dir}/${pipeline}_receipts_${batch_index}.txt"
@@ -41,7 +41,7 @@ fi
 echo ""
 echo "** Updating ${dataset_name}.submission_receipts table. **"
 
-gsutil -o "GSUtil:parallel_process_count=1" -m cp "${output_dir}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv" \
+gsutil -m cp "${output_dir}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv" \
   "gs://${dataset_name}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv" && \
   bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_leading_rows=1 --field_delimiter=tab \
   --autodetect "${dataset_name}.submission_receipts" "gs://${dataset_name}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv" \
