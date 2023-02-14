@@ -5,7 +5,7 @@ project_id=${2:-'prj-int-dev-covid19-nf-gls'}
 location=${3:-'europe-west4'}
 
 # Create bucket and dataset
-gsutil ls -p "${project_id}" "gs://${dataset_name}" || gsutil mb -p "${project_id}" -l "${location}" "gs://${dataset_name}"
+gsutil -o "GSUtil:parallel_process_count=1" ls -p "${project_id}" "gs://${dataset_name}" || gsutil -o "GSUtil:parallel_process_count=1" mb -p "${project_id}" -l "${location}" "gs://${dataset_name}"
 bq --project_id="${project_id}" show "${dataset_name}" || bq --location="${location}" mk --dataset "${project_id}:${dataset_name}"
 
 # DIR where the current script resides
