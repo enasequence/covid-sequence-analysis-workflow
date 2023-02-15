@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # DIR where the current script resides
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+# DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 DIR="/hps/nobackup/tburdett/ena/users/analyser/covid-sequence-analysis-workflow"
 batch_input=${1}
 pipeline=${2:-'nanopore'}

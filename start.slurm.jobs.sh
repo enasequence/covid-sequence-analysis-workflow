@@ -7,25 +7,25 @@ export $(grep -v '^#' .env | xargs)
 skip=${1:-'0'}
 concurrency=${2:-'500'}   # Maximum concurrency determined by the bottleneck - the submission server and storage space
 # concurrency=${2:-'5'}
-pipeline=${3:-'nanopore'}   # nanopore
+pipeline=${3:-'illumina'}   # nanopore,illumina
 root_dir=${4:-'/hps/nobackup/tburdett/ena/users/analyser/nextflow_yanisa'}  # /hps/nobackup/cochrane/ena/users/analyser/nextflow
 # root_dir=${4:-"${DIR}/nextflow"} 
-# batch_size=${5:-'15000'}
-batch_size=${5:-'500'}
+batch_size=${5:-'15000'}
+# batch_size=${5:-'500'}
 profile=${6:-'slurm'}
 snapshot_date=${7:-'2022-12-19'}  #2022-09-26 2022-10-24 2022-11-21 2022-12-19
 dataset_name=${8:-'sarscov2_metadata'}
 project_id=${9:-'prj-int-dev-covid19-nf-gls'}
-test_submission='false'
+test_submission='true'
 # Row count and batches
 table_name="${pipeline}_to_be_processed"
 sql="SELECT count(*) AS total FROM ${project_id}.${dataset_name}.${table_name}"
-row_count=$(bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}" | grep -v total)
-# row_count=10000
+# row_count=$(bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}" | grep -v total)
+row_count=75000
 ############################################
 # as defined as queueSize in nextflow.config
 ############################################
-queue_size=4     #100 4
+queue_size=100     #100 4
 batches=$(( row_count / batch_size + 1 ))
 num_of_jobs=$(( concurrency / queue_size ))
 #mem_limit=$(( batch_size / 2500 * 2048));mem_limit=$(( mem_limit > 2048 ? mem_limit : 2048 ))
@@ -46,7 +46,7 @@ for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batc
     bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_leading_rows=1 --field_delimiter=tab \
     --max_bad_records=0 "${dataset_name}.sra_processing" "gs://${dataset_name}/${table_name}_${batch_index}.tsv"
 
-  sbatch -N 2 -p standard --mem 4096 --export ALL -t 24:00:00 "${DIR}/run.nextflow.slurm.sh" "${input_dir}/${table_name}_${batch_index}.tsv" \
+  sbatch -N 2 -p standard --mem 4096 --export ALL -t 3-12:00:00 "${DIR}/run.nextflow.slurm.sh" "${input_dir}/${table_name}_${batch_index}.tsv" \
     "${pipeline}" "${profile}" "${root_dir}" "${batch_index}" "${snapshot_date}" "${test_submission}"
 done
 
