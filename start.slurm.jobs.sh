@@ -34,7 +34,7 @@ num_of_jobs=$(( concurrency / queue_size ))
 input_dir="${DIR}/data/${snapshot_date}"; mkdir -p "${input_dir}"
 
 for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batch_index++ )); do
-  mkdir -p "${root_dir}/${pipeline}_${batch_index}"; cd "${root_dir}/${pipeline}_${batch_index}" || exit
+  # mkdir -p "${root_dir}/${pipeline}_${batch_index}"; cd "${root_dir}/${pipeline}_${batch_index}" || exit
 
   offset=$((batch_index * batch_size))
   echo ""
@@ -44,7 +44,7 @@ for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batc
   # bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false --max_rows="${batch_size}" "${sql}" \
   #   | awk 'BEGIN{ FS=","; OFS="\t" }{$1=$1; print $0 }' > "${input_dir}/${table_name}_${batch_index}.tsv"
   
-  # if [ echo "$test_submission"="false" ]
+  # if [[ $test_submission=false ]]
   # then
   #   echo "Start production"
   #   gsutil -m cp "${input_dir}/${table_name}_${batch_index}.tsv" "gs://${dataset_name}/${table_name}_${batch_index}.tsv" && \
@@ -56,13 +56,12 @@ for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batc
   #   bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_leading_rows=1 --field_delimiter=tab \
   #   --max_bad_records=0 "${dataset_name}.sra_processing_test" "gs://${dataset_name}/${table_name}_${batch_index}.tsv"
   # fi
-  
-  sbatch -N 2 -p standard --mem 4096 --export ALL -t 3-12:00:00 "${DIR}/run.nextflow.slurm.sh" "${input_dir}/${table_name}_${batch_index}.tsv" \
+  sbatch -N 2 -p standard --mem 4096 --export ALL -t 4-00:00:00 "${DIR}/run.nextflow.slurm.sh" "${input_dir}/${table_name}_${batch_index}.tsv" \
     "${pipeline}" "${profile}" "${root_dir}" "${batch_index}" "${snapshot_date}" "${test_submission}"
 done
 
-sql="CREATE OR REPLACE TABLE ${dataset_name}.sra_processing AS SELECT DISTINCT * FROM ${dataset_name}.sra_processing"
-bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}"
+# sql="CREATE OR REPLACE TABLE ${dataset_name}.sra_processing AS SELECT DISTINCT * FROM ${dataset_name}.sra_processing"
+# bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}"
 
 #max_mem avg_mem swap stat exit_code exec_cwd exec_host
 #bjobs -u all -d -o "jobid job_name user submit_time start_time finish_time run_time cpu_used slots min_req_proc max_req_proc nthreads delimiter='^'" > jobs.csv
