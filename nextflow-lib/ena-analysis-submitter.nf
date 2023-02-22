@@ -3,7 +3,7 @@ process ena_analysis_submit {
     publishDir params.OUTDIR, mode: 'copy'
     storeDir params.STOREDIR
 
-    container 'davidyuyuan/ena-analysis-submitter:2.0'
+    container 'sands0/ena-analysis-submitter:2.3'
 
     input:
     val(run_accession)
@@ -25,6 +25,17 @@ process ena_analysis_submit {
     file("${run_accession}_output/${study_accession}/${run_accession}_filtered.vcf.gz")
     file("${run_accession}_output/${study_accession}/${run_accession}_consensus.fasta.gz")
     file("${run_accession}_output/${study_accession}/${run_accession}_submissions.txt")
+    
+    stub:
+    """
+    mkdir -p ${run_accession}_output/${study_accession}/
+    touch ${run_accession}_output/${study_accession}/${run_accession}.bam
+    touch ${run_accession}_output/${study_accession}/${run_accession}.coverage.gz
+    touch ${run_accession}_output/${study_accession}/${run_accession}.annot.vcf.gz
+    touch ${run_accession}_output/${study_accession}/${run_accession}_filtered.vcf.gz
+    touch ${run_accession}_output/${study_accession}/${run_accession}_consensus.fasta.gz
+    touch ${run_accession}_output/${study_accession}/${run_accession}_submissions.txt
+    """
 
     script:
     """
