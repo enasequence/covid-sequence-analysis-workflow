@@ -46,10 +46,10 @@ nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/${pipe
 ########################################################################################
 # Update submission receipt and submission metadata [as well as all the analyses archived]
 ########################################################################################
-# "${DIR}/test.update.receipt.sh" "${batch_index}" "${snapshot_date}" "${pipeline}" "${profile}" "${root_dir}" "${dataset_name}" "${project_id}"
-# "${DIR}/test.set.archived.sh" "${dataset_name}" "${project_id}"
-# rm -rf "${pipeline_dir}/workDir/*" &
-# rm -rf "${pipeline_dir}/storeDir/*" &
-# rm -rf "${pipeline_dir}/publishDir/*" &
-# wait
-# rm -R "${pipeline_dir}"
+"${DIR}/test.update.receipt.sh" "${batch_index}" "${snapshot_date}" "${pipeline}" "${profile}" "${root_dir}" "${dataset_name}" "${project_id}"
+"${DIR}/test.set.archived.sh" "${dataset_name}" "${project_id}"
+rm -rf "${pipeline_dir}/workDir/*" &
+rm -rf "${pipeline_dir}/storeDir/*" &
+rm -rf "${pipeline_dir}/publishDir/*" &
+wait
+rm -R "${pipeline_dir}"
