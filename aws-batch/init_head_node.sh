@@ -16,21 +16,21 @@ echo "IMAGE NAME = ${REPO_URI}:${IMG_TAG}"
 # Create new CE for head node
 
 #Create new job def for head node
-head_node_def_name="nextflow-parallel-head-node"
-latest_revision=$(aws batch describe-job-definitions  --job-definition-name "${head_node_def_name}"  \
-   --query='jobDefinitions[?status==`ACTIVE`].revision' --output=json | jq '.[0]')
-aws batch deregister-job-definition --job-definition "${head_node_def_name}:${latest_revision}"
-container_prop=$(cat <<-END
-	{
-        "image":"${REPO_URI}:${IMG_TAG}",
-        "vcpus": 1,
-        "memory": 1032,
-        "command": ["/usr/local/bin/run.aws.nextflow.sh"],
-        "jobRoleArn": "arn:aws:iam::${AWS_ACCOUNT_ID}:role/ecsTaskExecutionRole",
-        "user": "root"
-	}
-	END
-)
-echo "${container_prop}"
+# head_node_def_name="nextflow-parallel-head-node"
+# latest_revision=$(aws batch describe-job-definitions  --job-definition-name "${head_node_def_name}"  \
+#    --query='jobDefinitions[?status==`ACTIVE`].revision' --output=json | jq '.[0]')
+# aws batch deregister-job-definition --job-definition "${head_node_def_name}:${latest_revision}"
+# container_prop=$(cat <<-END
+# 	{
+#         "image":"${REPO_URI}:${IMG_TAG}",
+#         "vcpus": 1,
+#         "memory": 1032,
+#         "command": ["/usr/local/bin/run.aws.nextflow.sh"],
+#         "jobRoleArn": "arn:aws:iam::${AWS_ACCOUNT_ID}:role/ecsTaskExecutionRole",
+#         "user": "root"
+# 	}
+# 	END
+# )
+# echo "${container_prop}"
 # aws batch register-job-definition --job-definition-name "${job_def_name}" --type "container" \
 #     --container-properties "${container_prop}"
