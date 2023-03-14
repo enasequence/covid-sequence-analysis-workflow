@@ -25,7 +25,7 @@ cd ${DIR}
 # echo ">> Remove container from pipeline config if present."
 # sed -i -e '/process.container/d' ./nextflow-lib/nextflow.config
 aws s3 ls s3://prj-int-dev-ait-eosc-aws-eval/sarscov2_metadata/
-aws s3 cp --region ${AWS_DEFAULT_REGION} ${s3_input_path} ${DIR}/data/
+aws s3 cp ${s3_input_path} ${DIR}/data/
 echo "s3_input_path: ${s3_input_path}"
 batch_input="${DIR}/data/$(basename -- "$s3_input_path")"
 echo "filename: ${batch_input}"

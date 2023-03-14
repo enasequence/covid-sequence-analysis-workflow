@@ -6,8 +6,10 @@ aws ecr get-login-password | docker login --username AWS --password-stdin ${AWS_
 export REPO_URI=$(aws ecr describe-repositories --repository-names=nextflow-head |jq -r '.repositories[0].repositoryUri')
 echo $REPO_URI
 chmod +x ${HOME}/projects/covid-sequence-analysis-workflow/run.aws.nextflow.sh
-export IMG_TAG=$(date +%F)
+export IMG_TAG="latest"
+# $(date +%F)
 docker build -t ${REPO_URI}:${IMG_TAG} .
 docker push ${REPO_URI}:${IMG_TAG}
 echo "IMAGE NAME = ${REPO_URI}:${IMG_TAG}"
 # echo "BUCKET_NAME_RESULTS = ${BUCKET_NAME_RESULTS}"
+#TODO: create new job def
