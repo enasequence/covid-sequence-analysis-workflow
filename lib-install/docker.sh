@@ -5,5 +5,5 @@ sudo service docker start
 
 sudo groupadd docker
 sudo usermod -aG docker $(whoami)
-#reboot instance after add user & rerun sudo service docker start 
+#reboot instance after add user & rerun `sudo service docker start`
 sudo service docker start 
