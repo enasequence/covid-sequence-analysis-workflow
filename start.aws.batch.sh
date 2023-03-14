@@ -65,12 +65,9 @@ for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batc
 	)
 	echo "${cmd_override}"
 	
-	aws batch submit-job --job-name "submit-job-${snapshot_date}" --job-definition "nextflow-head-node" \
+	aws batch submit-job --job-name "submit-job-${snapshot_date}-${pipeline}-${batch_index}" --job-definition "nextflow-head-node" \
 	--job-queue "test-head-queue" \
 	--container-overrides "${cmd_override}"
-  break
-#   "${DIR}/run.aws.nextflow.sh" "${input_dir}/${table_name}_${batch_index}.tsv" \
-#     "${pipeline}" "${profile}" "${root_dir}" "${batch_index}" "${snapshot_date}" "${test_submission}"
 done
 
 #max_mem avg_mem swap stat exit_code exec_cwd exec_host
