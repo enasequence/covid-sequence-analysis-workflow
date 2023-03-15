@@ -25,6 +25,7 @@ if [ "$profile" != "gls" ]; then
 	bsub -n 2 -M 4096 -q production "${DIR}/run.nextflow.sh" "${input_dir}/${table_name}_${index}.tsv" \
     "${pipeline}" "${profile}" "${root_dir}" "${index}" "${snapshot_date}" "${test_submission}"
 else
-	"${DIR}/run.nextflow.sh" "${input_dir}/${table_name}_${index}.tsv" "${pipeline}" "${profile}" "${root_dir}" \
+	#TODO: Figure out WHY absolute path is needed
+	"/opt/covid-sequence-analysis-workflow/run.nextflow.sh" "${input_dir}/${table_name}_${index}.tsv" "${pipeline}" "${profile}" "${root_dir}" \
 	"${index}" "${snapshot_date}" "${test_submission}"  &
 fi

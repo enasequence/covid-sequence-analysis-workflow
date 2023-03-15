@@ -6,12 +6,12 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 pipeline=${1:-'nanopore'}
 profile=${2:-'gls'}
 root_dir=${3:-'gs://prj-int-dev-covid19-nf-gls'}
-snapshot_date=${4:-'2023-03-14'}
-concurrency=${5:-'5'}   # Maximum concurrency determined by the bottleneck - the submission server at present
-batch_size=${6:-'5'}   # takes 12 hours if 2 jobs, 72 hours if 40 jobs
+snapshot_date=${4:-'2023-03-15'}
+concurrency=${5:-'500'}   # Maximum concurrency determined by the bottleneck - the submission server at present
+batch_size=${6:-'15000'}   # takes 12 hours if 2 jobs, 72 hours if 40 jobs
 dataset_name=${7:-'sarscov2_metadata'}
 project_id=${8:-'prj-int-dev-covid19-nf-gls'}
-test_submission='true'
+test_submission='false'
 
 # Row count and batches
 table_name="${pipeline}_to_be_processed"
@@ -41,8 +41,6 @@ sleep 5
 
 for (( j=0; j<num_of_jobs&&j<batches; j++ )); do
 #  bsub -n 2 -M 8192 -q production
-  echo "root_dir: ${root_dir}"
-  echo "pwd 1: $PWD"
   mkdir -p "${root_dir}/${snapshot_date}/${pipeline}_${j}"; cd "${root_dir}/${snapshot_date}/${pipeline}_${j}" || exit
   echo "pwd 2: $PWD"
   offset=$((j * batch_size))

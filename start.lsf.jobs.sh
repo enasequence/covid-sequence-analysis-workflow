@@ -25,12 +25,7 @@ queue_size=100     # 4
 
 batches=$(( (row_count + batch_size - 1) / batch_size ))
 
-echo "row_count is: $row_count"
-echo "batch_size is: $batch_size"
-echo "count of batches is: $batches"
-
 num_of_jobs=$(( (concurrency + queue_size - 1) / queue_size ))
-echo "num_of_jobs is: $num_of_jobs"
 #mem_limit=$(( batch_size / 2500 * 2048));mem_limit=$(( mem_limit > 2048 ? mem_limit : 2048 ))
 
 input_dir="${DIR}/data/${snapshot_date}"; mkdir -p "${input_dir}"
@@ -39,7 +34,6 @@ for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batc
   mkdir -p "${root_dir}/${pipeline}_${batch_index}"; cd "${root_dir}/${pipeline}_${batch_index}" || exit
 
   offset=$((batch_index * batch_size))
-  echo ""
   echo "** Retrieving and reserving batch ${batch_index} with the size of ${batch_size} from the offset of ${offset}. **"
 
   sql="SELECT * FROM ${project_id}.${dataset_name}.${table_name} LIMIT ${batch_size} OFFSET ${offset}"
