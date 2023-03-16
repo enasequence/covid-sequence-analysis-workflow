@@ -27,11 +27,8 @@ project_bucket="prj-int-dev-ait-eosc-aws-eval"
 # sed -i -e '/process.container/d' ./nextflow-lib/nextflow.config
 aws s3 cp ${s3_input_path} ${DIR}/data/ 
 aws s3 cp "s3://${project_bucket}/${dataset_name}/" "${DIR}/data/" --recursive --exclude "*/*"
-aws s3 ls "s3://${project_bucket}/${dataset_name}/"
 
-echo "s3_input_path: ${s3_input_path}"
 batch_input="${DIR}/data/$(basename -- "$s3_input_path")"
-echo "filename: ${batch_input}"
 
 # "$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 #################################
@@ -56,11 +53,11 @@ nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/${pipe
 # ########################################################################################
 # # Update submission receipt and submission metadata [as well as all the analyses archived]
 # ########################################################################################
-# # "${DIR}/update.receipt.sh" "${batch_index}" "${snapshot_date}" "${pipeline}" "${profile}" "${root_dir}" "${dataset_name}" "${project_id}"
-# # "${DIR}/set.archived.sh" "${dataset_name}" "${project_id}"
+"${DIR}/update.receipt.sh" "${batch_index}" "${snapshot_date}" "${pipeline}" "${profile}" "${root_dir}" "${dataset_name}" "${project_id}"
+"${DIR}/set.archived.sh" "${dataset_name}" "${project_id}"
 
-aws s3 rm --recursive "${pipeline_dir}/workDir" --quiet &
-aws s3 rm --recursive "${pipeline_dir}/storeDir" --quiet &
-aws s3 rm --recursive "${pipeline_dir}/publishDir" --quiet &
-wait
-aws s3 rm --recursive "${pipeline_dir}" 
+# aws s3 rm --recursive "${pipeline_dir}/workDir" --quiet &
+# aws s3 rm --recursive "${pipeline_dir}/storeDir" --quiet &
+# aws s3 rm --recursive "${pipeline_dir}/publishDir" --quiet &
+# wait
+# aws s3 rm --recursive "${pipeline_dir}" 
