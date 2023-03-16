@@ -28,6 +28,9 @@ if [ "${profile}" = 'gls' ]; then
   gsutil -m cp "${pipeline_dir}/publishDir/**/*_submissions.txt" "${output_dir}"
 #  gsutil -m cp "gs://prj-int-dev-covid19-nf-gls/prepro/results/**/*_submissions.txt" "${output_dir}"
   find "${output_dir}" -type f -name '*_submissions.txt' -exec cat {} + >> "${output_dir}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv"
+elif [ "${profile}" = 'awsbatch' ]; then
+  aws s3 cp "${pipeline_dir}/publishDir/**/*_submissions.txt" "${output_dir}"
+  find "${output_dir}" -type f -name '*_submissions.txt' -exec cat {} + >> "${output_dir}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv"
 else
 #  find "${pipeline_dir}/publishDir/" -type f -name '*_submissions.txt' > "${output_dir}/${pipeline}_receipts_${batch_index}.txt"
 #  cat "$(cat "${output_dir}/${pipeline}_receipts_${batch_index}.txt")" >> "${output_dir}/${snapshot_date}_${pipeline}_${batch_index}_receipts.tsv"
