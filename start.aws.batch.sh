@@ -8,22 +8,21 @@ concurrency=${2:-'500'}   # Maximum concurrency determined by the bottleneck - t
 # concurrency=${2:-'5'}
 pipeline=${3:-'illumina'}   # nanopore,illumina
 root_dir=${4:-'s3://prj-int-dev-ait-eosc-aws-eval/nextflow'} #s3://prj-int-dev-covid19-nf-aws
-batch_size=${5:-'100'}
+batch_size=${5:-'15000'}
 profile=${6:-'awsbatch'}
 snapshot_date=${7:-'2022-12-19'}  #2022-09-26 2022-10-24 2022-11-21 2022-12-19
-dataset_name=${8:-'sarscov2_metadata_test'}
+dataset_name=${8:-'sarscov2_metadata'}
 project_id=${9:-'prj-int-dev-covid19-nf-gls'}
 project_bucket='prj-int-dev-ait-eosc-aws-eval'
-test_submission=true
+test_submission='false'
 input_dir="${DIR}/data/${snapshot_date}"; mkdir -p "${input_dir}"
 
-test_submission='true'
 
 # Row count and batches
 table_name="${pipeline}_to_be_processed"
 sql="SELECT count(*) AS total FROM ${project_id}.${dataset_name}.${table_name}"
 # row_count=$(bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}" | grep -v total)
-row_count=500
+row_count=75000
 ############################################
 # as defined as queueSize in nextflow.config
 ############################################
@@ -32,7 +31,7 @@ batches=$(( row_count / batch_size + 1 ))
 num_of_jobs=$(( concurrency / queue_size ))
 
 aws --region ${AWS_DEFAULT_REGION} s3 mb ${root_dir}
-# aws s3 sync "${DIR}/data/" "s3://${project_bucket}/${dataset_name}/" --exclude '${DIR}/data/${snapshot_date}/*'
+aws s3 sync "${DIR}/data/" "s3://${project_bucket}/${dataset_name}/" --exclude '${DIR}/data/${snapshot_date}/*'
 
 for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batch_index++ )); do
   
@@ -41,8 +40,8 @@ for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batc
 	echo "** Retrieving and reserving batch ${batch_index} with the size of ${batch_size} from the offset of ${offset}. **"
 
 	sql="SELECT * FROM ${project_id}.${dataset_name}.${table_name} LIMIT ${batch_size} OFFSET ${offset}"
-	# bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false --max_rows="${batch_size}" "${sql}" \
-	#   | awk 'BEGIN{ FS=","; OFS="\t" }{$1=$1; print $0 }' > "${input_dir}/${table_name}_${batch_index}.tsv"
+	bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false --max_rows="${batch_size}" "${sql}" \
+	  | awk 'BEGIN{ FS=","; OFS="\t" }{$1=$1; print $0 }' > "${input_dir}/${table_name}_${batch_index}.tsv"
 
 	aws s3 cp "${input_dir}/${table_name}_${batch_index}.tsv" "s3://${project_bucket}/${dataset_name}/${snapshot_date}/" 
 
@@ -66,8 +65,7 @@ for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batc
 	)
 	
 	aws batch submit-job --job-name "submit-job-${snapshot_date}-${pipeline}-${batch_index}" --job-definition "head_node_job" \
-	--job-queue "head_queue" \
-	--container-overrides "${cmd_override}"
+	--job-queue "head_queue" --container-overrides "${cmd_override}"
 	break
 done
 
