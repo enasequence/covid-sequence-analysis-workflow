@@ -6,3 +6,9 @@ do
   aws batch cancel-job --job-id $i --reason "Cancelling job."
   echo "Job $i canceled"
 done
+for i in $(aws batch list-jobs --job-queue worker_queue --job-status running --output text --query "jobSummaryList[*].[jobId]")
+do
+  echo "Terminate Job: $i"
+  aws batch terminate-job --job-id $i --reason "Terminating job."
+  echo "Job $i terminated"
+done
