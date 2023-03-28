@@ -35,7 +35,11 @@ process ena_analysis_submit {
     mkdir -p ${run_accession}_output/${study_accession}
     cp ${config_yaml} ${run_accession}_output/${study_accession}
 
+<<<<<<< HEAD
     #PRJEB45555 is the root study ID for the public analysis objects. Do not change it as the public analysis objects and the private ones are submitted differently.
+=======
+    # Public study ID
+>>>>>>> 8122c2f (add aws batch script)
     if [ "${study_accession}" = 'PRJEB45555' ]; then
         analysis_submission.py -t ${test_submission} -o ${run_accession}_output/${study_accession} -p PRJEB59443 -s ${sample_accession} -r ${run_accession} -f ${output_bam},${output_coverage_gz},${output_annot_vcf_gz} -a PATHOGEN_ANALYSIS -au \${webin_id} -ap \${webin_password}
         analysis_submission.py -t ${test_submission} -o ${run_accession}_output/${study_accession} -p PRJEB59444 -s ${sample_accession} -r ${run_accession} -f ${filtered_vcf_gz} -a COVID19_FILTERED_VCF -au \${webin_id} -ap \${webin_password}

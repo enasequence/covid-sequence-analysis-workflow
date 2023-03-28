@@ -22,7 +22,11 @@ input_dir="${DIR}/data/${snapshot_date}"; mkdir -p "${input_dir}"
 table_name="${pipeline}_to_be_processed"
 sql="SELECT count(*) AS total FROM ${project_id}.${dataset_name}.${table_name}"
 # row_count=$(bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}" | grep -v total)
+<<<<<<< HEAD
 row_count=75000
+=======
+row_count=500
+>>>>>>> 8122c2f (add aws batch script)
 ############################################
 # as defined as queueSize in nextflow.config
 ############################################
