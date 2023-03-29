@@ -17,7 +17,7 @@ You will also need to change the paths for params.INDEX, params.STOREDIR, params
 2. Follow the setup instructions as described on Nextflow tower to integrate the [codebase](https://help.tower.nf/22.4/git/overview/#github)
 3. Create a project on GCP and a [Bucket](https://console.cloud.google.com/storage/browser) with the following files and folders:
 	a. Folders - data,results,scratch and storeDir
-	b. Files - illumina5.tsv, nanopore5.tsv, data/projects_accounts.csv, [data/NC_045512.2.fa.fai](https://github.com/sandsebi/covid-sequence-analysis-workflow/blob/3a24372fa011e7b5ed422a1a61671931f45e9866/illumina/illumina.nf#L17), [data/NC_045512.2.fa](https://github.com/sandsebi/covid-sequence-analysis-workflow/blob/3a24372fa011e7b5ed422a1a61671931f45e9866/illumina/illumina.nf#L16)
+	b. Files - illumina5.tsv, nanopore5.tsv, data/projects_accounts.csv, [data/NC_045512.2.fa.fai](https://github.com/enasequence/covid-sequence-analysis-workflow/blob/5b6b53b3a228ec55cb1b34bbc3aec5ec31759edd/illumina/illumina.nf#L12), [data/NC_045512.2.fa](https://github.com/enasequence/covid-sequence-analysis-workflow/blob/5b6b53b3a228ec55cb1b34bbc3aec5ec31759edd/illumina/illumina.nf#L11)
 
 ### Running pipelines via Nextflow tower
 
@@ -26,13 +26,13 @@ You will also need to change the paths for params.INDEX, params.STOREDIR, params
 3. Add the URL of this reposotory in the field for **Pipeline to launch**
 4. **Work directory** is a Bucket that you need to create on GCP as described in the Preparation section
 5. Depending on which pipeline you want to run, add the following in the **Advanced options**:
-	Nanopore - [nanopore/nanopore.nf](https://github.com/sandsebi/covid-sequence-analysis-workflow/blob/demo/nanopore/nanopore.nf)
-	Illumina - [illumina/illumina.nf](https://github.com/sandsebi/covid-sequence-analysis-workflow/blob/demo/illumina/illumina.nf)
+	Nanopore - [nanopore/nanopore.nf](https://github.com/enasequence/covid-sequence-analysis-workflow/blob/demo/nanopore/nanopore.nf)
+	Illumina - [illumina/illumina.nf](https://github.com/enasequence/covid-sequence-analysis-workflow/blob/demo/illumina/illumina.nf)
 6. If you make changes to this fork make sure to enable the button to pull latest changes in the **Advanced options**
 7. Click on **Add** at the bottom right corner
 8. Once your pipeline is ready, make sure your sample file is uploaded on GCP and is at the location the script reads it from:
-	a. For running Nanopore the samples are read from [here](https://github.com/sandsebi/covid-sequence-analysis-workflow/blob/3a24372fa011e7b5ed422a1a61671931f45e9866/nanopore/nanopore.nf#L7)
-	b. For running Illumina the samples are read from [here](https://github.com/sandsebi/covid-sequence-analysis-workflow/blob/3a24372fa011e7b5ed422a1a61671931f45e9866/illumina/illumina.nf#L7)
+	a. For running Nanopore the samples are read from [here](https://github.com/enasequence/covid-sequence-analysis-workflow/blob/5b6b53b3a228ec55cb1b34bbc3aec5ec31759edd/nanopore/nanopore.nf#L4)
+	b. For running Illumina the samples are read from [here](https://github.com/enasequence/covid-sequence-analysis-workflow/blob/5b6b53b3a228ec55cb1b34bbc3aec5ec31759edd/illumina/illumina.nf#L4)
 	Make sure to change these values to point to your files and GCP account
-9. After successful analysis, samples will be submitted with a test flag: https://github.com/sandsebi/covid-sequence-analysis-workflow/blob/3a24372fa011e7b5ed422a1a61671931f45e9866/nanopore/nanopore.nf#L12 to the account: https://github.com/sandsebi/covid-sequence-analysis-workflow/blob/3a24372fa011e7b5ed422a1a61671931f45e9866/illumina/illumina.nf#L18 matching the study: https://github.com/sandsebi/covid-sequence-analysis-workflow/blob/3a24372fa011e7b5ed422a1a61671931f45e9866/nanopore/nanopore.nf#L11. Since the test flag is set to true, the samples will be deleted at the end of the day.
-10. Analysis results can also be seen in the results: https://github.com/sandsebi/covid-sequence-analysis-workflow/blob/3a24372fa011e7b5ed422a1a61671931f45e9866/illumina/illumina.nf#L9 folder on GCP
+9. After successful analysis, samples will be submitted with a test flag to the test server account matching the study: https://github.com/enasequence/covid-sequence-analysis-workflow/blob/5b6b53b3a228ec55cb1b34bbc3aec5ec31759edd/illumina/illumina.nf#L16. Since the test flag is set to true, the samples will be deleted at the end of the day.
+10. Analysis results can also be seen in the results: https://github.com/enasequence/covid-sequence-analysis-workflow/blob/5b6b53b3a228ec55cb1b34bbc3aec5ec31759edd/illumina/illumina.nf#L6 folder on GCP
