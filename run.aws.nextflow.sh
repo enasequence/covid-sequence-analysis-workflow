@@ -56,8 +56,8 @@ nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/${pipe
 "${DIR}/update.receipt.sh" "${batch_index}" "${snapshot_date}" "${pipeline}" "${profile}" "${root_dir}" "${dataset_name}" "${project_id}"
 "${DIR}/set.archived.sh" "${dataset_name}" "${project_id}"
 
-# aws s3 rm --recursive "${pipeline_dir}/workDir" --quiet &
-# aws s3 rm --recursive "${pipeline_dir}/storeDir" --quiet &
-# aws s3 rm --recursive "${pipeline_dir}/publishDir" --quiet &
-# wait
-# aws s3 rm --recursive "${pipeline_dir}" 
+aws s3 rm --recursive "${pipeline_dir}/workDir" --quiet &
+aws s3 rm --recursive "${pipeline_dir}/storeDir" --quiet &
+aws s3 rm --recursive "${pipeline_dir}/publishDir" --quiet &
+wait
+aws s3 rm --recursive "${pipeline_dir}" 
