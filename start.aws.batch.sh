@@ -26,7 +26,7 @@ row_count=75000
 ############################################
 # as defined as queueSize in nextflow.config
 ############################################
-queue_size=10
+queue_size=100
 batches=$(( row_count / batch_size + 1 ))
 num_of_jobs=$(( concurrency / queue_size ))
 
@@ -64,8 +64,8 @@ for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batc
 	END
 	)
 	
-	aws batch submit-job --job-name "submit-job-${snapshot_date}-${pipeline}-${batch_index}" --job-definition "head_node_job" \
-	--job-queue "head_queue" --container-overrides "${cmd_override}"
+	# aws batch submit-job --job-name "submit-job-${snapshot_date}-${pipeline}-${batch_index}" --job-definition "head_node_job" \
+	# --job-queue "head_queue" --container-overrides "${cmd_override}"
 	# break
 done
 
