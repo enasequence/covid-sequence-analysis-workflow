@@ -1,0 +1,4 @@
+run_accession	sample_accession	instrument_platform	instrument_model	fastq_aspera	fastq_bytes	fastq_ftp	fastq_galaxy	fastq_md5	first_created	first_public	country	collection_date	isolate	strain
+ERR4080517	SAMEA6798447	OXFORD_NANOPORE	MinION	fasp.sra.ebi.ac.uk:/vol1/fastq/ERR408/007/ERR4080517/ERR4080517_1.fastq.gz	118130460	ftp.sra.ebi.ac.uk/vol1/fastq/ERR408/007/ERR4080517/ERR4080517_1.fastq.gz	ftp.sra.ebi.ac.uk/vol1/fastq/ERR408/007/ERR4080517/ERR4080517_1.fastq.gz	cb63af2481b24e64aea76b49ff057f19	29/04/2020	29/04/2020	Denmark	17/03/2020	not provided	
+														
+														

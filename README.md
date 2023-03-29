@@ -9,7 +9,8 @@ You will also need to change the paths for params.INDEX, params.STOREDIR, params
 
 1. Have access to a Google Cloud account
 2. Have a Nextflow tower account
-3. Have a list of samples in a .tsv file
+3. Have a list of samples in a .tsv file e.g:
+	https://github.com/enasequence/covid-sequence-analysis-workflow/blob/demo/TSVs/illumina.tsv
 
 ### Preparation
 
@@ -28,7 +29,9 @@ You will also need to change the paths for params.INDEX, params.STOREDIR, params
 5. Depending on which pipeline you want to run, add the following in the **Advanced options**:
 	Nanopore - [nanopore/nanopore.nf](https://github.com/enasequence/covid-sequence-analysis-workflow/blob/demo/nanopore/nanopore.nf)
 	Illumina - [illumina/illumina.nf](https://github.com/enasequence/covid-sequence-analysis-workflow/blob/demo/illumina/illumina.nf)
+	![Screenshot](doc/img/AdvancedOptions.JPG)
 6. If you make changes to this fork make sure to enable the button to pull latest changes in the **Advanced options**
+	![Screenshot](doc/img/PullLatest.JPG)
 7. Click on **Add** at the bottom right corner
 8. Once your pipeline is ready, make sure your sample file is uploaded on GCP and is at the location the script reads it from:
 	a. For running Nanopore the samples are read from [here](https://github.com/enasequence/covid-sequence-analysis-workflow/blob/5b6b53b3a228ec55cb1b34bbc3aec5ec31759edd/nanopore/nanopore.nf#L4)
