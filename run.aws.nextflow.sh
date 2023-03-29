@@ -23,14 +23,10 @@ DIR="/scratch/covid-sequence-analysis-workflow"
 git clone -b ${BRANCH} ${PIPELINE_URL} ${DIR}
 cd ${DIR}
 project_bucket="prj-int-dev-ait-eosc-aws-eval"
-# echo ">> Remove container from pipeline config if present."
-# sed -i -e '/process.container/d' ./nextflow-lib/nextflow.config
 aws s3 cp ${s3_input_path} ${DIR}/data/ 
 aws s3 cp "s3://${project_bucket}/${dataset_name}/" "${DIR}/data/" --recursive --exclude "*/*"
 
 batch_input="${DIR}/data/$(basename -- "$s3_input_path")"
-
-# "$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 #################################
 # Process the batch with Nextflow
 #################################
