@@ -1,14 +1,20 @@
 #!/usr/bin/env nextflow
 
-//params.SARS2_FA = "gs://prj-int-dev-covid19-nf-gls/data/NC_045512.2.fa"
-//params.SARS2_FA_FAI = "gs://prj-int-dev-covid19-nf-gls/data/NC_045512.2.fa.fai"
-//params.SECRETS = "gs://prj-int-dev-covid19-nf-gls/prepro/projects_accounts.csv"
+//TSV file of samples to process
+params.INDEX = "gs://sands-nf-tower/nanopore5.tsv"
+params.STOREDIR = "gs://sands-nf-tower/storeDir"
+params.OUTDIR = "gs://sands-nf-tower/results"
+params.CONFIG_YAML = "gs://sands-nf-tower/config.yaml"
 
-params.INDEX = "gs://prj-int-dev-covid19-nf-gls/prepro/nanopore.index.tsv"
-params.STOREDIR = "gs://prj-int-dev-covid19-nf-gls/prepro/storeDir"
-params.OUTDIR = "gs://prj-int-dev-covid19-nf-gls/prepro/results"
+//If using LSF, uncomment the following variables and provide an appropriate path to the files
+//Reference sequence location
+//params.SARS2_FA = "gs://sands-nf-tower/data/NC_045512.2.fa"
+//params.SARS2_FA_FAI = "gs://sands-nf-tower/data/NC_045512.2.fa.fai"
+//TSV file containing project number and credentials
+//params.SECRETS = "gs://sands-nf-tower/data/projects_accounts.csv"
 
 params.STUDY = 'PRJEB45555'
+//When set to true, submissions will be made to the ENA test server and deleted at 24:00 on the day of submission
 params.TEST_SUBMISSION = 'true'
 
 //import nextflow.splitter.CsvSplitter

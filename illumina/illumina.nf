@@ -1,10 +1,20 @@
 #!/usr/bin/env nextflow
 
-params.INDEX = "gs://prj-int-dev-covid19-nf-gls/prepro/illumina.index.tsv"
-params.STOREDIR = "gs://prj-int-dev-covid19-nf-gls/prepro/storeDir"
-params.OUTDIR = "gs://prj-int-dev-covid19-nf-gls/prepro/results"
+//TSV file of samples to process
+params.INDEX = "gs://sands-nf-tower/illumina5.tsv"
+params.STOREDIR = "gs://sands-nf-tower/storeDir"
+params.OUTDIR = "gs://sands-nf-tower/results"
+params.CONFIG_YAML = "gs://sands-nf-tower/config.yaml"
+
+//If using LSF, uncomment the following variables and provide an appropriate path to the files
+//Reference sequence location
+//params.SARS2_FA = "gs://sands-nf-tower/data/NC_045512.2.fa"
+//params.SARS2_FA_FAI = "gs://sands-nf-tower/data/NC_045512.2.fa.fai"
+//TSV file containing project number and credentials
+//params.SECRETS = "gs://sands-nf-tower/data/projects_accounts.csv"
 
 params.STUDY = 'PRJEB45555'
+//When set to true, submissions will be made to the ENA test server and deleted at 24:00 on the day of submission
 params.TEST_SUBMISSION = 'true'
 
 nextflow.enable.dsl = 2
