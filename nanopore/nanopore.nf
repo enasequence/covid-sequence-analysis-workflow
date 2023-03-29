@@ -77,11 +77,11 @@ process map_to_reference {
     vcf2consensus.py -v ${run_accession}_filtered.vcf.gz -d ${run_accession}.coverage -r ${sars2_fasta} -o headless_consensus.fasta -dp 30 -n ${run_accession}
     fix_consensus_header.py headless_consensus.fasta > ${run_accession}_consensus.fasta
     bgzip ${run_accession}.coverage
-    bgzip ${run_accession}_consensus.fasta
 
     java -Xmx4g -jar /opt/conda/share/snpeff-5.0-1/snpEff.jar -q -no-downstream -no-upstream -noStats NC_045512.2 ${run_accession}.vcf > ${run_accession}.annot.vcf
     #bgzip ${run_accession}.vcf
     bgzip ${run_accession}.annot.vcf
+    bgzip ${run_accession}_consensus.fasta
     """
 }
 

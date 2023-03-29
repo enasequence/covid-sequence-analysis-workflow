@@ -8,8 +8,8 @@ pipeline=${2:-'nanopore'}
 profile=${3:-'codon'}
 root_dir=${4:-'gs://prj-int-dev-covid19-nf-gls'}
 batch_index=${5:-'0'}
-snapshot_date=${6:-'2022-06-27'}
-test_submission=${7:-'false'}
+snapshot_date=${6:-'2023-03-13'}
+test_submission=${7:-'true'}
 study_accession=${8:-'PRJEB45555'}
 dataset_name=${9:-'sarscov2_metadata'}
 project_id=${10:-'prj-int-dev-covid19-nf-gls'}
@@ -21,6 +21,7 @@ echo ""
 echo "** Processing samples with ${DIR}/${pipeline}/${pipeline}.nf. **"
 
 pipeline_dir="${root_dir}/${snapshot_date}/${pipeline}_${batch_index}"
+echo "** pipeline_dir: ${pipeline_dir} **"
 nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/${pipeline}.nf" -profile "${profile}" \
       --TEST_SUBMISSION "${test_submission}" --STUDY "${study_accession}" \
       --CONFIG_YAML "${DIR}/${pipeline}/config.yaml" \
@@ -36,11 +37,13 @@ nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/${pipe
 ########################################################################################
 # Update submission receipt and submission metadata [as well as all the analyses archived]
 ########################################################################################
-"${DIR}/update.receipt.sh" "${batch_index}" "${snapshot_date}" "${pipeline}" "${profile}" "${root_dir}" "${dataset_name}" "${project_id}"
-"${DIR}/set.archived.sh" "${dataset_name}" "${project_id}"
+#"${DIR}/update.receipt.sh" "${batch_index}" "${snapshot_date}" "${pipeline}" "${profile}" "${root_dir}" "${dataset_name}" "${project_id}"
+#"${DIR}/set.archived.sh" "${dataset_name}" "${project_id}"
 
-rm -R "${pipeline_dir}/workDir" &
-rm -R "${pipeline_dir}/storeDir" &
-rm -R "${pipeline_dir}/publishDir" &
-wait
-rm -R "${pipeline_dir}"
+if [ "$profile" != "gls" ]; then
+      rm -R "${pipeline_dir}/workDir" &
+      rm -R "${pipeline_dir}/storeDir" &
+      rm -R "${pipeline_dir}/publishDir" &
+      wait
+      rm -R "${pipeline_dir}"
+fi
