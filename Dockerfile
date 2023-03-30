@@ -19,8 +19,6 @@ RUN curl -s https://get.nextflow.io | bash \
  && mv nextflow /usr/local/bin/
 VOLUME ["/scratch"]
 ARG DIR=/scratch/covid-sequence-analysis-workflow
-# RUN git clone -b "aws-batch" https://github.com/enasequence/covid-sequence-analysis-workflow $DIR
-COPY . $DIR
-# COPY run.aws.nextflow.sh /usr/local/bin/run.aws.nextflow.sh
-# COPY nextflow-lib/nextflow.config /scratch/nextflow-lib/nextflow.config
-CMD ["${DIR}/run.aws.nextflow.sh"]
+RUN git clone -b "aws-batch" https://github.com/enasequence/covid-sequence-analysis-workflow $DIR
+# COPY run.nextflow.sh /usr/local/bin/run.nextflow.sh
+CMD ["${DIR}/run.nextflow.sh"]

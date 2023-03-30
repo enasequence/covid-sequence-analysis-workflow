@@ -52,7 +52,7 @@ for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batc
 	###TODO: Insert AWS cli command to submit batch job (head node) here###
 	cmd_override=$(cat <<-END
 	{
-	  "command": ["/usr/local/bin/run.aws.nextflow.sh", \
+	  "command": ["/scratch/covid-sequence-analysis-workflow/run.nextflow.sh", \
 	  "s3://${project_bucket}/${dataset_name}/${snapshot_date}/${table_name}_${batch_index}.tsv", \
 	  "${pipeline}", "awsbatch", "${root_dir}",\
 	  "${batch_index}", "${snapshot_date}",\

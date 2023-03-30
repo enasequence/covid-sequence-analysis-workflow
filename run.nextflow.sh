@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
 # DIR where the current script resides
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+if [ "$profile" = "awsbatch" ]; then
+      DIR="/scratch/covid-sequence-analysis-workflow"
+else
+      DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+fi
 
 batch_input=${1}
 pipeline=${2:-'nanopore'}
@@ -20,6 +24,13 @@ project_id=${10:-'prj-int-dev-covid19-nf-gls'}
 echo ""
 echo "** Processing samples with ${DIR}/${pipeline}/${pipeline}.nf. **"
 
+if [ "$profile" = "awsbatch" ]; then
+      project_bucket="prj-int-dev-ait-eosc-aws-eval"
+      aws s3 cp ${batch_input} ${DIR}/data/ # download sample index file from s3 to local dir
+      aws s3 cp "s3://${project_bucket}/${dataset_name}/" "${DIR}/data/" --recursive --exclude "*/*"  # download projects_accounts and .fa files
+      batch_input="${DIR}/data/$(basename -- "$batch_input")" #local path to sample index file
+fi
+
 pipeline_dir="${root_dir}/${snapshot_date}/${pipeline}_${batch_index}"
 echo "** pipeline_dir: ${pipeline_dir} **"
 nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/${pipeline}.nf" -profile "${profile}" \
@@ -37,13 +48,22 @@ nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/${pipe
 ########################################################################################
 # Update submission receipt and submission metadata [as well as all the analyses archived]
 ########################################################################################
-#"${DIR}/update.receipt.sh" "${batch_index}" "${snapshot_date}" "${pipeline}" "${profile}" "${root_dir}" "${dataset_name}" "${project_id}"
-#"${DIR}/set.archived.sh" "${dataset_name}" "${project_id}"
+"${DIR}/update.receipt.sh" "${batch_index}" "${snapshot_date}" "${pipeline}" "${profile}" "${root_dir}" "${dataset_name}" "${project_id}"
+"${DIR}/set.archived.sh" "${dataset_name}" "${project_id}"
 
-if [ "$profile" != "gls" ]; then
+if [ "$profile" != "gls" ] && [ "$profile" != "awsbatch" ]; then
       rm -R "${pipeline_dir}/workDir" &
       rm -R "${pipeline_dir}/storeDir" &
       rm -R "${pipeline_dir}/publishDir" &
       wait
       rm -R "${pipeline_dir}"
 fi
+
+if [ "$profile" = "awsbatch" ]; then
+      aws s3 rm --recursive "${pipeline_dir}/workDir" --quiet &
+      aws s3 rm --recursive "${pipeline_dir}/storeDir" --quiet &
+      aws s3 rm --recursive "${pipeline_dir}/publishDir" --quiet &
+      wait
+      aws s3 rm --recursive "${pipeline_dir}" 
+fi
+
