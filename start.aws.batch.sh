@@ -68,9 +68,6 @@ for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batc
 	--job-queue "head_queue" --container-overrides "${cmd_override}"
 	# break
 done
-
-#max_mem avg_mem swap stat exit_code exec_cwd exec_host
-#bjobs -u all -d -o "jobid job_name user submit_time start_time finish_time run_time cpu_used slots min_req_proc max_req_proc nthreads delimiter='^'" > jobs.csv
 num_of_snapshots=$(( batches / num_of_jobs + 1 ))
 echo "Row count: ${row_count}. Total number of batches: ${batches}, Number of jobs: ${num_of_jobs}, Number of snapshots: ${num_of_snapshots}."
 

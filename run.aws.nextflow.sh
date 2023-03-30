@@ -16,17 +16,17 @@ project_id=${10:-'prj-int-dev-covid19-nf-gls'}
 # Setup headnode
 #################################
 #!/bin/bash
-PIPELINE_URL=${PIPELINE_URL:-https://github.com/enasequence/covid-sequence-analysis-workflow}
-BRANCH="aws-batch"
+# PIPELINE_URL=${PIPELINE_URL:-https://github.com/enasequence/covid-sequence-analysis-workflow}
+# BRANCH="aws-batch"
 # DIR where the current script resides
 DIR="/scratch/covid-sequence-analysis-workflow"
-git clone -b ${BRANCH} ${PIPELINE_URL} ${DIR}
-cd ${DIR}
+# git clone -b ${BRANCH} ${PIPELINE_URL} ${DIR}
+# cd ${DIR}
 project_bucket="prj-int-dev-ait-eosc-aws-eval"
-aws s3 cp ${s3_input_path} ${DIR}/data/ 
-aws s3 cp "s3://${project_bucket}/${dataset_name}/" "${DIR}/data/" --recursive --exclude "*/*"
+aws s3 cp ${s3_input_path} ${DIR}/data/ # download sample index file to local dir
+aws s3 cp "s3://${project_bucket}/${dataset_name}/" "${DIR}/data/" --recursive --exclude "*/*"  # download projects_accounts and .fa files
 
-batch_input="${DIR}/data/$(basename -- "$s3_input_path")"
+batch_input="${DIR}/data/$(basename -- "$s3_input_path")" #local path to sample index file
 #################################
 # Process the batch with Nextflow
 #################################
