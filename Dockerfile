@@ -8,8 +8,7 @@ RUN curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cl
 RUN tar -xf ./google-cloud-cli-422.0.0-linux-x86_64.tar.gz
 RUN mv google-cloud-sdk /opt/google-cloud-sdk && \
     ln -s /opt/google-cloud-sdk/bin/* /bin/ && \
-    rm google-cloud-cli-422.0.0-linux-x86_64.tar.gz
-# RUN ./google-cloud-sdk/install.sh -q --path-update=true --command-completion=true 
+    rm google-cloud-cli-422.0.0-linux-x86_64.tar.gz 
 COPY secrets/prj-int-dev-covid19-nf-gls-aws-worker.json ./prj-int-dev-covid19-nf-gls-aws-worker.json
 RUN gcloud auth activate-service-account --key-file=./prj-int-dev-covid19-nf-gls-aws-worker.json && \
     gcloud config set project "prj-int-dev-covid19-nf-gls"

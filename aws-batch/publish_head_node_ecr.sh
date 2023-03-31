@@ -12,7 +12,7 @@ aws ecr create-repository --tags Key=covid-pipeline,Value=true  --repository-nam
 export REPO_URI="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/nextflow-head"
 echo $REPO_URI
 # chmod +x ${HOME}/run.aws.nextflow.sh
-export IMG_TAG="test"
+export IMG_TAG="latest"
 # $(date +%F)
 docker build -t ${REPO_URI}:${IMG_TAG} .
 # docker push ${REPO_URI}:${IMG_TAG}

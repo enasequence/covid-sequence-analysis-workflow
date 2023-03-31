@@ -3,7 +3,7 @@
 # DIR where the current script resides
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 export $(grep -v '^#' .env | xargs)
-skip=${1:-'0'}
+skip=${1:-'4'}
 concurrency=${2:-'500'}   # Maximum concurrency determined by the bottleneck - the submission server and storage space
 # concurrency=${2:-'5'}
 pipeline=${3:-'illumina'}   # nanopore,illumina
@@ -16,7 +16,6 @@ project_id=${9:-'prj-int-dev-covid19-nf-gls'}
 project_bucket='prj-int-dev-ait-eosc-aws-eval'
 test_submission='false'
 input_dir="${DIR}/data/${snapshot_date}"; mkdir -p "${input_dir}"
-
 
 # Row count and batches
 table_name="${pipeline}_to_be_processed"
@@ -66,8 +65,12 @@ for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batc
 	
 	aws batch submit-job --job-name "submit-job-${snapshot_date}-${pipeline}-${batch_index}" --job-definition "head_node_job" \
 	--job-queue "head_queue" --container-overrides "${cmd_override}"
-	# break
+	break
 done
+
+sql="CREATE OR REPLACE TABLE ${dataset_name}.sra_processing AS SELECT DISTINCT * FROM ${dataset_name}.sra_processing"
+bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}"
+
 num_of_snapshots=$(( batches / num_of_jobs + 1 ))
 echo "Row count: ${row_count}. Total number of batches: ${batches}, Number of jobs: ${num_of_jobs}, Number of snapshots: ${num_of_snapshots}."
 
