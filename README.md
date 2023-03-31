@@ -7,18 +7,21 @@ You will also need to change the paths for params.INDEX, params.STOREDIR, params
 
 ## Prerequisites
 
-1. Have access to a Google Cloud account
-2. Have a Nextflow tower account
+1. Have access to a [Google Cloud account](https://cloud.google.com/free)
+2. Have a [Nextflow tower](https://cloud.tower.nf/pricing/) account
 3. Have a list of samples in a .tsv file e.g:
 	https://github.com/enasequence/covid-sequence-analysis-workflow/blob/demo/TSVs/illumina.tsv
 
 ### Preparation
 
 1. Follow the setup instructions as described on Nextflow tower to setup a [compute environment](https://help.tower.nf/22.4/compute-envs/google-cloud-lifesciences/) on Google
-2. Follow the setup instructions as described on Nextflow tower to integrate the [codebase](https://help.tower.nf/22.4/git/overview/#github)
+2. Follow the setup instructions as described on Nextflow tower to [integrate](https://help.tower.nf/22.4/git/overview/#github) the codebase
 3. Create a project on GCP and a [Bucket](https://console.cloud.google.com/storage/browser) with the following files and folders:
-	a. Folders - data,results,scratch and storeDir
-	b. Files - illumina5.tsv, nanopore5.tsv, data/projects_accounts.csv, [data/NC_045512.2.fa.fai](https://github.com/enasequence/covid-sequence-analysis-workflow/blob/5b6b53b3a228ec55cb1b34bbc3aec5ec31759edd/illumina/illumina.nf#L12), [data/NC_045512.2.fa](https://github.com/enasequence/covid-sequence-analysis-workflow/blob/5b6b53b3a228ec55cb1b34bbc3aec5ec31759edd/illumina/illumina.nf#L11)
+	a. Files - illumina5.tsv, nanopore5.tsv, data/projects_accounts.csv, [data/NC_045512.2.fa.fai](https://github.com/enasequence/covid-sequence-analysis-workflow/blob/5b6b53b3a228ec55cb1b34bbc3aec5ec31759edd/illumina/illumina.nf#L12), [data/NC_045512.2.fa](https://www.ncbi.nlm.nih.gov/nuccore/1798174254)
+	b. You have to use [samtools](https://www.htslib.org/doc/samtools-faidx.html) to create the .fai file from the .fa reference sequence file
+	c. Folder - data to store data/NC_045512.2.fa, data/NC_045512.2.fa.fai and data/projects_accounts.csv
+	d. project_accounts.csv is a file that contains the following headers and appropriate values:
+	https://github.com/enasequence/covid-sequence-analysis-workflow/blob/demo/TSVs/project_accounts.csv
 
 ### Running pipelines via Nextflow tower
 
