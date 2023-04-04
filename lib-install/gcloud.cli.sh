@@ -1,8 +1,8 @@
 echo "Installing gcloud cli"
 curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-421.0.0-linux-x86_64.tar.gz
 tar -xf ./google-cloud-cli-421.0.0-linux-x86_64.tar.gz
-sudo mv google-cloud-sdk /opt/google-cloud-sdk
-sudo ln -s /opt/google-cloud-sdk/bin/* /bin/
+mv google-cloud-sdk /opt/google-cloud-sdk
+ln -s /opt/google-cloud-sdk/bin/* /bin/
 rm google-cloud-cli-422.0.0-linux-x86_64.tar.gz
 # mv ./google-cloud-sdk ~/
 # rm ./google-cloud-cli-421.0.0-linux-x86_64.tar.gz
