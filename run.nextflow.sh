@@ -25,7 +25,8 @@ echo ""
 echo "** Processing samples with ${DIR}/${pipeline}/${pipeline}.nf. **"
 
 if [ "$profile" = "awsbatch" ]; then
-      ${DIR}/lib-install/gcloud.cli.sh
+      gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+      gcloud config set project "prj-int-dev-covid19-nf-gls"
       project_bucket="prj-int-dev-ait-eosc-aws-eval"
       aws s3 cp ${batch_input} ${DIR}/data/ # download sample index file from s3 to local dir
       aws s3 cp "s3://${project_bucket}/${dataset_name}/" "${DIR}/data/" --recursive --exclude "*/*"  # download projects_accounts and .fa files
