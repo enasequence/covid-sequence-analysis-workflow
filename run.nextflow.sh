@@ -35,17 +35,17 @@ fi
 
 pipeline_dir="${root_dir}/${snapshot_date}/${pipeline}_${batch_index}"
 echo "** pipeline_dir: ${pipeline_dir} **"
-nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/${pipeline}.nf" -profile "${profile}" \
-      --TEST_SUBMISSION "${test_submission}" --STUDY "${study_accession}" \
-      --CONFIG_YAML "${DIR}/${pipeline}/config.yaml" \
-      --SECRETS "${DIR}/data/projects_accounts.csv" \
-      --SARS2_FA "${DIR}/data/NC_045512.2.fa" \
-      --SARS2_FA_FAI "${DIR}/data/NC_045512.2.fa.fai"\
-      --INDEX "${batch_input}" \
-      --OUTDIR "${pipeline_dir}/publishDir" \
-      --STOREDIR "${pipeline_dir}/storeDir" \
-      -w "${pipeline_dir}/workDir" \
-      -with-tower
+# nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/${pipeline}.nf" -profile "${profile}" \
+#       --TEST_SUBMISSION "${test_submission}" --STUDY "${study_accession}" \
+#       --CONFIG_YAML "${DIR}/${pipeline}/config.yaml" \
+#       --SECRETS "${DIR}/data/projects_accounts.csv" \
+#       --SARS2_FA "${DIR}/data/NC_045512.2.fa" \
+#       --SARS2_FA_FAI "${DIR}/data/NC_045512.2.fa.fai"\
+#       --INDEX "${batch_input}" \
+#       --OUTDIR "${pipeline_dir}/publishDir" \
+#       --STOREDIR "${pipeline_dir}/storeDir" \
+#       -w "${pipeline_dir}/workDir" \
+#       -with-tower
 
 ########################################################################################
 # Update submission receipt and submission metadata [as well as all the analyses archived]
