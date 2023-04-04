@@ -16,6 +16,6 @@ export IMG_TAG="latest" # $(date +%F)
 docker login quay.io
 # docker build -t ${REPO_URI}:${IMG_TAG} .
 docker build -t ${REPO_URI}:${IMG_TAG} .
-docker tag ${REPO_URI}:${IMG_TAG} quay.io/username/repository:${IMG_TAG}
-# docker push ${REPO_URI}:${IMG_TAG}
+docker tag ${REPO_URI}:${IMG_TAG} ${REPO_URI}:${IMG_TAG}
+docker push ${REPO_URI}:${IMG_TAG}
 echo "IMAGE NAME = ${REPO_URI}:${IMG_TAG}"
