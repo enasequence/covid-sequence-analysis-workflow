@@ -1,11 +1,11 @@
 echo "Installing gcloud cli"
 export $(grep -v '^#' .env | xargs)
-curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-421.0.0-linux-x86_64.tar.gz
-tar -xf ./google-cloud-cli-421.0.0-linux-x86_64.tar.gz
-sudo mv google-cloud-sdk /opt/google-cloud-sdk
-wait
-sudo ln -s /opt/google-cloud-sdk/bin/* /bin/
-rm google-cloud-cli-421.0.0-linux-x86_64.tar.gz
+# curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-421.0.0-linux-x86_64.tar.gz
+# tar -xf ./google-cloud-cli-421.0.0-linux-x86_64.tar.gz
+# sudo mv google-cloud-sdk /opt/google-cloud-sdk
+# wait
+# sudo ln -s /opt/google-cloud-sdk/bin/* /bin/
+# rm google-cloud-cli-421.0.0-linux-x86_64.tar.gz
 # mv ./google-cloud-sdk ~/
 # rm ./google-cloud-cli-421.0.0-linux-x86_64.tar.gz
 # $HOME/google-cloud-sdk/install.sh
