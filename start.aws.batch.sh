@@ -3,7 +3,7 @@
 # DIR where the current script resides
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 export $(grep -v '^#' .env | xargs)
-skip=${1:-'4'}
+skip=${1:-'5'}
 concurrency=${2:-'500'}   # Maximum concurrency determined by the bottleneck - the submission server and storage space
 # concurrency=${2:-'5'}
 pipeline=${3:-'illumina'}   # nanopore,illumina
@@ -57,7 +57,8 @@ for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batc
 	  "${batch_index}", "${snapshot_date}",\
 	  "${test_submission}"], \
 	  "environment": [ \
-	    {"name": "TOWER_ACCESS_TOKEN", "value": "${TOWER_ACCESS_TOKEN}"}
+	    {"name": "TOWER_ACCESS_TOKEN", "value": "${TOWER_ACCESS_TOKEN}"},
+	    {"name": "GOOGLE_APPLICATION_CREDENTIALS", "value": "${GOOGLE_APPLICATION_CREDENTIALS}"}
 		]
 	}
 	END
