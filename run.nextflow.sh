@@ -25,7 +25,8 @@ echo ""
 echo "** Processing samples with ${DIR}/${pipeline}/${pipeline}.nf. **"
 
 if [ "$profile" = "awsbatch" ]; then
-      gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+      aws secretsmanager get-secret-value --secret-id $GOOGLE_APPLICATION_CREDENTIALS_SECRET_ARN --query SecretString --output text > $SERVICE_ACCOUNT_KEY_FILE
+      gcloud auth activate-service-account --key-file=$SERVICE_ACCOUNT_KEY_FILE
       gcloud config set project ${project_id}
       project_bucket="prj-int-dev-ait-eosc-aws-eval"
       aws s3 cp ${batch_input} ${DIR}/data/ # download sample index file from s3 to local dir

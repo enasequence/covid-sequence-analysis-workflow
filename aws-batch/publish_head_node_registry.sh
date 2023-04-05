@@ -9,11 +9,12 @@ echo $AWS_DEFAULT_REGION
 # aws ecr get-login-password | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
 # aws ecr create-repository --tags Key=covid-pipeline,Value=true  --repository-name nextflow-head
 # export REPO_URI="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/nextflow-head"
+
 export REPO_URI="quay.io/mingyanisa/covid-analysis-nf-head"
 echo $REPO_URI
 export IMG_TAG="latest" # $(date +%F)
 # Log in to your Quay.io account
-docker login quay.io
+echo "$QUAY_PASSWORD" | docker login quay.io --username $QUAY_USERNAME --password-stdin
 docker rmi ${REPO_URI}:${IMG_TAG}
 docker build -t ${REPO_URI}:${IMG_TAG} .
 echo "IMAGE NAME = ${REPO_URI}:${IMG_TAG}"
