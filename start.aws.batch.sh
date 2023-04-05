@@ -3,18 +3,18 @@
 # DIR where the current script resides
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 export $(grep -v '^#' .env | xargs)
-skip=${1:-'5'}
+skip=${1:-'0'}
 concurrency=${2:-'500'}   # Maximum concurrency determined by the bottleneck - the submission server and storage space
 # concurrency=${2:-'5'}
 pipeline=${3:-'illumina'}   # nanopore,illumina
 root_dir=${4:-'s3://prj-int-dev-ait-eosc-aws-eval/nextflow'} #s3://prj-int-dev-covid19-nf-aws
-batch_size=${5:-'15000'}
+batch_size=${5:-'10'}
 profile=${6:-'awsbatch'}
-snapshot_date=${7:-'2023-03-29'}  #2022-09-26 2022-10-24 2022-11-21 2022-12-19
-dataset_name=${8:-'sarscov2_metadata'}
+snapshot_date=${7:-'2023-04-05'}  #2022-09-26 2022-10-24 2022-11-21 2022-12-19
+dataset_name=${8:-'sarscov2_metadata_test'}
 project_id=${9:-'prj-int-dev-covid19-nf-gls'}
 project_bucket='prj-int-dev-ait-eosc-aws-eval'
-test_submission='false'
+test_submission='true'
 input_dir="${DIR}/data/${snapshot_date}"; mkdir -p "${input_dir}"
 
 # Row count and batches
@@ -38,15 +38,15 @@ for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batc
 	echo ""
 	echo "** Retrieving and reserving batch ${batch_index} with the size of ${batch_size} from the offset of ${offset}. **"
 
-	# sql="SELECT * FROM ${project_id}.${dataset_name}.${table_name} LIMIT ${batch_size} OFFSET ${offset}"
-	# bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false --max_rows="${batch_size}" "${sql}" \
-	#   | awk 'BEGIN{ FS=","; OFS="\t" }{$1=$1; print $0 }' > "${input_dir}/${table_name}_${batch_index}.tsv"
+	sql="SELECT * FROM ${project_id}.${dataset_name}.${table_name} LIMIT ${batch_size} OFFSET ${offset}"
+	bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false --max_rows="${batch_size}" "${sql}" \
+	  | awk 'BEGIN{ FS=","; OFS="\t" }{$1=$1; print $0 }' > "${input_dir}/${table_name}_${batch_index}.tsv"
 
-	# aws s3 cp "${input_dir}/${table_name}_${batch_index}.tsv" "s3://${project_bucket}/${dataset_name}/${snapshot_date}/" 
+	aws s3 cp "${input_dir}/${table_name}_${batch_index}.tsv" "s3://${project_bucket}/${dataset_name}/${snapshot_date}/" 
 
-	# gsutil -m cp "${input_dir}/${table_name}_${batch_index}.tsv" "gs://${dataset_name}/${snapshot_date}/${table_name}_${batch_index}.tsv" && \
-    # bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_leading_rows=1 --field_delimiter=tab \
-    # --max_bad_records=0 "${dataset_name}.sra_processing" "gs://${dataset_name}/${snapshot_date}/${table_name}_${batch_index}.tsv"
+	gsutil -m cp "${input_dir}/${table_name}_${batch_index}.tsv" "gs://${dataset_name}/${snapshot_date}/${table_name}_${batch_index}.tsv" && \
+    bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_leading_rows=1 --field_delimiter=tab \
+    --max_bad_records=0 "${dataset_name}.sra_processing" "gs://${dataset_name}/${snapshot_date}/${table_name}_${batch_index}.tsv"
 
 	###TODO: Insert AWS cli command to submit batch job (head node) here###
 	cmd_override=$(cat <<-END
@@ -55,7 +55,7 @@ for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batc
 	  "s3://${project_bucket}/${dataset_name}/${snapshot_date}/${table_name}_${batch_index}.tsv", \
 	  "${pipeline}", "awsbatch", "${root_dir}",\
 	  "${batch_index}", "${snapshot_date}",\
-	  "${test_submission}"], \
+	  "${test_submission}","PRJEB45555","${dataset_name}"], \
 	  "environment": [ \
 	    {"name": "TOWER_ACCESS_TOKEN", "value": "${TOWER_ACCESS_TOKEN}"},
 	    {"name": "GOOGLE_APPLICATION_CREDENTIALS", "value": "${GOOGLE_APPLICATION_CREDENTIALS}"}
