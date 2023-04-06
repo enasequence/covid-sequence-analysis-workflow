@@ -25,7 +25,9 @@ echo ""
 echo "** Processing samples with ${DIR}/${pipeline}/${pipeline}.nf. **"
 
 if [ "$profile" = "awsbatch" ]; then
-      aws secretsmanager get-secret-value --secret-id $GOOGLE_APPLICATION_CREDENTIALS_SECRET_ARN --query SecretString --output text > $SERVICE_ACCOUNT_KEY_FILE
+      echo "** Retrieve secrets: ${SERVICE_ACCOUNT_KEY_FILE} **"
+      aws secretsmanager get-secret-value --secret-id $GOOGLE_APPLICATION_CREDENTIALS_SECRET_ARN --query SecretString --output text > $SERVICE_ACCOUNT_KEY_FILE 
+      [ -f $SERVICE_ACCOUNT_KEY_FILE ] && echo "$SERVICE_ACCOUNT_KEY_FILE exists."
       gcloud auth activate-service-account --key-file=$SERVICE_ACCOUNT_KEY_FILE
       gcloud config set project ${project_id}
       project_bucket="prj-int-dev-ait-eosc-aws-eval"
