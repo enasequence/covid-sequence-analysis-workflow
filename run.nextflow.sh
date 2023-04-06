@@ -26,8 +26,8 @@ echo "** Processing samples with ${DIR}/${pipeline}/${pipeline}.nf. **"
 
 if [ "$profile" = "awsbatch" ]; then
       echo "** Retrieve secrets: ${SERVICE_ACCOUNT_KEY_FILE} **"
-      aws secretsmanager get-secret-value --secret-id $GOOGLE_APPLICATION_CREDENTIALS_SECRET_ARN:project_id:: --query SecretString --output text --region eu-west-2
-      aws secretsmanager get-secret-value --secret-id $GOOGLE_APPLICATION_CREDENTIALS_SECRET_ARN --region eu-west-2 --query SecretString --output text > $SERVICE_ACCOUNT_KEY_FILE 
+      aws secretsmanager get-secret-value --secret-id $GOOGLE_APPLICATION_CREDENTIALS_SECRET_ARN --query SecretString --output text 
+      aws secretsmanager get-secret-value --secret-id $GOOGLE_APPLICATION_CREDENTIALS_SECRET_ARN --query SecretString --output text > $SERVICE_ACCOUNT_KEY_FILE 
       if [[ ! -f $SERVICE_ACCOUNT_KEY_FILE  ]] ; then
             echo "File ${SERVICE_ACCOUNT_KEY_FILE} is not there, aborting."
             exit
