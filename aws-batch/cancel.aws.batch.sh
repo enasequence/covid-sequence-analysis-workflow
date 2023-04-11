@@ -1,5 +1,4 @@
-export $(grep -v '^#' .env | xargs)
-echo $AWS_DEFAULT_REGION
+#!/usr/bin/env bash
 for i in $(aws batch list-jobs --job-queue head_queue --job-status running --output text --query "jobSummaryList[*].[jobId]")
 do
   echo "Terminate Job: $i"
