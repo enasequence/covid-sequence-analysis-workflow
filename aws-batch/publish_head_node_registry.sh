@@ -1,15 +1,16 @@
 ###
-# This script will publish the Docker image which contains `run.aws.nextflow.sh` / `nextflow.config`
-# This reposiroty (Branch aws-batch) will then be cloned in run.aws.nextflow.sh
+# This script will publish the Docker image for headnode which contains `run.aws.nextflow.sh` / `nextflow.config`
+# The repository (Branch aws-batch) will be cloned in the docker image.
 ###
 # sudo yum install jq -y
 export $(grep -v '^#' .env | xargs)
 echo $AWS_DEFAULT_REGION
-# Create ECR for head node
+### Option 1: Create ECR for head node
 # aws ecr get-login-password | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
 # aws ecr create-repository --tags Key=covid-pipeline,Value=true  --repository-name nextflow-head
 # export REPO_URI="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/nextflow-head"
 
+### Option 2: Publish docker image to Quay.io
 export REPO_URI="quay.io/mingyanisa/covid-analysis-nf-head"
 echo $REPO_URI
 export IMG_TAG="latest" # $(date +%F)
