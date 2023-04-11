@@ -1,5 +1,0 @@
-.env
-*.csv
-.nextflow
-*.tsv
-*.log
