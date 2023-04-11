@@ -3,7 +3,7 @@
 # DIR where the current script resides
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 export $(grep -v '^#' .env | xargs)
-skip=${1:-'0'}
+skip=${1:-'0'} 
 concurrency=${2:-'500'}   # Maximum concurrency determined by the bottleneck - the submission server and storage space
 # concurrency=${2:-'5'}
 pipeline=${3:-'illumina'}   # nanopore,illumina
@@ -48,7 +48,6 @@ for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batc
     bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_leading_rows=1 --field_delimiter=tab \
     --max_bad_records=0 "${dataset_name}.sra_processing" "gs://${dataset_name}/${snapshot_date}/${table_name}_${batch_index}.tsv"
 
-	###TODO: Insert AWS cli command to submit batch job (head node) here###
 	cmd_override=$(cat <<-END
 	{
 	  "command": ["/scratch/covid-sequence-analysis-workflow/run.nextflow.sh", \
@@ -67,7 +66,6 @@ for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batc
 	)
 	aws batch submit-job --job-name "submit-job-${snapshot_date}-${pipeline}-${batch_index}" --job-definition "head_node_job" \
 	--job-queue "head_queue" --container-overrides "${cmd_override}"
-	break
 done
 
 sql="CREATE OR REPLACE TABLE ${dataset_name}.sra_processing AS SELECT DISTINCT * FROM ${dataset_name}.sra_processing"
