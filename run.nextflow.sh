@@ -1,12 +1,7 @@
 #!/usr/bin/env bash
 
 # DIR where the current script resides
-if [ "$profile" = "awsbatch" ]; then
-      DIR="/scratch/covid-sequence-analysis-workflow"
-else
-      DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-fi
-
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 batch_input=${1}
 pipeline=${2:-'nanopore'}
 profile=${3:-'codon'}
