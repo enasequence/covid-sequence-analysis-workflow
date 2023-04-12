@@ -20,4 +20,4 @@ docker rmi ${REPO_URI}:${IMG_TAG}
 docker build -t ${REPO_URI}:${IMG_TAG} ${DIR}
 echo "IMAGE NAME = ${REPO_URI}:${IMG_TAG}"
 docker tag ${REPO_URI}:${IMG_TAG} ${REPO_URI}:${IMG_TAG}
-# docker push ${REPO_URI}:${IMG_TAG}
+docker push ${REPO_URI}:${IMG_TAG}
