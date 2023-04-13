@@ -50,6 +50,11 @@ process map_to_reference {
     file("${run_accession}_filtered.vcf.gz")
     file("${run_accession}_consensus.fasta.gz")
 
+    // Refer: https://cloud.google.com/storage/docs/xml-api/reference-status#503%E2%80%94service-unavailable
+    // Refer: https://training.nextflow.io/basic_training/debugging/#retry-with-backoff
+    errorStrategy { sleep(Math.pow(2, task.attempt) * 200 as long); return 'retry' }
+    maxRetries 5
+
     script:
     """
     line="\$(grep ${study_accession} ${projects_accounts_csv})"
