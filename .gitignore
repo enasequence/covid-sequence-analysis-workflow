@@ -1,7 +1,6 @@
 .env
-*.csv
+data/projects_accounts.csv
 .nextflow
-data/
-*.tsv
 *.log
+data/*/
 secrets/
