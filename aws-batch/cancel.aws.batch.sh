@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+source .env
+aws ecr get-login-password | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
 for i in $(aws batch list-jobs --job-queue head_queue --job-status running --output text --query "jobSummaryList[*].[jobId]")
 do
   echo "Terminate Job: $i"
