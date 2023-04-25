@@ -17,10 +17,10 @@ WHERE
     T3.run_accession
   FROM
     `prj-int-dev-covid19-nf-gls.sarscov2_metadata.sra_processing` T3)
-  AND T1.run_accession NOT IN (
-  SELECT
-    T4.run_accession
-  FROM
-    `prj-int-dev-covid19-nf-gls.sarscov2_metadata.submission_metadata` T4)
+  -- AND T1.run_accession NOT IN (
+  -- SELECT
+  --   T4.run_accession
+  -- FROM
+  --   `prj-int-dev-covid19-nf-gls.sarscov2_metadata.submission_metadata` T4)
 ORDER BY
   T1.run_accession DESC

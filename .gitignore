@@ -1,0 +1,7 @@
+.env
+data/projects_accounts.csv
+.nextflow
+*.log
+data/*/illumina_to_be_processed_*.tsv
+data/*/nanopore_to_be_processed_*.tsv
+secrets/
