@@ -11,7 +11,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 # export REPO_URI="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/nextflow-head"
 
 ### Option 2: Publish docker image to Quay.io
-export REPO_URI="quay.io/enasequence/ena-sars-cov2-head"
+export REPO_URI="quay.io/enasequence/ena-sars-cov2-aws-batch-head"
 export IMG_TAG="1.0" # $(date +%F)
 echo $REPO_URI $DIR
 # Log in to your Quay.io account
