@@ -38,6 +38,13 @@ parser.add_argument('-f',
                     help="sars2_fasta",
                     type=str,
                     required=True)
+
+parser.add_argument('-c',
+                    '--task_cpus',
+                    help="task cpu",
+                    type=str,
+                    required=True)
+
 parser.add_argument('-s',
                     '--study_accession',
                     help="study_accession",
@@ -47,9 +54,9 @@ parser.add_argument('-s',
 
 args = parser.parse_args()
 
-def run_process(work_dir, run_accession, projects_accounts_csv, input_file_1, input_file_2, sars2_fasta, study_accession:str='PRJEB45555'):
+def run_process(work_dir, run_accession, projects_accounts_csv, input_file_1, input_file_2, sars2_fasta, task_cpus, study_accession:str='PRJEB45555'):
     # Define the Bash command to run
-    bash_command=f"bash {work_dir} {run_accession} {projects_accounts_csv} {input_file_1} {input_file_2} {sars2_fasta} {study_accession}"
+    bash_command=f"bash {work_dir} {run_accession} {projects_accounts_csv} {input_file_1} {input_file_2} {sars2_fasta} {task_cpus} {study_accession}"
     # Run the Bash command and capture the output
     output = subprocess.check_output(bash_command, shell=True)
     # Print the output

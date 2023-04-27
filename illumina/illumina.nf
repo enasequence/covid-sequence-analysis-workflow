@@ -35,8 +35,7 @@ process map_to_reference {
 
     script:
     """
-    echo ${projects_accounts_csv}
-    processing.py -w ${map_to_ref} -r ${run_accession} -p ${projects_accounts_csv} -i1 ${input_file_1} -i2 ${input_file_2} -f ${sars2_fasta} -s ${study_accession}
+    processing.py -w ${map_to_ref} -r ${run_accession} -p ${projects_accounts_csv} -i1 ${input_file_1} -i2 ${input_file_2} -f ${sars2_fasta} -c ${task.cpus} -s ${study_accession}
     """
 }
 
