@@ -65,7 +65,7 @@ def run_process(work_dir, run_accession, projects_accounts_csv, input_file_1, in
 if __name__ == '__main__':
     print(f"SENTRY URL: {os.environ.get('SENTRY_URL')}")
     print(args)
-    sentry_sdk.init(f"{os.environ['SENTRY_URL']}")
+    sentry_sdk.init(f"{os.environ['SENTRY_URL']}",attach_stacktrace=True,)
     try:
         run_process(args.work_dir, args.run_accession, args.projects_accounts_csv, args.input_file_1, args.input_file_2, args.sars2_fasta, args.task_cpus, args.study_accession)
     except Exception as e:
