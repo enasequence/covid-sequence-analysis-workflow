@@ -41,3 +41,9 @@ tabix ${run_accession}.vcf.gz
 bcftools stats ${run_accession}.vcf.gz > ${run_accession}.stat
 
 snpEff -q -no-downstream -no-upstream -noStats NC_045512.2 ${run_accession}.vcf > ${run_accession}.annot.vcf
+# vcf_to_consensus.py -dp 10 -af 0.25 -v ${run_accession}.vcf.gz -d ${run_accession}.coverage -o ${run_accession}_consensus.fasta -n ${run_accession} -r ${sars2_fasta}
+vcf_to_consensus.py -dp 10 -af 0.25 -v ${run_accession}.vcf.gz -d ${run_accession}.coverage -o headless_consensus.fasta -n ${run_accession} -r ${sars2_fasta}
+fix_consensus_header.py headless_consensus.fasta > ${run_accession}_consensus.fasta
+bgzip ${run_accession}_consensus.fasta
+bgzip ${run_accession}.coverage
+bgzip ${run_accession}.annot.vcf

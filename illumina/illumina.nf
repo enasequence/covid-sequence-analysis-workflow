@@ -34,13 +34,8 @@ process map_to_reference {
 
     script:
     """
-    processing.py -r ${run_accession} -p ${projects_accounts_csv} -i1 ${input_file_1} -i2 ${input_file_2} -f ${sars2_fasta} -s ${study_accession}
-    # vcf_to_consensus.py -dp 10 -af 0.25 -v ${run_accession}.vcf.gz -d ${run_accession}.coverage -o ${run_accession}_consensus.fasta -n ${run_accession} -r ${sars2_fasta}
-    vcf_to_consensus.py -dp 10 -af 0.25 -v ${run_accession}.vcf.gz -d ${run_accession}.coverage -o headless_consensus.fasta -n ${run_accession} -r ${sars2_fasta}
-    fix_consensus_header.py headless_consensus.fasta > ${run_accession}_consensus.fasta
-    bgzip ${run_accession}_consensus.fasta
-    bgzip ${run_accession}.coverage
-    bgzip ${run_accession}.annot.vcf
+    DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+    processing.py -w ${DIR} -r ${run_accession} -p ${projects_accounts_csv} -i1 ${input_file_1} -i2 ${input_file_2} -f ${sars2_fasta} -s ${study_accession}
     """
 }
 
