@@ -3,7 +3,6 @@ import subprocess
 import sentry_sdk
 from pathlib import Path
 import os
-print(os.environ['HOME'])
 import argparse
 
 parser = argparse.ArgumentParser(description='Start processing script')
@@ -43,7 +42,7 @@ args = parser.parse_args()
 
 def run_process(run_accession, projects_accounts_csv, input_file_1, input_file_2, sars2_fasta, study_accession:str='PRJEB45555'):
     # Define the Bash command to run
-    bash_command=f"bash {Path.cwd()}/processing.sh {run_accession} {projects_accounts_csv} {input_file_1} {input_file_2} {sars2_fasta} {study_accession}"
+    bash_command=f"bash {os.getcwd()}/processing.sh {run_accession} {projects_accounts_csv} {input_file_1} {input_file_2} {sars2_fasta} {study_accession}"
     # Run the Bash command and capture the output
     output = subprocess.check_output(bash_command, shell=True)
     # Print the output
