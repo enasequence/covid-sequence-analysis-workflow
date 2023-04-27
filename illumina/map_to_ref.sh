@@ -8,6 +8,7 @@ study_accession=${6}
 
 line="\$(grep ${study_accession} ${projects_accounts_csv})"
 ftp_id="\$(echo \${line} | cut -d ',' -f 3)"
+echo "ftp_id:${ftp_id}"
 ftp_password="\$(echo \${line} | cut -d ',' -f 6)"
 if [ "\${ftp_id}" = 'public' ]; then
     wget -t 0 -O ${run_accession}_1.fastq.gz ${input_file_1}

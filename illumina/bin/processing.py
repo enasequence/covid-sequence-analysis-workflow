@@ -42,6 +42,7 @@ parser.add_argument('-s',
                     '--study_accession',
                     help="study_accession",
                     type=str,
+                    default='PRJEB45555',
                     required=False)
 
 args = parser.parse_args()
