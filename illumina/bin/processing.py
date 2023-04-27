@@ -48,7 +48,7 @@ args = parser.parse_args()
 
 def run_process(work_dir, run_accession, projects_accounts_csv, input_file_1, input_file_2, sars2_fasta, study_accession:str='PRJEB45555'):
     # Define the Bash command to run
-    bash_command=f"bash {work_dir}/processing.sh {run_accession} {projects_accounts_csv} {input_file_1} {input_file_2} {sars2_fasta} {study_accession}"
+    bash_command=f"bash {work_dir} {run_accession} {projects_accounts_csv} {input_file_1} {input_file_2} {sars2_fasta} {study_accession}"
     # Run the Bash command and capture the output
     output = subprocess.check_output(bash_command, shell=True)
     # Print the output
@@ -56,6 +56,7 @@ def run_process(work_dir, run_accession, projects_accounts_csv, input_file_1, in
 
 if __name__ == '__main__':
     print(f"SENTRY URL: {os.environ.get('SENTRY_URL')}")
+    print(args)
     sentry_sdk.init(f"{os.environ['SENTRY_URL']}")
     try:
         run_process(args.work_dir, args.run_accession, args.projects_accounts_csv, args.input_file_1, args.input_file_2, args.sars2_fasta, args.study_accession)

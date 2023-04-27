@@ -35,6 +35,7 @@ echo "** pipeline_dir: ${pipeline_dir} **"
 nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/${pipeline}.nf" -profile "${profile}" \
       --TEST_SUBMISSION "${test_submission}" --STUDY "${study_accession}" \
       --CONFIG_YAML "${DIR}/${pipeline}/config.yaml" \
+      --MAP_TO_REF_PATH "${DIR}/${pipeline}/map_to_ref.sh" \
       --SECRETS "${DIR}/data/projects_accounts.csv" \
       --SARS2_FA "${DIR}/data/NC_045512.2.fa" \
       --SARS2_FA_FAI "${DIR}/data/NC_045512.2.fa.fai"\
@@ -66,4 +67,3 @@ fi
 #       wait
 #       aws s3 rm --recursive "${pipeline_dir}"
 # fi
-
