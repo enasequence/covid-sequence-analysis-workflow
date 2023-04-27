@@ -34,8 +34,7 @@ process map_to_reference {
 
     script:
     """
-    DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-    processing.py -w ${DIR} -r ${run_accession} -p ${projects_accounts_csv} -i1 ${input_file_1} -i2 ${input_file_2} -f ${sars2_fasta} -s ${study_accession}
+    processing.py -w ${pwd} -r ${run_accession} -p ${projects_accounts_csv} -i1 ${input_file_1} -i2 ${input_file_2} -f ${sars2_fasta} -s ${study_accession}
     """
 }
 
