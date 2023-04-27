@@ -47,8 +47,9 @@ nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/${pipe
 ########################################################################################
 # Update submission receipt and submission metadata [as well as all the analyses archived]
 ########################################################################################
-"${DIR}/update.receipt.sh" "${batch_index}" "${snapshot_date}" "${pipeline}" "${profile}" "${root_dir}" "${dataset_name}" "${project_id}"
-"${DIR}/set.archived.sh" "${dataset_name}" "${project_id}"
+###TODO: Omit when test?
+# "${DIR}/update.receipt.sh" "${batch_index}" "${snapshot_date}" "${pipeline}" "${profile}" "${root_dir}" "${dataset_name}" "${project_id}"
+# "${DIR}/set.archived.sh" "${dataset_name}" "${project_id}"
 
 if [[ "$profile" != "gls" && "awsbatch" ]]; then
       rm -R "${pipeline_dir}/workDir" &
@@ -58,11 +59,11 @@ if [[ "$profile" != "gls" && "awsbatch" ]]; then
       rm -R "${pipeline_dir}"
 fi
 
-if [ "$profile" = "awsbatch" ]; then
-      aws s3 rm --recursive "${pipeline_dir}/workDir" --quiet &
-      aws s3 rm --recursive "${pipeline_dir}/storeDir" --quiet &
-      aws s3 rm --recursive "${pipeline_dir}/publishDir" --quiet &
-      wait
-      aws s3 rm --recursive "${pipeline_dir}"
-fi
+# if [ "$profile" = "awsbatch" ]; then
+#       aws s3 rm --recursive "${pipeline_dir}/workDir" --quiet &
+#       aws s3 rm --recursive "${pipeline_dir}/storeDir" --quiet &
+#       aws s3 rm --recursive "${pipeline_dir}/publishDir" --quiet &
+#       wait
+#       aws s3 rm --recursive "${pipeline_dir}"
+# fi
 
