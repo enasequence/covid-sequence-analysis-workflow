@@ -60,10 +60,10 @@ if [[ "$profile" != "gls" && "awsbatch" ]]; then
       rm -R "${pipeline_dir}"
 fi
 
-# if [ "$profile" = "awsbatch" ]; then
-#       aws s3 rm --recursive "${pipeline_dir}/workDir" --quiet &
-#       aws s3 rm --recursive "${pipeline_dir}/storeDir" --quiet &
-#       aws s3 rm --recursive "${pipeline_dir}/publishDir" --quiet &
-#       wait
-#       aws s3 rm --recursive "${pipeline_dir}"
-# fi
+if [ "$profile" = "awsbatch" ]; then
+      aws s3 rm --recursive "${pipeline_dir}/workDir" --quiet &
+      aws s3 rm --recursive "${pipeline_dir}/storeDir" --quiet &
+      aws s3 rm --recursive "${pipeline_dir}/publishDir" --quiet &
+      wait
+      aws s3 rm --recursive "${pipeline_dir}"
+fi
