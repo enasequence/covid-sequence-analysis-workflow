@@ -10,11 +10,11 @@ line="\$(grep ${study_accession} ${projects_accounts_csv})"
 ftp_id="\$(echo \${line} | cut -d ',' -f 3)"
 ftp_password="\$(echo \${line} | cut -d ',' -f 6)"
 if [ "\${ftp_id}" = 'public' ]; then
-    wget -t 0 -O ${run_accession}_1.fastq.gz \$(cat ${input_file_1})
-    wget -t 0 -O ${run_accession}_2.fastq.gz \$(cat ${input_file_2})
+    wget -t 0 -O ${run_accession}_1.fastq.gz ${input_file_1}
+    wget -t 0 -O ${run_accession}_2.fastq.gz ${input_file_2}
 else
-    wget -t 0 -O ${run_accession}_1.fastq.gz \$(cat ${input_file_1}) --user=\${ftp_id} --password=\${ftp_password}
-    wget -t 0 -O ${run_accession}_2.fastq.gz \$(cat ${input_file_2}) --user=\${ftp_id} --password=\${ftp_password}
+    wget -t 0 -O ${run_accession}_1.fastq.gz ${input_file_1} --user=\${ftp_id} --password=\${ftp_password}
+    wget -t 0 -O ${run_accession}_2.fastq.gz ${input_file_2} --user=\${ftp_id} --password=\${ftp_password}
 fi
 trimmomatic PE ${run_accession}_1.fastq.gz ${run_accession}_2.fastq.gz ${run_accession}_trim_1.fq \
 ${run_accession}_trim_1_un.fq ${run_accession}_trim_2.fq ${run_accession}_trim_2_un.fq \
