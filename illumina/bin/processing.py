@@ -39,6 +39,8 @@ parser.add_argument('-s',
                     type=str,
                     required=False)
 
+args = parser.parse_args()
+
 def run_process(run_accession, projects_accounts_csv, input_file_1, input_file_2, sars2_fasta, study_accession:str='PRJEB45555'):
     # Define the Bash command to run
     bash_command=f"bash {Path.cwd()}/processing.sh {run_accession} {projects_accounts_csv} {input_file_1} {input_file_2} {sars2_fasta} {study_accession}"
