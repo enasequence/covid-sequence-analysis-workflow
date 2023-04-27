@@ -17,7 +17,7 @@ process map_to_reference {
     container 'quay.io/yanisasunt/ena-sars-cov2-illumina:1.0'
 
     input:
-    tuple val(run_accession), val(sample_accession), file(input_file_1), file(input_file_2) //from samples_ch
+    tuple val(run_accession), val(sample_accession), val(input_file_1), val(input_file_2) //from samples_ch
     path(sars2_fasta)
     path(sars2_fasta_fai)
     path(projects_accounts_csv)
