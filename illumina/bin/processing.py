@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import subprocess
 import sentry_sdk
+from sentry_sdk import push_scope, capture_exception
 from sentry_sdk.integrations.asyncio import AsyncioIntegration
 from sentry_sdk.integrations.excepthook import ExcepthookIntegration
 import os
@@ -57,6 +58,13 @@ parser.add_argument('-s',
 
 args = parser.parse_args()
 
+class FailedDownloadException(Exception):
+    pass
+class FailedProcessException(Exception):
+    pass
+class FailedConsensusException(Exception):
+    pass
+
 def download(run_accession, projects_accounts_csv, input_file_1, input_file_2, study_accession:str='PRJEB45555'):
     # Define the Bash command to run
     bash_command=f"bash download.sh {run_accession} {projects_accounts_csv} {input_file_1} {input_file_2} {study_accession}"
@@ -64,7 +72,7 @@ def download(run_accession, projects_accounts_csv, input_file_1, input_file_2, s
     output = subprocess.run(bash_command, capture_output=True, text=True, shell=True)
     print(output)
     if output.returncode!=0:
-        raise Exception(output.stderr[-SENTRY_MSG_LIMIT_LEN:])
+        raise FailedDownloadException(output.stderr[-SENTRY_MSG_LIMIT_LEN:])
     return output
 
 def run_process(run_accession, sars2_fasta, task_cpus):
@@ -74,7 +82,7 @@ def run_process(run_accession, sars2_fasta, task_cpus):
     output = subprocess.run(bash_command, capture_output=True, text=True, shell=True)
     print(output)
     if output.returncode!=0:
-        raise Exception(output.stderr[-SENTRY_MSG_LIMIT_LEN:])
+        raise FailedProcessException(output.stderr[-SENTRY_MSG_LIMIT_LEN:])
     return output
 
 def generate_zip(run_accession):
@@ -84,7 +92,7 @@ def generate_zip(run_accession):
         print(output)
         print(f"subprocess output stderr limit: {output.stderr[-SENTRY_MSG_LIMIT_LEN:]}")
         if output.returncode!=0:
-            raise Exception(output.stderr[-SENTRY_MSG_LIMIT_LEN:])
+            raise FailedConsensusException(output.stderr[-SENTRY_MSG_LIMIT_LEN:])
     return 
 
 def generate_consensus(run_accession, sars2_fasta):
@@ -100,7 +108,7 @@ def generate_consensus(run_accession, sars2_fasta):
     if output.returncode!=0:
         raise Exception(output.stderr[-SENTRY_MSG_LIMIT_LEN:])
     
-        
+
 if __name__ == '__main__':
     print(args)
     try:
@@ -109,6 +117,6 @@ if __name__ == '__main__':
         generate_consensus(args.run_accession, args.sars2_fasta)
         generate_zip(args.run_accession)
     except Exception as e:
-        sentry_sdk.capture_exception(e)
+        capture_exception(e)
     finally:
         sentry_sdk.flush()
