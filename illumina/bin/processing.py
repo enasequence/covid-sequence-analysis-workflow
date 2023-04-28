@@ -60,13 +60,16 @@ def run_process(run_accession, projects_accounts_csv, input_file_1, input_file_2
     # Define the Bash command to run
     bash_command=f"bash map_to_ref.sh {run_accession} {projects_accounts_csv} {input_file_1} {input_file_2} {sars2_fasta} {task_cpus} {study_accession}"
     # Run the Bash command and capture the output
-    output = subprocess.run(bash_command, check=True, capture_output=True,shell=True)
+    output = subprocess.run(bash_command, capture_output=True, text=True, shell=True)
     print(output)
+    return output
 
 if __name__ == '__main__':
     print(args)
     try:
-        run_process(args.run_accession, args.projects_accounts_csv, args.input_file_1, args.input_file_2, args.sars2_fasta, args.task_cpus, args.study_accession)
+        subprocess_output=run_process(args.run_accession, args.projects_accounts_csv, args.input_file_1, args.input_file_2, args.sars2_fasta, args.task_cpus, args.study_accession)
+        if subprocess_output.returncode!=0:
+            raise Exception(subprocess_output.stderr)
     except Exception as e:
         sentry_sdk.capture_exception(e)
     finally:
