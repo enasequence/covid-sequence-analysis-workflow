@@ -60,7 +60,7 @@ def run_process(run_accession, projects_accounts_csv, input_file_1, input_file_2
     # Define the Bash command to run
     bash_command=f"bash map_to_ref.sh {run_accession} {projects_accounts_csv} {input_file_1} {input_file_2} {sars2_fasta} {task_cpus} {study_accession}"
     # Run the Bash command and capture the output
-    output = subprocess.check_output(bash_command, shell=True)
+    output = subprocess.run(bash_command, shell=True)
     # Print the output
     print(output)
     
