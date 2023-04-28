@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# set -e 
-# set -o pipefail
+set -e 
+set -o pipefail
 run_accession=${1}
 projects_accounts_csv=${2}
 input_file_1=${3}
@@ -10,6 +10,7 @@ task_cpus=${6}
 study_accession=${7}
 
 function download {
+    echo "Downloading..."
     line=$(grep ${study_accession} ${projects_accounts_csv})
     ftp_id=$(echo ${line} | cut -d ',' -f 3)
     ftp_password=$(echo ${line} | cut -d ',' -f 6)
@@ -23,8 +24,7 @@ function download {
 }
 
 function process {
-    echo "Cleaning up..."
-    # Add any cleanup commands here
+    echo "Processing..."
     trimmomatic PE ${run_accession}_1.fastq.gz ${run_accession}_2.fastq.gz ${run_accession}_trim_1.fq \
     ${run_accession}_trim_1_un.fq ${run_accession}_trim_2.fq ${run_accession}_trim_2_un.fq \
     -summary ${run_accession}_trim_summary -threads ${task_cpus} \
