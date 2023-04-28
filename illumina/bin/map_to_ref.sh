@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-set -e 2> error.log
-# set -o pipefail
+set -e
+set -o pipefail
 run_accession=${1}
 projects_accounts_csv=${2}
 input_file_1=${3}
@@ -51,8 +51,3 @@ fix_consensus_header.py headless_consensus.fasta > ${run_accession}_consensus.fa
 bgzip ${run_accession}_consensus.fasta
 bgzip ${run_accession}.coverage
 bgzip ${run_accession}.annot.vcf
-
-if [ -s error.log ]; then
-  echo "Error: $(cat error.log)"
-  exit 1
-fi
