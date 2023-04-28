@@ -2,6 +2,7 @@
 import subprocess
 import sentry_sdk
 from sentry_sdk.integrations.asyncio import AsyncioIntegration
+from sentry_sdk.integrations.excepthook import ExcepthookIntegration
 import os
 import argparse
 
@@ -55,6 +56,7 @@ def run_process(run_accession, projects_accounts_csv, input_file_1, input_file_2
     output = subprocess.check_output(bash_command, shell=True)
     # Print the output
     print(output)
+    
 
 if __name__ == '__main__':
     print(f"SENTRY URL: {os.environ.get('SENTRY_URL')}")
@@ -62,10 +64,12 @@ if __name__ == '__main__':
     sentry_sdk.init(f"{os.environ['SENTRY_URL']}", 
                     integrations=[
                         AsyncioIntegration(),
+                        ExcepthookIntegration(always_run=True),
                     ],
                     attach_stacktrace=True,)
     try:
-        run_process(args.run_accession, args.projects_accounts_csv, args.input_file_1, args.input_file_2, args.sars2_fasta, args.task_cpus, args.study_accession)
+        raise Exception("I am error")
+        # run_process(args.run_accession, args.projects_accounts_csv, args.input_file_1, args.input_file_2, args.sars2_fasta, args.task_cpus, args.study_accession)
     except Exception as e:
         sentry_sdk.capture_exception(e)
     finally:
