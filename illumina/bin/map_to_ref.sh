@@ -2,23 +2,8 @@
 set -e
 set -o pipefail
 run_accession=${1}
-projects_accounts_csv=${2}
-input_file_1=${3}
-input_file_2=${4}
-sars2_fasta=${5}
-task_cpus=${6}
-study_accession=${7}
-
-line=$(grep ${study_accession} ${projects_accounts_csv})
-ftp_id=$(echo ${line} | cut -d ',' -f 3)
-ftp_password=$(echo ${line} | cut -d ',' -f 6)
-if [ "${ftp_id}" = 'public' ]; then
-    wget -t 0 -O ${run_accession}_1.fastq.gz ${input_file_1}
-    wget -t 0 -O ${run_accession}_2.fastq.gz ${input_file_2}
-else
-    wget -t 0 -O ${run_accession}_1.fastq.gz ${input_file_1} --user=${ftp_id} --password=${ftp_password}
-    wget -t 0 -O ${run_accession}_2.fastq.gz ${input_file_2} --user=${ftp_id} --password=${ftp_password}
-fi
+sars2_fasta=${2}
+task_cpus=${3}
 
 trimmomatic PE ${run_accession}_1.fastq.gz ${run_accession}_2.fastq.gz ${run_accession}_trim_1.fq \
 ${run_accession}_trim_1_un.fq ${run_accession}_trim_2.fq ${run_accession}_trim_2_un.fq \
@@ -45,9 +30,3 @@ tabix ${run_accession}.vcf.gz
 bcftools stats ${run_accession}.vcf.gz > ${run_accession}.stat
 
 snpEff -q -no-downstream -no-upstream -noStats NC_045512.2 ${run_accession}.vcf > ${run_accession}.annot.vcf
-# vcf_to_consensus.py -dp 10 -af 0.25 -v ${run_accession}.vcf.gz -d ${run_accession}.coverage -o ${run_accession}_consensus.fasta -n ${run_accession} -r ${sars2_fasta}
-vcf_to_consensus.py -dp 10 -af 0.25 -v ${run_accession}.vcf.gz -d ${run_accession}.coverage -o headless_consensus.fasta -n ${run_accession} -r ${sars2_fasta}
-fix_consensus_header.py headless_consensus.fasta > ${run_accession}_consensus.fasta
-bgzip ${run_accession}_consensus.fasta
-bgzip ${run_accession}.coverage
-bgzip ${run_accession}.annot.vcf
