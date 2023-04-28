@@ -66,9 +66,11 @@ def run_process(run_accession, projects_accounts_csv, input_file_1, input_file_2
 
 if __name__ == '__main__':
     print(args)
-    SENTRY_MSG_LIMIT_LEN=8192
+    SENTRY_MSG_LIMIT_LEN=1024
     try:
         subprocess_output=run_process(args.run_accession, args.projects_accounts_csv, args.input_file_1, args.input_file_2, args.sars2_fasta, args.task_cpus, args.study_accession)
+        print(f"subprocess output stderr: {subprocess_output.stderr}")
+        print(f"subprocess output stderr limit: {subprocess_output.stderr[-SENTRY_MSG_LIMIT_LEN:]}")
         if subprocess_output.returncode!=0:
             raise Exception(subprocess_output.stderr[-SENTRY_MSG_LIMIT_LEN:])
     except Exception as e:
