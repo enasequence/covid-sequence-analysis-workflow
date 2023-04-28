@@ -88,7 +88,7 @@ def generate_zip(run_accession):
     return 
 
 def generate_consensus(run_accession, sars2_fasta):
-    output = subprocess.run(f"vcf_to_consensus.py -dp 10 -af 0.25 -v ${run_accession}.vcf.gz -d ${run_accession}.coverage -o ${run_accession}_consensus.fasta -n ${run_accession} -r ${sars2_fasta}", capture_output=True, text=True, shell=True)
+    output = subprocess.run(f"vcf_to_consensus.py -dp 10 -af 0.25 -v {run_accession}.vcf.gz -d {run_accession}.coverage -o {run_accession}_consensus.fasta -n {run_accession} -r {sars2_fasta}", capture_output=True, text=True, shell=True)
     print(output)
     print(f"subprocess output stderr limit: {output.stderr[-SENTRY_MSG_LIMIT_LEN:]}")
     if output.returncode!=0:
