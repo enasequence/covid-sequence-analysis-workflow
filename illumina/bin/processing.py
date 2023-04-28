@@ -68,8 +68,7 @@ def run_process(run_accession, projects_accounts_csv, input_file_1, input_file_2
 if __name__ == '__main__':
     print(args)
     try:
-        raise Exception("I am error")
-        # run_process(args.run_accession, args.projects_accounts_csv, args.input_file_1, args.input_file_2, args.sars2_fasta, args.task_cpus, args.study_accession)
+        run_process(args.run_accession, args.projects_accounts_csv, args.input_file_1, args.input_file_2, args.sars2_fasta, args.task_cpus, args.study_accession)
     except Exception as e:
         sentry_sdk.capture_exception(e)
     finally:
