@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 set -e
-set -o pipefail
 run_accession=${1}
 sars2_fasta=${2}
 task_cpus=${3}
@@ -17,7 +16,7 @@ samtools merge ${run_accession}.bam ${run_accession}_paired.bam ${run_accession}
 rm ${run_accession}_paired.bam ${run_accession}_unpaired.bam
 
 samtools mpileup -a -A -Q 30 -d 8000 -f ${sars2_fasta} ${run_accession}.bam > ${run_accession}.pileup
-cat ${run_accession}.pileup | awk '{print \$2,","\$3,","\$4}' > ${run_accession}.coverage
+cat ${run_accession}.pileup | awk '{print $2,",",$3,",",$4}'  > ${run_accession}.coverage
 
 samtools index ${run_accession}.bam
 lofreq indelqual --dindel ${run_accession}.bam -f ${sars2_fasta} -o ${run_accession}_fixed.bam
