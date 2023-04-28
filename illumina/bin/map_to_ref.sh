@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+set -e 
+set -o pipefail
+
 run_accession=${1}
 projects_accounts_csv=${2}
 input_file_1=${3}
