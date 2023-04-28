@@ -22,7 +22,7 @@ process map_to_reference {
     path(sars2_fasta_fai)
     path(projects_accounts_csv)
     val(study_accession)
-    path(map_to_ref)
+    // path(map_to_ref)
 
     output:
     val(run_accession)
@@ -47,6 +47,6 @@ workflow {
             .map { row -> tuple(row.run_accession, row.sample_accession, 'ftp://' + row.fastq_ftp.split(';').takeRight(2)[0], 'ftp://' + row.fastq_ftp.split(';').takeRight(2)[1]) }
 //            .map { row -> tuple(row.run_accession, row.sample_accession, 'ftp://' + row.fastq_ftp.split(';')[0], 'ftp://' + row.fastq_ftp.split(';')[1]) }
 
-    map_to_reference(data, params.SARS2_FA, params.SARS2_FA_FAI, params.SECRETS, params.STUDY, params.MAP_TO_REF_PATH)
+    map_to_reference(data, params.SARS2_FA, params.SARS2_FA_FAI, params.SECRETS, params.STUDY) //, params.MAP_TO_REF_PATH)
     ena_analysis_submit(map_to_reference.out, params.SECRETS, params.STUDY, params.TEST_SUBMISSION, params.CONFIG_YAML)
 }
