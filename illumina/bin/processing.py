@@ -86,7 +86,7 @@ def run_process(run_accession, sars2_fasta, task_cpus):
     return output
 
 def generate_zip(run_accession):
-    for file_type in ["_consensus.fasta", ".coverage", "annot.vcf"]:
+    for file_type in ["_consensus.fasta", ".coverage", ".annot.vcf"]:
         bash_command=f"bgzip {run_accession}{file_type}"
         output = subprocess.run(bash_command, capture_output=True, text=True, shell=True)
         print(output)
