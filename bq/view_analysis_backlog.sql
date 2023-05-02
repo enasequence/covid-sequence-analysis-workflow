@@ -3,7 +3,7 @@ AS WITH
     tmp_analysed AS (
         SELECT
             analysis_date,
-            COUNT(DISTINCT run_ref) AS analysed_runs
+            COUNT(DISTINCT run_accession) AS analysed_runs
         FROM
             `prj-int-dev-covid19-nf-gls.sarscov2_metadata.analysis_archived`
         GROUP BY
