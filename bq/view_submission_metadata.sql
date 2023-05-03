@@ -73,7 +73,7 @@ FROM
         LEFT JOIN
     `prj-int-dev-covid19-nf-gls.sarscov2_metadata.sra_index` T2
     ON
-            T2.run_accession = T1.run_ref
+            T2.run_accession = T1.run_accession
         LEFT JOIN
     `prj-int-dev-covid19-nf-gls.sarscov2_metadata.submission_receipts` T3
     ON

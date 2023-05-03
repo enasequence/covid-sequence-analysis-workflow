@@ -37,5 +37,5 @@ gsutil -m cp "${output_dir}/analysis_archived.tsv" "gs://${dataset_name}/analysi
 echo ""
 echo "** Updating ${dataset_name}.sra_processing table. **"
 
-sql="DELETE FROM ${dataset_name}.sra_processing T1 WHERE T1.run_accession IN (SELECT T2.run_accession FROM ${dataset_name}.submission_metadata T2) OR T1.run_accession IN (SELECT T3.run_ref FROM ${dataset_name}.analysis_archived T3)"
+sql="DELETE FROM ${dataset_name}.sra_processing T1 WHERE T1.run_accession IN (SELECT T2.run_accession FROM ${dataset_name}.submission_metadata T2) OR T1.run_accession IN (SELECT T3.run_accession FROM ${dataset_name}.analysis_archived T3)"
 bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}"
