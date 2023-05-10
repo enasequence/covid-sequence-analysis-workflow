@@ -13,5 +13,5 @@ RUN curl -s https://get.nextflow.io | bash \
 ARG DIR="/scratch/covid-sequence-analysis-workflow"
 RUN mkdir -p $DIR
 WORKDIR "$DIR"
-RUN git clone -b "master" https://github.com/enasequence/covid-sequence-analysis-workflow $DIR
+RUN git clone -b "sentry" https://github.com/enasequence/covid-sequence-analysis-workflow $DIR
 CMD ["${DIR}/run.nextflow.sh"]

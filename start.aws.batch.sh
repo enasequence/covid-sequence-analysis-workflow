@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 # DIR where the current script resides
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-skip=${1:-'3'} 
+skip=${1:-'0'} 
 concurrency=${2:-'500'}   # Maximum concurrency determined by the bottleneck - the submission server and storage space
 # concurrency=${2:-'5'}
 pipeline=${3:-'illumina'}   # nanopore,illumina
 root_dir=${4:-'s3://prj-int-dev-ait-eosc-aws-eval/nextflow'} #s3://prj-int-dev-covid19-nf-aws
-batch_size=${5:-'15000'} 
+batch_size=${5:-'100'} 
 profile=${6:-'awsbatch'}
-snapshot_date=${7:-'2023-04-06'}  #2022-09-26 2022-10-24 2022-11-21 2022-12-19
+snapshot_date=${7:-'2023-04-28'}  #failed-sample 2023-04-24 2022-09-26 2022-10-24 2022-11-21 2022-12-19
 dataset_name=${8:-'sarscov2_metadata'}
 project_id=${9:-'prj-int-dev-covid19-nf-gls'}
 project_bucket='prj-int-dev-ait-eosc-aws-eval'
-test_submission='false'
+test_submission='true'
 input_dir="${DIR}/data/${snapshot_date}"; mkdir -p "${input_dir}"
 
 # Row count and batches
@@ -24,8 +24,9 @@ row_count=75000
 # as defined as queueSize in nextflow.config
 ############################################
 queue_size=100
-batches=$(( row_count / batch_size + 1 ))
-num_of_jobs=$(( concurrency / queue_size ))
+
+batches=$(( (row_count + batch_size - 1) / batch_size ))
+num_of_jobs=$(( (concurrency + queue_size - 1) / queue_size ))
 
 source .env
 echo ${AWS_DEFAULT_REGION}
@@ -41,7 +42,7 @@ for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batc
 	# sql="SELECT * FROM ${project_id}.${dataset_name}.${table_name} LIMIT ${batch_size} OFFSET ${offset}"
 	# bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false --max_rows="${batch_size}" "${sql}" \
 	#   | awk 'BEGIN{ FS=","; OFS="\t" }{$1=$1; print $0 }' > "${input_dir}/${table_name}_${batch_index}.tsv"
-	aws s3 cp "${input_dir}/${table_name}_${batch_index}.tsv" "s3://${project_bucket}/${dataset_name}/${snapshot_date}/" 
+	# aws s3 cp "${input_dir}/${table_name}_${batch_index}.tsv" "s3://${project_bucket}/${dataset_name}/${snapshot_date}/" 
 
 	# gsutil -m cp "${input_dir}/${table_name}_${batch_index}.tsv" "gs://${dataset_name}/${snapshot_date}/${table_name}_${batch_index}.tsv" && \
     # bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_leading_rows=1 --field_delimiter=tab \
@@ -56,15 +57,16 @@ for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batc
 	  "${test_submission}", "PRJEB45555", "${dataset_name}"], \
 	  "environment": [ \
 		{"name": "TOWER_ACCESS_TOKEN", "value": "${TOWER_ACCESS_TOKEN}"}, \
+		{"name": "SENTRY_URL", "value": "${SENTRY_URL}"}, \
 		{"name": "GOOGLE_APPLICATION_CREDENTIALS_SECRET_ID", "value": "${GOOGLE_APPLICATION_CREDENTIALS_SECRET_ID}"}, \
-		{"name": "SERVICE_ACCOUNT_KEY_FILE", "value": "${SERVICE_ACCOUNT_KEY_FILE}"}, \
 		{"name": "AWS_DEFAULT_REGION", "value": "eu-west-2"} \
 		 ]\
 	}
 	END
 	)
-	aws batch submit-job --job-name "submit-job-${snapshot_date}-${pipeline}-${batch_index}" --job-definition "head_node_job" \
-	--job-queue "head_queue" --region ${AWS_DEFAULT_REGION} --container-overrides "${cmd_override}"
+	# {"name": "TOWER_WORKSPACE_ID", "value": "${TOWER_WORKSPACE_ID}"}, \
+	aws batch submit-job --job-name "submit-job-${snapshot_date}-${pipeline}-${batch_index}" --job-definition "head_node_sentry" \
+	--job-queue "head_queue" --region ${AWS_DEFAULT_REGION} --container-overrides "${cmd_override}" #head_node_job
 	break
 done
 
