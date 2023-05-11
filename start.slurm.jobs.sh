@@ -59,7 +59,7 @@ for (( batch_index=skip;batch_index<skip+num_of_jobs&&batch_index<batches; batch
     # bq --project_id="${project_id}" load --source_format=CSV --replace=true --skip_leading_rows=1 --field_delimiter=tab \
     # --max_bad_records=0 "${dataset_name}.sra_processing_test" "gs://${dataset_name}/${table_name}_${batch_index}.tsv"
   fi
-  sbatch --account=$PROJECT_ID -N 2 --ntasks=2 --cpus-per-task=32 -t 72:00:00 -p small --export ALL --wrap="${DIR}/run.nextflow.sh ${input_dir}/${table_name}_${batch_index}.tsv \
+  sbatch --account=$PROJECT_ID -N 2 --ntasks=2 --cpus-per-task=32 --mem=32800 -t 72:00:00 -p small --export ALL --wrap="${DIR}/run.nextflow.sh ${input_dir}/${table_name}_${batch_index}.tsv \
     ${pipeline} ${profile} ${root_dir} ${batch_index} ${snapshot_date} ${test_submission}"
 
 done
