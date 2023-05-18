@@ -32,7 +32,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # One query for both instrument platforms
 curl -X POST -H "Content-Type: application/x-www-form-urlencoded" \
-  -d 'result=read_run&query=tax_tree(2697049)%20AND%20(instrument_platform%3D%22ILLUMINA%22%20OR%20instrument_platform%3D%22OXFORD_NANOPORE%22)&fields=instrument_platform%2Cinstrument_model%2Cfastq_ftp%2Cfastq_md5%2Cfirst_created%2Cfirst_public%2Ccountry%2Ccollection_date%2Cisolate%2Cstrain&format=tsv&limit=0&excludeAccessionType=study&excludeAccessions=PRJEB48024%2CPRJEB48256%2CPRJEB48419%2CPRJEB48025%2CPRJEB39014' \
+  -d 'result=read_run&query=tax_tree(2697049)%20AND%20(instrument_platform%3D%22ILLUMINA%22%20OR%20instrument_platform%3D%22OXFORD_NANOPORE%22)&fields=run_accession%2Csample_accession%2Cinstrument_platform%2Cinstrument_model%2Cfastq_ftp%2Cfastq_md5%2Cfirst_created%2Cfirst_public%2Ccountry%2Ccollection_date%2Cisolate%2Cstrain&format=tsv&limit=0&excludeAccessionType=study&excludeAccessions=PRJEB48024%2CPRJEB48256%2CPRJEB48419%2CPRJEB48025%2CPRJEB39014' \
   "https://www.ebi.ac.uk/ena/portal/api/search" > "${DIR}/data/illumina_index.tsv" && \
   gsutil -m cp "${DIR}/data/illumina_index.tsv" "gs://${dataset_name}/illumina_index.tsv" && \
   bq --project_id="${project_id}" load --source_format=CSV --replace=true --skip_leading_rows=1 --field_delimiter=tab \
