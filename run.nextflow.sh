@@ -59,45 +59,6 @@ if ! [[ "$profile" =~ ^(gls|awsbatch)$ ]]; then
       rm -R "${pipeline_dir}"
 fi
 
-
-# Set your S3 bucket and log file path
-# # Download the log file from S3 to a temporary file
-# TMP_FILE=$(mktemp)
-# aws s3 cp s3://${S3_BUCKET}/${S3_LOG_FILE} ${TMP_FILE}
-
-# # Embed the log file contents in the Datadog API request
-# FTP_URL=$(cat ${TMP_FILE} | grep -oP -m 1 'ftp://ftp\.sra\.ebi\.ac\.uk/.*')
-# FTP_URL=${FTP_URL#ftp://ftp.sra.ebi.ac.uk/vol1/fastq/*/*/}
-# SAMPLE_ID=${FTP_URL%%/*}
-# echo ${SAMPLE_ID}
-
-# # # Send the log data to Datadog using the API
-# echo $(cat << EOF
-# [
-#   {
-#     "ddsource": "covid-pipeline",
-#     "ddtags": "env:aws-batch,version:5.1",
-#     "hostname": "aws",
-#     "message": "${LOG_DATA}",
-#     "sample_accession": "${SAMPLE_ID}"
-#   }
-# ]
-# EOF
-# ) | gzip | curl -X POST "https://http-intake.logs.datadoghq.eu/api/v2/logs" \
-# -H "Accept: application/json" \
-# -H "Content-Type: application/json" \
-# -H "Content-Encoding: gzip" \
-# -H "DD-API-KEY: ${DD_API_KEY}" \
-# --data-binary @-
-
-if ! [[ "$profile" =~ ^(gls|awsbatch)$ ]]; then
-      rm -R "${pipeline_dir}/workDir" &
-      rm -R "${pipeline_dir}/storeDir" &
-      rm -R "${pipeline_dir}/publishDir" &
-      wait
-      rm -R "${pipeline_dir}"
-fi
-
 if [ "$profile" = "awsbatch" ]; then
       aws s3 rm --recursive "${pipeline_dir}/workDir" --quiet &
       aws s3 rm --recursive "${pipeline_dir}/storeDir" --quiet &
