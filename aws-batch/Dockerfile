@@ -6,7 +6,7 @@ RUN yum -y update && \
     yum clean all
 ENV CLOUDSDK_PYTHON=python3.8
 RUN pip install --upgrade awscli
-RUN curl -sL https://sdk.cloud.google.com/install/linux | bash --disable-prompts
+RUN curl -sL https://sdk.cloud.google.com/install/linux | bash -s -- --disable-prompts
 # RUN curl https://sdk.cloud.google.com | bash -s -- --install-dir=/bin/ --disable-prompts
 # ENV PATH $PATH:/bin/google-cloud-sdk/bin
 RUN gcloud version && bq version
