@@ -8,7 +8,7 @@ env:
   IMG_TAG: 1.0
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: amazoncorretto:17
     steps:
       - uses: actions/checkout@v2
       - name: Set up Docker
