@@ -26,8 +26,8 @@ jobs:
           context: "{{defaultContext}}:aws-batch"
           # file: aws-batch/Dockerfile
           tags: quay.io/enasequence/ena-sars-cov2-aws-batch-head:${{ env.IMG_TAG }}
-          secrets: |
-            GIT_AUTH_TOKEN=${{ secrets.GH_TOKEN }}
+          # secrets: |
+          #   GIT_AUTH_TOKEN=${{ secrets.GH_TOKEN }}
       # - name: Build the image
       #   run: |
       #     docker build -t quay.io/enasequence/ena-sars-cov2-aws-batch-head:$IMG_TAG .
