@@ -8,7 +8,7 @@ env:
   IMG_TAG: 1.0
 jobs:
   build:
-    runs-on: amazoncorretto:17
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set up Docker
@@ -23,7 +23,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          context: .
+          context: "{{defaultContext}}:aws-batch"
           file: aws-batch/Dockerfile
           tags: quay.io/enasequence/ena-sars-cov2-aws-batch-head:${{ env.IMG_TAG }}
       # - name: Build the image
