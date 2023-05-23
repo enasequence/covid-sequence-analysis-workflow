@@ -34,11 +34,10 @@ process map_to_reference {
 
     script:
     """
-    ls
-    bash download.sh ${run_accession} ${projects_accounts_csv} ${input_file_1} ${input_file_2} ${study_accession} 2>>log.err
-    bash assemblies.sh ${run_accession} ${sars2_fasta} ${task.cpus} 2>>log.err
-    bash annotation.sh ${run_accession} ${sars2_fasta} ${task.cpus} 2>>log.err
-    bash push_log.sh ${run_accession} log.err
+    download.sh ${run_accession} ${projects_accounts_csv} ${input_file_1} ${input_file_2} ${study_accession} 2>>log.err
+    assemblies.sh ${run_accession} ${sars2_fasta} ${task.cpus} 2>>log.err
+    annotation.sh ${run_accession} ${sars2_fasta} ${task.cpus} 2>>log.err
+    push_log.sh ${run_accession} log.err
     
     """
 }
