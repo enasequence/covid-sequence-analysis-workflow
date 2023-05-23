@@ -15,4 +15,4 @@ samtools merge ${run_accession}.bam ${run_accession}_paired.bam ${run_accession}
 rm ${run_accession}_paired.bam ${run_accession}_unpaired.bam
 
 samtools mpileup -a -A -Q 30 -d 8000 -f ${sars2_fasta} ${run_accession}.bam > ${run_accession}.pileup
-cat ${run_accession}.pileup | awk '{print \$2,","\$3,","\$4}' > ${run_accession}.coverage
+cat ${run_accession}.pileup | awk '{print $2,",",$3,",",$4}' > ${run_accession}.coverage
