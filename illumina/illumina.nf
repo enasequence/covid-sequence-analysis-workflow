@@ -14,7 +14,7 @@ process map_to_reference {
 
     cpus 8
     memory '8 GB'
-    container 'yanisasunt/ena-sars-cov2-illumina:1.0'
+    container 'quay.io/yanisasunt/ena-sars-cov2-illumina:1.0'
 
     input:
     tuple val(run_accession), val(sample_accession), file(input_file_1), file(input_file_2) //from samples_ch
