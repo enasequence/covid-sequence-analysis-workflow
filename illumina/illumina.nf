@@ -34,11 +34,11 @@ process map_to_reference {
 
     script:
     """
-    download.sh ${run_accession} ${projects_accounts_csv} ${input_file_1} ${input_file_2} ${study_accession} 2>>log.err
-    assemblies.sh ${run_accession} ${sars2_fasta} ${task.cpus} 2>>log.err
-    annotation.sh ${run_accession} ${sars2_fasta} ${task.cpus} 2>>log.err
-    push_log.sh ${run_accession} log.err
-    
+    echo "hello test"
+    mamba run download.sh ${run_accession} ${projects_accounts_csv} ${input_file_1} ${input_file_2} ${study_accession} 2>>log.err
+    mamba run assemblies.sh ${run_accession} ${sars2_fasta} ${task.cpus} 2>>log.err
+    mamba run annotation.sh ${run_accession} ${sars2_fasta} ${task.cpus} 2>>log.err
+    mamba run push_log.sh ${run_accession} log.err
     """
 }
 
