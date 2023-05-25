@@ -22,8 +22,4 @@ EOF
   -H "Content-Encoding: gzip" \
   -H "DD-API-KEY: ${DD_API_KEY}" \
   --data-binary @-
-# else
-## Remove empty file
-# if [ ! -s ${err_file} ]; then
-  # rm ${err_file}
 fi
