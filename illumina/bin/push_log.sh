@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 run_accession=${1}
 err_file=${2}
-## Remove empty file
-if [ ! -s ${err_file} ]; then
-  rm ${err_file}
-else
+if grep -qi "error" ${err_file};  then
     ## Send the log data to Datadog using the API
     err_log_content=$(jq -Rs '.' ${err_file})
     echo $(cat << EOF
@@ -24,4 +21,8 @@ EOF
   -H "Content-Encoding: gzip" \
   -H "DD-API-KEY: ${DD_API_KEY}" \
   --data-binary @-
+# else
+## Remove empty file
+# if [ ! -s ${err_file} ]; then
+  # rm ${err_file}
 fi
