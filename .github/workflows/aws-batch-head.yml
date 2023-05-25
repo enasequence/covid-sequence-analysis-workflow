@@ -24,11 +24,4 @@ jobs:
         with:
           push: true
           context: "{{defaultContext}}:aws-batch"
-          # file: aws-batch/Dockerfile
           tags: quay.io/enasequence/ena-sars-cov2-aws-batch-head:${{ env.IMG_TAG }}
-      # - name: Build the image
-      #   run: |
-      #     docker build -t quay.io/enasequence/ena-sars-cov2-aws-batch-head:$IMG_TAG .
-      # - name: Push the image
-      #   run: |
-      #     docker push quay.io/enasequence/ena-sars-cov2-aws-batch-head:$IMG_TAG
