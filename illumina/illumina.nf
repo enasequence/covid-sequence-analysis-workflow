@@ -37,10 +37,10 @@ process map_to_reference {
     echo "hello test"
     download.sh ${run_accession} ${projects_accounts_csv} ${input_file_1} ${input_file_2} ${study_accession} 2>>log.err
     echo "mamba test"
-    mamba run assemblies.sh ${run_accession} ${sars2_fasta} ${task.cpus} 2>>log.err
-    mamba run annotation.sh ${run_accession} ${sars2_fasta} ${task.cpus} 2>>log.err
+    assemblies.sh ${run_accession} ${sars2_fasta} ${task.cpus} 2>>log.err
+    annotation.sh ${run_accession} ${sars2_fasta} ${task.cpus} 2>>log.err
     echo "try test"
-    mamba run push_log.sh ${run_accession} log.err
+    push_log.sh ${run_accession} log.err
     """
 }
 
