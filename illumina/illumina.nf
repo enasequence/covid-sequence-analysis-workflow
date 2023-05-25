@@ -35,10 +35,13 @@ process map_to_reference {
     script:
     """
     echo "hello test"
-    # code to handle the exception
     mamba run download.sh ${run_accession} ${projects_accounts_csv} ${input_file_1} ${input_file_2} ${study_accession} 2>>log.err
-    mamba run assemblies.sh ${run_accession} ${sars2_fasta} ${task.cpus} 2>>log.err
-    mamba run annotation.sh ${run_accession} ${sars2_fasta} ${task.cpus} 2>>log.err
+    echo "mamba test"
+    try:
+        mamba run assemblies.sh ${run_accession} ${sars2_fasta} ${task.cpus} 2>>log.err
+    catch Exception e:
+        mamba run annotation.sh ${run_accession} ${sars2_fasta} ${task.cpus} 2>>log.err
+    echo "try test"
     mamba run push_log.sh ${run_accession} log.err
     """
 }
