@@ -36,10 +36,10 @@ process map_to_reference {
     try {
     """
     echo "hello test"
-    download.sh ${run_accession} ${projects_accounts_csv} ${input_file_1} ${input_file_2} ${study_accession} 2>&1 >/dev/null | tee -a log.err
+    download.sh ${run_accession} ${projects_accounts_csv} ${input_file_1} ${input_file_2} ${study_accession} \|\& tee -a log.err
     echo "mamba test"
-    assemblies.sh ${run_accession} ${sars2_fasta} ${task.cpus} 2>&1 >/dev/null | tee -a log.err
-    annotation.sh ${run_accession} ${sars2_fasta} ${task.cpus} 2>&1 >/dev/null | tee -a log.err
+    assemblies.sh ${run_accession} ${sars2_fasta} ${task.cpus} 2>\&1 >/dev/null \| tee -a log.err
+    annotation.sh ${run_accession} ${sars2_fasta} ${task.cpus} \|\& tee -a log.err
     echo "try test"
     push_log.sh ${run_accession} log.err
     """
