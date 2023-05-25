@@ -33,7 +33,6 @@ process map_to_reference {
     file("${run_accession}_consensus.fasta.gz")
 
     script:
-    try {
     """
     echo "hello test"
     download.sh ${run_accession} ${projects_accounts_csv} ${input_file_1} ${input_file_2} ${study_accession} \|\& tee -a log.err
