@@ -17,7 +17,7 @@ else
         "run_accession": "${run_accession}"
     }
     ]
-  EOF
+EOF
   ) | gzip | curl -X POST "https://http-intake.logs.datadoghq.eu/api/v2/logs" \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
