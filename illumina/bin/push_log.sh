@@ -11,6 +11,7 @@ if grep -qi "error" ${err_file};  then
         "ddtags": "env:aws-batch,version:5.1",
         "hostname": "aws",
         "message": ${err_log_content},
+        "status": "error",
         "run_accession": "${run_accession}"
     }
     ]
