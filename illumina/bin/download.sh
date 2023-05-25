@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 run_accession=${1}
 projects_accounts_csv=${2}
 input_file_1=${3}
