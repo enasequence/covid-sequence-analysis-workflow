@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -e
 run_accession=${1}
 projects_accounts_csv=${2}
 input_file_1=${3}
@@ -11,9 +10,9 @@ ftp_id="$(echo ${line} | cut -d ',' -f 3)"
 ftp_password="$(echo ${line} | cut -d ',' -f 6)"
 
 if [ "${ftp_id}" = 'public' ]; then
-    wget -t 0 -O ${run_accession}_1.fastq.gz $(cat ${input_file_1})
-    wget -t 0 -O ${run_accession}_2.fastq.gz $(cat ${input_file_2})
+    wget -q -t 0 -O ${run_accession}_1.fastq.gz $(cat ${input_file_1})
+    wget -q -t 0 -O ${run_accession}_2.fastq.gz $(cat ${input_file_2})
 else
-    wget -t 0 -O ${run_accession}_1.fastq.gz $(cat ${input_file_1}) --user=${ftp_id} --password=${ftp_password}
-    wget -t 0 -O ${run_accession}_2.fastq.gz $(cat ${input_file_2}) --user=${ftp_id} --password=${ftp_password}
+    wget -q -t 0 -O ${run_accession}_1.fastq.gz $(cat ${input_file_1}) --user=${ftp_id} --password=${ftp_password}
+    wget -q -t 0 -O ${run_accession}_2.fastq.gz $(cat ${input_file_2}) --user=${ftp_id} --password=${ftp_password}
 fi

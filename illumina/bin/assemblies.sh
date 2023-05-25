@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -e
 run_accession=${1}
 sars2_fasta=${2}
 task_cpus=${3}
