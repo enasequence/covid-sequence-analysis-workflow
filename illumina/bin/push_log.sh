@@ -6,7 +6,7 @@ if [ ! -s ${err_file} ]; then
   rm ${err_file}
 else
     ## Send the log data to Datadog using the API
-    err_log_content=$(cat ${err_file})
+    err_log_content=$(jq -Rs '.' ${err_file})
     echo $(cat << EOF
     [
     {
