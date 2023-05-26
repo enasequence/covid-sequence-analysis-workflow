@@ -3,7 +3,7 @@ name: deploy_aws_batch_head_docker_image
 on:
   push:
     branches:
-      - master
+      - gh-action
 env:
   IMG_TAG: 1.0
 jobs:
