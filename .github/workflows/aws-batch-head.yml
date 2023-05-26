@@ -3,7 +3,9 @@ name: deploy_aws_batch_head_docker_image
 on:
   push:
     branches:
-      - gh-action
+      - master
+env:
+  IMG_TAG: 1.0
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,5 +24,4 @@ jobs:
         with:
           push: true
           context: "{{defaultContext}}:aws-batch"
-          tags: quay.io/enasequence/ena-sars-cov2-aws-batch-head:${{ github.ref }}
-          # tags: quay.io/enasequence/ena-sars-cov2-aws-batch-head:${{ env.IMG_TAG }}
+          tags: quay.io/enasequence/ena-sars-cov2-aws-batch-head:${{ env.IMG_TAG }}
