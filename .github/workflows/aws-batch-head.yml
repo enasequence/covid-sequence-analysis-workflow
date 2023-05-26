@@ -5,7 +5,7 @@ on:
     branches:
       - gh-action
 env:
-  IMG_TAG: 1.0
+  IMG_TAG: "1.0"
 jobs:
   build:
     runs-on: ubuntu-latest
