@@ -1,9 +1,11 @@
 #For AWS Batch Head node
 #Run based on custom AMI with Google CLI + preconfig project ID attached
 FROM amazoncorretto:17
+RUN amazon-linux-extras install python3.8
 RUN yum -y update && \
     yum -y install wget git python-pip jq tar.x86_64 gzip which&& \
     yum clean all
+ENV CLOUDSDK_PYTHON=python3.8
 RUN pip install --upgrade awscli
 RUN curl https://sdk.cloud.google.com | bash -s -- --install-dir=/bin/ --disable-prompts
 ENV PATH $PATH:/bin/google-cloud-sdk/bin
