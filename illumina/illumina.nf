@@ -32,6 +32,15 @@ process map_to_reference {
     file("${run_accession}_filtered.vcf.gz")
     file("${run_accession}_consensus.fasta.gz")
 
+    stub:
+    """
+    touch ${run_accession}.bam
+    touch ${run_accession}.coverage.gz 
+    touch ${run_accession}.annot.vcf.gz 
+    touch ${run_accession}_filtered.vcf.gz 
+    touch ${run_accession}_consensus.fasta.gz
+    """
+    
     script:
     """
     line="\$(grep ${study_accession} ${projects_accounts_csv})"
@@ -86,7 +95,7 @@ workflow {
             .splitCsv(header: true, sep: '\t')
             .map { row -> tuple(row.run_accession, row.sample_accession, 'ftp://' + row.fastq_ftp.split(';').takeRight(2)[0], 'ftp://' + row.fastq_ftp.split(';').takeRight(2)[1]) }
 //            .map { row -> tuple(row.run_accession, row.sample_accession, 'ftp://' + row.fastq_ftp.split(';')[0], 'ftp://' + row.fastq_ftp.split(';')[1]) }
-
+    // data.view { "Result: ${it}" }
     map_to_reference(data, params.SARS2_FA, params.SARS2_FA_FAI, params.SECRETS, params.STUDY)
     ena_analysis_submit(map_to_reference.out, params.SECRETS, params.STUDY, params.TEST_SUBMISSION, params.CONFIG_YAML)
 }

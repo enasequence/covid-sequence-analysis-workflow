@@ -19,8 +19,15 @@ project_id=${10:-'prj-int-dev-covid19-nf-gls'}
 #################################
 echo ""
 echo "** Processing samples with ${DIR}/${pipeline}/${pipeline}.nf. **"
-
 pipeline_dir="${root_dir}/${snapshot_date}/${pipeline}_${batch_index}"
+
+if [ "$profile" = "lumislurm" ]; then 
+      mkdir -p ${pipeline_dir}/{workDir,storeDir,publishDir}
+      ${DIR}/hq/start.hq.node.sh "${pipeline_dir}/workDir"
+      module use $HOME/.local/easybuild/modules/all
+      module load Nextflow/22.10.0
+fi
+
 nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/${pipeline}.nf" -profile "${profile}" \
       --TEST_SUBMISSION "${test_submission}" --STUDY "${study_accession}" \
       --CONFIG_YAML "${DIR}/${pipeline}/config.yaml" \
@@ -33,11 +40,16 @@ nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/${pipe
       -w "${pipeline_dir}/workDir" \
       -with-tower
 
+
+if [ "$profile" = "lumislurm" ]; then
+      hq worker stop all
+      hq server stop
+fi
 ########################################################################################
 # Update submission receipt and submission metadata [as well as all the analyses archived]
 ########################################################################################
-"${DIR}/update.receipt.sh" "${batch_index}" "${snapshot_date}" "${pipeline}" "${profile}" "${root_dir}" "${dataset_name}" "${project_id}"
-"${DIR}/set.archived.sh" "${dataset_name}" "${project_id}"
+# "${DIR}/update.receipt.sh" "${batch_index}" "${snapshot_date}" "${pipeline}" "${profile}" "${root_dir}" "${dataset_name}" "${project_id}"
+# "${DIR}/set.archived.sh" "${dataset_name}" "${project_id}"
 
 rm -R "${pipeline_dir}/workDir" &
 rm -R "${pipeline_dir}/storeDir" &

@@ -21,25 +21,20 @@ project_id=${10:-'prj-int-dev-covid19-nf-gls'}
 #################################
 # Process the batch with Nextflow
 #################################
-source ${DIR}/.env
-echo "TOWER_ACCESS_TOKEN: ${TOWER_ACCESS_TOKEN}"
+# source ${DIR}/.env
 echo "** Processing samples with ${DIR}/${pipeline}/${pipeline}.nf. **"
 pipeline_dir="${root_dir}/${snapshot_date}/${pipeline}_${batch_index}"
 
-echo "Pipeline dir: ${pipeline_dir}"
-mkdir -p ${pipeline_dir}/{workDir,storeDir,publishDir}
+# echo "Pipeline dir: ${pipeline_dir}"
+# mkdir -p ${pipeline_dir}/{workDir,storeDir,publishDir}
  
 # Create a per job directory
 workDir="${pipeline_dir}/workDir"
 mkdir -p $workDir/.hq-server
-SLURM_NNODES=12 #4
+SLURM_NNODES=12
 SLURM_CPUS_PER_TASK=4
-
 # Set the directory which hyperqueue will use 
 export HQ_SERVER_DIR=$workDir/.hq-server
-echo $HQ_SERVER_DIR
-# Make sure nextflow uses the right executor and
-# knows how much it can submit.
 cd $workDir
 hq server start &
 srun --cpu-bind=none --hint=nomultithread --mpi=none -N $SLURM_NNODES -n $SLURM_NNODES hq worker start --cpus=$SLURM_CPUS_PER_TASK &
@@ -66,6 +61,7 @@ nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/${pipe
       --OUTDIR "${pipeline_dir}/publishDir" \
       --STOREDIR "${pipeline_dir}/storeDir" \
       -w "${pipeline_dir}/workDir" \
+      -resume \
       -with-tower 
       
 hq worker stop all
@@ -73,8 +69,8 @@ hq server stop
 ########################################################################################
 # Update submission receipt and submission metadata [as well as all the analyses archived]
 ########################################################################################
-# "${DIR}/test.update.receipt.sh" "${batch_index}" "${snapshot_date}" "${pipeline}" "${profile}" "${root_dir}" "${dataset_name}" "${project_id}"
-# "${DIR}/test.set.archived.sh" "${dataset_name}" "${project_id}"
+# "${DIR}/update.receipt.sh" "${batch_index}" "${snapshot_date}" "${pipeline}" "${profile}" "${root_dir}" "${dataset_name}" "${project_id}"
+# "${DIR}/set.archived.sh" "${dataset_name}" "${project_id}"
 rm -rf "${pipeline_dir}/workDir/*" &
 rm -rf "${pipeline_dir}/storeDir/*" &
 rm -rf "${pipeline_dir}/publishDir/*" &
