@@ -31,9 +31,13 @@ echo "** Updating ${dataset_name}.analysis_archived table. **"
 curl -X POST -H "Content-Type: application/x-www-form-urlencoded" -d 'result=analysis&query=study_accession%3D%22PRJEB43947%22%20OR%20study_accession%3D%22PRJEB45554%22%20OR%20study_accession%3D%22PRJEB45619%22%20OR%20study_accession%3D%22PRJEB55349%22%20OR%20study_accession%3D%22PRJEB55355%22%20OR%20study_accession%3D%22PRJEB55356%22%20OR%20study_accession%3D%22PRJEB57992%22%20OR%20study_accession%3D%22PRJEB57993%22%20OR%20study_accession%3D%22PRJEB57995%22%20OR%20study_accession%3D%22PRJEB59443%22%20OR%20study_accession%3D%22PRJEB59444%22%20OR%20study_accession%3D%22PRJEB59445%22%20OR%20study_accession%3D%22PRJEB61667%22%20OR%20study_accession%3D%22PRJEB61668%22%20OR%20study_accession%3D%22PRJEB61669%22&fields=sample_accession%2Crun_accession%2Canalysis_date%2Csubmitted_bytes%2Canalysis_type%2Cfirst_public&format=tsv&limit=0' \
   "https://www.ebi.ac.uk/ena/portal/api/search" > "${output_dir}/analysis_archived.tsv"
 gsutil -m cp "${output_dir}/analysis_archived.tsv" "gs://${dataset_name}/analysis_archived.tsv" && \
-  bq --project_id="${project_id}" load --source_format=CSV --replace=true --skip_leading_rows=1 --field_delimiter=tab \
+  bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_leading_rows=1 --field_delimiter=tab \
   --autodetect "${dataset_name}.analysis_archived" "gs://${dataset_name}/analysis_archived.tsv" \
   "analysis_accession:STRING,sample_accession:STRING,run_accession:STRING,analysis_date:DATE,submitted_bytes:STRING,analysis_type:STRING,first_public:DATE"
+
+#Make sure we don't delete anything in the table above by using `--replace=false` and then selecting DISTINCT values below
+sql="CREATE OR REPLACE TABLE ${dataset_name}.analysis_archived AS SELECT DISTINCT * FROM ${dataset_name}.analysis_archived"
+bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql}"
 
 #################################
 # delete runs from sra_processing
