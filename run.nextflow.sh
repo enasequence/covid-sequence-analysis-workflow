@@ -18,6 +18,7 @@ project_id=${10:-'prj-int-dev-covid19-nf-gls'}
 #################################
 echo ""
 echo "** Processing samples with ${DIR}/${pipeline}/${pipeline}.nf. **"
+pipeline_dir="${root_dir}/${snapshot_date}/${pipeline}_${batch_index}"
 
 if [ "$profile" = "awsbatch" ]; then
       echo "** Retrieve secrets to ${DIR}/${project_id}-sa-credential.json **"
@@ -30,7 +31,14 @@ if [ "$profile" = "awsbatch" ]; then
       batch_input="${DIR}/data/$(basename -- "$batch_input")" #local path to sample index file
 fi
 
-pipeline_dir="${root_dir}/${snapshot_date}/${pipeline}_${batch_index}"
+if [ "$profile" = "lumislurm" ]; then 
+      mkdir -p ${pipeline_dir}/{workDir,storeDir,publishDir}
+      export HQ_SERVER_DIR="${pipeline_dir}/workDir/.hq-server"
+      ${DIR}/hq/start.hq.nodes.sh "${pipeline_dir}/workDir"
+      module use $HOME/.local/easybuild/modules/all
+      module load Nextflow/22.10.0
+fi
+
 echo "** pipeline_dir: ${pipeline_dir} **"
 nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/${pipeline}.nf" -profile "${profile}" \
       --TEST_SUBMISSION "${test_submission}" --STUDY "${study_accession}" \
@@ -47,8 +55,8 @@ nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/${pipe
 ########################################################################################
 # Update submission receipt and submission metadata [as well as all the analyses archived]
 ########################################################################################
-"${DIR}/update.receipt.sh" "${batch_index}" "${snapshot_date}" "${pipeline}" "${profile}" "${root_dir}" "${dataset_name}" "${project_id}"
-"${DIR}/set.archived.sh" "${dataset_name}" "${project_id}"
+# "${DIR}/update.receipt.sh" "${batch_index}" "${snapshot_date}" "${pipeline}" "${profile}" "${root_dir}" "${dataset_name}" "${project_id}"
+# "${DIR}/set.archived.sh" "${dataset_name}" "${project_id}"
 
 if ! [[ "$profile" =~ ^(gls|awsbatch)$ ]]; then
       rm -R "${pipeline_dir}/workDir" &
@@ -56,6 +64,12 @@ if ! [[ "$profile" =~ ^(gls|awsbatch)$ ]]; then
       rm -R "${pipeline_dir}/publishDir" &
       wait
       rm -R "${pipeline_dir}"
+fi
+
+
+if [ "$profile" = "lumislurm" ]; then
+      hq worker stop all
+      hq server stop
 fi
 
 if [ "$profile" = "awsbatch" ]; then
