@@ -47,9 +47,8 @@ nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/${pipe
 ########################################################################################
 # Update submission receipt and submission metadata [as well as all the analyses archived]
 ########################################################################################
-# "${DIR}/update.receipt.sh" "${batch_index}" "${snapshot_date}" "${pipeline}" "${profile}" "${root_dir}" "${dataset_name}" "${project_id}"
-# "${DIR}/set.archived.sh" "${dataset_name}" "${project_id}"
-# DD_SITE="datadoghq.eu" DD_API_KEY="$DD_API_KEY" python3 "push_log.py"
+"${DIR}/update.receipt.sh" "${batch_index}" "${snapshot_date}" "${pipeline}" "${profile}" "${root_dir}" "${dataset_name}" "${project_id}"
+"${DIR}/set.archived.sh" "${dataset_name}" "${project_id}"
 
 if ! [[ "$profile" =~ ^(gls|awsbatch)$ ]]; then
       rm -R "${pipeline_dir}/workDir" &
