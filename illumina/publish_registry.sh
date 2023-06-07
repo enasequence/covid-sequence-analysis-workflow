@@ -4,15 +4,9 @@
 # The repository (Branch aws-batch) will be cloned in the docker image.
 ###
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-# sudo yum install jq -y
-### Option 1: Create ECR for head node
-# aws ecr get-login-password | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
-# aws ecr create-repository --tags Key=covid-pipeline,Value=true  --repository-name nextflow-head
-# export REPO_URI="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/nextflow-head"
-
 ### Option 2: Publish docker image to Quay.io
-export REPO_URI="quay.io/enasequence/ena-sars-cov2-aws-batch-head"
-export IMG_TAG="test" # $(date +%F)
+export REPO_URI="quay.io/yanisasunt/ena-sars-cov2-illumina"
+export IMG_TAG="1.0" # $(date +%F)
 echo $REPO_URI $DIR
 # Log in to your Quay.io account
 echo "$QUAY_PASSWORD" | docker login quay.io --username $QUAY_USERNAME --password-stdin
