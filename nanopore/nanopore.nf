@@ -8,10 +8,10 @@ params.CONFIG_YAML = "gs://sands-nf-tower/config.yaml"
 
 //If using LSF, uncomment the following variables and provide an appropriate path to the files
 //Reference sequence location
-//params.SARS2_FA = "gs://sands-nf-tower/data/NC_045512.2.fa"
-//params.SARS2_FA_FAI = "gs://sands-nf-tower/data/NC_045512.2.fa.fai"
+params.SARS2_FA = "gs://sands-nf-tower/data/NC_045512.2.fa"
+params.SARS2_FA_FAI = "gs://sands-nf-tower/data/NC_045512.2.fa.fai"
 //TSV file containing project number and credentials
-//params.SECRETS = "gs://sands-nf-tower/data/projects_accounts.csv"
+params.SECRETS = "gs://sands-nf-tower/data/projects_accounts.csv"
 
 params.STUDY = 'PRJEB45555'
 //When set to true, submissions will be made to the ENA test server and deleted at 24:00 on the day of submission
@@ -38,7 +38,7 @@ process map_to_reference {
 
     cpus 4 /* more is better, parallelizes very well*/
     memory '8 GB'
-    container 'davidyuyuan/ena-sars-cov2-nanopore:2.0'
+    container 'quay.io/enasequence/ena-sars-cov2-nanopore'
 
     input:
     tuple val(run_accession), val(sample_accession), file(input_file)
