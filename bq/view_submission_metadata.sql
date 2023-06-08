@@ -10,7 +10,6 @@ AS SELECT
     T2.first_public,
     T2.first_created,
     T2.country,
-    T2.collection_date,
     (CASE
          WHEN T1.analysis_date IS NULL THEN NULL
          WHEN T1.analysis_date < '2021-03-22' THEN '2021-03-22'
