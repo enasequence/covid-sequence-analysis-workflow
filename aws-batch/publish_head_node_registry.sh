@@ -16,7 +16,7 @@ export REPO_URI="quay.io/enasequence/ena-sars-cov2-aws-batch-head"
 export IMG_TAG="test" # $(date +%F)
 echo $REPO_URI $DIR
 # Log in to your Quay.io account
-# docker rmi ${REPO_URI}:${IMG_TAG}
+docker rmi ${REPO_URI}:${IMG_TAG}
 echo "$QUAY_PASSWORD" | docker login quay.io --username $QUAY_USERNAME --password-stdin
 docker build -t ${REPO_URI}:${IMG_TAG} ${DIR}
 echo "IMAGE NAME = ${REPO_URI}:${IMG_TAG}"
