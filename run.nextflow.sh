@@ -41,6 +41,9 @@ nextflow -C "${DIR}/nextflow-lib/nextflow.config" run "${DIR}/${pipeline}/${pipe
       --INDEX "${batch_input}" \
       --OUTDIR "${pipeline_dir}/publishDir" \
       --STOREDIR "${pipeline_dir}/storeDir" \
+      --GCLOUD_PROJECT_ID "${project_id}" \
+      --GCLOUD_KEY_FILE "$DIR/${project_id}-sa-credential.json" \
+      --LOGGING_OUTPUT "gs://${dataset_name}_logs/${snapshot_date}/${table_name}_${batch_index}" \
       -w "${pipeline_dir}/workDir" \
       -with-tower
 

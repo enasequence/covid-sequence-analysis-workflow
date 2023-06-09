@@ -1,0 +1,2 @@
+gcloud logging sinks create covid-pipeline-logs-bq-sinks bigquery.googleapis.com/projects/prj-int-dev-covid19-nf-gls/datasets/sarscov2_metadata_test \
+--log-filter='logName="projects/prj-int-dev-covid19-nf-gls/logs/covid_pipeline_logs"'
