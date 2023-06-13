@@ -41,7 +41,7 @@ process map_to_reference {
     download.sh ${run_accession} ${projects_accounts_csv} ${input_file_1} ${input_file_2} ${study_accession} 2>&1 >/dev/null | tee -a log.err
     assemblies.sh ${run_accession} ${sars2_fasta} ${task.cpus} 2>&1 >/dev/null | tee -a log.err
     annotation.sh ${run_accession} ${sars2_fasta} ${task.cpus} 2>&1 >/dev/null | tee -a log.err
-	push_log.sh ${run_accession} log.err ${PROFILE}
+	push_log.sh ${run_accession} log.err ${PROFILE} ${gcloud_project_id} 
     """
 }
 

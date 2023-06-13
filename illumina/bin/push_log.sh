@@ -2,6 +2,7 @@
 run_accession=${1}
 err_file=${2}
 profile=${3}
+gcloud_project_id=${4}
 if grep -qi "error" ${err_file};  then
     err_log_content=$(jq -Rs '.' ${err_file})
     log_msg=$(cat <<-END
@@ -15,7 +16,7 @@ if grep -qi "error" ${err_file};  then
         }
 END
     )
-    gcloud logging write covid_pipeline_logs "${log_msg}" --project="prj-int-dev-covid19-nf-gls" --payload-type=json --severity=ERROR
+    gcloud logging write covid_pipeline_logs "${log_msg}" --project="${gcloud_project_id}" --payload-type=json --severity=ERROR
     # ## Send the log data to Datadog using the API
     # err_log_content=$(jq -Rs '.' ${err_file})
     # log_msg=$(jq -n --arg error_status "ERROR" \
