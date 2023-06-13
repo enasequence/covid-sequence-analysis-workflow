@@ -10,8 +10,7 @@ log_msg=$(cat <<-END
         "logging.googleapis.com/labels":{ 
             "run_accession" : "$run_accession", 
             "compute_resource" : "$executor"
-        },
-        "times":"$(date '+%Y-%m-%d %H:%M:%S')"
+        }
 	}
 	END
 )
