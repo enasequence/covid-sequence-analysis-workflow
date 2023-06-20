@@ -18,10 +18,13 @@ echo "** Retrieving and reserving batch ${index} with the size of ${batch_size} 
 sql="SELECT * FROM ${project_id}.${dataset_name}.${table_name} LIMIT ${batch_size} OFFSET ${offset}"
 bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false --max_rows="${batch_size}" "${sql}" \
 	| awk 'BEGIN{ FS=","; OFS="\t" }{$1=$1; print $0 }' > "${input_dir}/${table_name}_${index}.tsv"
+	#Modify the file here with a timestamp field and then load into BQ
+	#sql2 = "ALTER TABLE ${dataset_name}.sra_processing ADD COLUMN timestamp DATETIME DEFAULT CURRENT_DATETIME();"
+	#bq --project_id="${project_id}" --format=csv query --use_legacy_sql=false "${sql2}"
 gsutil -m cp "${input_dir}/${table_name}_${index}.tsv" "gs://${dataset_name}/${table_name}_${index}.tsv" && \
     bq --project_id="${project_id}" load --source_format=CSV --replace=false --skip_leading_rows=1 --field_delimiter=tab \
     --max_bad_records=0 "${dataset_name}.sra_processing" "gs://${dataset_name}/${table_name}_${index}.tsv"
-if [ "$profile" != "gls" ]; then    
+if [ "$profile" == "codon" ]; then
 	bsub -n 2 -M 4096 -q production "${DIR}/run.nextflow.sh" "${input_dir}/${table_name}_${index}.tsv" \
     "${pipeline}" "${profile}" "${root_dir}" "${index}" "${snapshot_date}" "${test_submission}"
 else
