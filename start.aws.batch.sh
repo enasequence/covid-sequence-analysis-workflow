@@ -63,7 +63,7 @@ for (( batch_index=skip; batch_index<skip+num_of_jobs&&batch_index<batches; batc
 	}
 	END
 	)
-	aws batch submit-job --job-name "submit-job-${snapshot_date}-${pipeline}-${batch_index}" --job-definition "head_node_job" \
+	aws batch submit-job --job-name "submit-job-${snapshot_date}-${pipeline}-${batch_index}" --job-definition "head_node_sentry" \
 	--job-queue "head_queue" --region ${AWS_DEFAULT_REGION} --container-overrides "${cmd_override}"
 	break
 done
