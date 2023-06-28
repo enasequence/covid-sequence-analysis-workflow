@@ -17,10 +17,4 @@ if grep -qi "error" ${err_file};  then
 END
     )
     gcloud logging write covid_pipeline_logs "${log_msg}" --project="${gcloud_project_id}" --payload-type=json --severity=ERROR
-    # ## Send the log data to Datadog using the API
-    # err_log_content=$(jq -Rs '.' ${err_file})
-    # log_msg=$(jq -n --arg error_status "ERROR" \
-    #         --arg ts "$(date '+%Y-%m-%d %H:%M:%S')" \
-    #         --arg error_msg "${err_log_content}" \
-    #         '{severity:$error_status, message:$error_msg, times:$ts}' )
 fi
