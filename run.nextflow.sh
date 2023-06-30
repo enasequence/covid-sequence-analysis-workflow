@@ -14,7 +14,7 @@ dataset_name=${9:-'sarscov2_metadata'}
 project_id=${10:-'prj-int-dev-covid19-nf-gls'}
 
 echo "$profile"
-if ["$profile" = "codonslurm"]; then
+if [ "$profile" = "codonslurm"]; then
       echo "in"
       DIR="/hps/nobackup/tburdett/ena/users/analyser/covid-sequence-analysis-workflow"
 fi
