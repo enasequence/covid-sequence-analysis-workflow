@@ -26,6 +26,11 @@ process ena_analysis_submit {
     file("${run_accession}_output/${study_accession}/${run_accession}_consensus.fasta.gz")
     file("${run_accession}_output/${study_accession}/${run_accession}_submissions.txt")
 
+    //Uncomment below to use Exponential Backoff Error stratergy as described here:
+    //https://www.nextflow.io/docs/latest/process.html?highlight=retry#dynamic-retry-with-backoff
+    //errorStrategy { sleep(Math.pow(2, task.attempt) * 200 as long); return 'retry' }
+    //maxRetries 5
+
     script:
     """
     line="\$(grep ${study_accession} ${projects_accounts_csv})"
