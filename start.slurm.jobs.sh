@@ -2,7 +2,6 @@
 
 # DIR where the current script resides
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-export $(grep -v '^#' .env | xargs)
 
 skip=${1:-'0'}
 concurrency=${2:-'500'}   # Maximum concurrency determined by the bottleneck - the submission server and storage space
@@ -17,6 +16,7 @@ snapshot_date=${7:-'2023-06-29'}  #2022-09-26 2022-10-24 2022-11-21 2022-12-19
 dataset_name=${8:-'sarscov2_metadata'}
 project_id=${9:-'prj-int-dev-covid19-nf-gls'}
 test_submission=true
+source .env
 # Row count and batches
 table_name="${pipeline}_to_be_processed"
 sql="SELECT count(*) AS total FROM ${project_id}.${dataset_name}.${table_name}"

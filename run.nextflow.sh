@@ -13,6 +13,9 @@ study_accession=${8:-'PRJEB45555'}
 dataset_name=${9:-'sarscov2_metadata'}
 project_id=${10:-'prj-int-dev-covid19-nf-gls'}
 
+if ["$profile" = "codonslurm"]; then
+      DIR="/hps/nobackup/tburdett/ena/users/analyser/covid-sequence-analysis-workflow"
+fi
 #################################
 # Process the batch with Nextflow
 #################################
@@ -20,6 +23,7 @@ echo ""
 echo "** Processing samples with ${DIR}/${pipeline}/${pipeline}.nf. **"
 mkdir -p "$DIR/secrets/"
 gcloud_key_file="$DIR/secrets/${project_id}-sa-credential.json"
+
 
 if [ "$profile" = "awsbatch" ]; then
       echo "** Retrieve secrets to $gcloud_key_file **"
