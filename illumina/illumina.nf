@@ -36,7 +36,7 @@ process map_to_reference {
 
     script:
     """ 
-    if ! [[ "${PROFILE}" = gls ]]; then
+    if [[ "${PROFILE}" = awsbatch ]]; then
         gcloud auth activate-service-account --key-file="${gcloud_key_file}"
     fi
     gcloud config set project ${gcloud_project_id}
