@@ -1,59 +1,73 @@
-#!/usr/bin/env python3
 import os
 import subprocess
-import sys
-import time
 
-# DIR where the current script resides
-DIR = os.path.dirname(os.path.abspath(__file__))
+class RunNextflow:
+    def __init__(self):
+        self.dir = os.path.dirname(os.path.abspath(__file__))
+        self.batch_input = ''
+        self.pipeline = 'nanopore'
+        self.profile = 'codon'
+        self.root_dir = 'gs://prj-int-dev-covid19-nf-gls'
+        self.batch_index = '0'
+        self.snapshot_date = '2023-03-13'
+        self.test_submission = 'true'
+        self.study_accession = 'PRJEB45555'
+        self.dataset_name = 'sarscov2_metadata'
+        self.project_id = 'prj-int-dev-covid19-nf-gls'
 
-# set default values for arguments if not provided
-pipeline = sys.argv[1] if len(sys.argv) > 1 else 'nanopore'
-profile = sys.argv[2] if len(sys.argv) > 2 else 'gls'
-root_dir = sys.argv[3] if len(sys.argv) > 3 else 'gs://prj-int-dev-covid19-nf-gls'
-snapshot_date = sys.argv[4] if len(sys.argv) > 4 else '2023-03-15'
-concurrency = sys.argv[5] if len(sys.argv) > 5 else '100'
-batch_size = sys.argv[6] if len(sys.argv) > 6 else '15000'
-dataset_name = sys.argv[7] if len(sys.argv) > 7 else 'sarscov2_metadata'
-project_id = sys.argv[8] if len(sys.argv) > 8 else 'prj-int-dev-covid19-nf-gls'
-test_submission = 'false'
+    def process_batch(self):
+        print("")
+        print(f"** Processing samples with {self.dir}/{self.pipeline}/{self.pipeline}.nf. **")
 
-# Row count and batches
-table_name = f"{pipeline}_to_be_processed"
-sql = f"SELECT count(*) AS total FROM {project_id}.{dataset_name}.{table_name}"
-row_count = subprocess.check_output(f"bq --project_id={project_id} --format=csv query --use_legacy_sql=false \"{sql}\" | grep -v total", shell=True).decode('utf-8')
+        if self.profile == "awsbatch":
+            print(f"** Retrieve secrets to {self.dir}/{self.project_id}-sa-credential.json **")
+            subprocess.run(['aws', 'secretsmanager', 'get-secret-value', '--secret-id', GOOGLE_APPLICATION_CREDENTIALS_SECRET_ID, '--query', 'SecretString', '--output', 'text', '>', f"{self.dir}/{self.project_id}-sa-credential.json"])
+            subprocess.run(['gcloud', 'auth', 'activate-service-account', '--key-file', f"{self.dir}/{self.project_id}-sa-credential.json"])
+            subprocess.run(['gcloud', 'config', 'set', 'project', self.project_id])
+            project_bucket = "prj-int-dev-ait-eosc-aws-eval"
+            subprocess.run(['aws', 's3', 'cp', self.batch_input, f"{self.dir}/data/"])  # download sample index file from s3 to local dir
+            subprocess.run(['aws', 's3', 'cp', f"s3://{project_bucket}/{self.dataset_name}/", f"{self.dir}/data/", '--recursive', '--exclude', '"*/*"'])  # download projects_accounts and .fa files
+            self.batch_input = f"{self.dir}/data/{os.path.basename(self.batch_input)}"  # local path to sample index file
 
-queue_size = 100  # as defined as queueSize in nextflow.config
-batches = (int(row_count) + int(batch_size) - 1) // int(batch_size)
-num_of_jobs = (int(concurrency) + queue_size - 1) // queue_size
+        pipeline_dir = f"{self.root_dir}/{self.snapshot_date}/{self.pipeline}_{self.batch_index}"
+        print(f"** pipeline_dir: {pipeline_dir} **")
 
-input_dir = os.path.join(DIR, 'data', snapshot_date)
-os.makedirs(input_dir, exist_ok=True)
+        subprocess.run(['nextflow', '-C', f"{self.dir}/nextflow-lib/nextflow.config", 'run', f"{self.dir}/{self.pipeline}/{self.pipeline}.nf", '-profile', self.profile,
+                        '--TEST_SUBMISSION', self.test_submission, '--STUDY', self.study_accession,
+                        '--CONFIG_YAML', f"{self.dir}/{self.pipeline}/config.yaml",
+                        '--SECRETS', f"{self.dir}/data/projects_accounts.csv",
+                        '--SARS2_FA', f"{self.dir}/data/NC_045512.2.fa",
+                        '--SARS2_FA_FAI', f"{self.dir}/data/NC_045512.2.fa.fai",
+                        '--INDEX', self.batch_input,
+                        '--OUTDIR', f"{pipeline_dir}/publishDir",
+                        '--STOREDIR', f"{pipeline_dir}/storeDir",
+                        '-w', f"{pipeline_dir}/workDir",
+                        '-with-tower'])
 
-print(f"Pipeline: {pipeline}")
-print(f"batches: {batches}")
-print(f"num_of_jobs: {num_of_jobs}")
-print(f"input_dir: {input_dir}")
-time.sleep(5)
+        subprocess.run([f"{self.dir}/update.receipt.sh", self.batch_index, self.snapshot_date, self.pipeline, self.profile, self.root_dir, self.dataset_name, self.project_id])
+        subprocess.run([f"{self.dir}/set.archived.sh", self.dataset_name, self.project_id])
 
-for j in range(num_of_jobs):
-    if j >= batches:
-        break
-    # bsub -n 2 -M 8192 -q production
-    job_dir = os.path.join(root_dir, snapshot_date, f"{pipeline}_{j}")
-    os.makedirs(job_dir, exist_ok=True)
-    os.chdir(job_dir)
-    offset = j * int(batch_size)
-    subprocess.call([f"{DIR}/manage_nf.sh", str(j), batch_size, project_id, dataset_name, table_name,
-                     input_dir, pipeline, profile, root_dir, snapshot_date, test_submission])
-    
-# Move set.archived.sh and update.receipt.sh outside the loop
-# Comment out update.receipt.sh
-# subprocess.call([f"{DIR}/update.receipt.sh", batch_index, snapshot_date, pipeline, profile, root_dir, dataset_name, project_id])
-subprocess.call([f"{DIR}/set.archived.sh", dataset_name, project_id])
+        if self.profile not in ['gls', 'awsbatch']:
+            subprocess.run(['rm', '-R', f"{pipeline_dir}/workDir"])
+            subprocess.run(['rm', '-R', f"{pipeline_dir}/storeDir"])
+            subprocess.run(['rm', '-R', f"{pipeline_dir}/publishDir"])
 
-sql = f"CREATE OR REPLACE TABLE {dataset_name}.sra_processing AS SELECT DISTINCT * FROM {dataset_name}.sra_processing"
-subprocess.call([f"bq --project_id={project_id} --format=csv query --use_legacy_sql=false \"{sql}\""], shell=True)
+        if self.profile == "awsbatch":
+            subprocess.run(['aws', 's3', 'rm', '--recursive', f"{pipeline_dir}/workDir", '--quiet'])
+            subprocess.run(['aws', 's3', 'rm', '--recursive', f"{pipeline_dir}/storeDir", '--quiet'])
+            subprocess.run(['aws', 's3', 'rm', '--recursive', f"{pipeline_dir}/publishDir", '--quiet'])
+            subprocess.run(['aws', 's3', 'rm', '--recursive', pipeline_dir])
 
-# max_mem avg_mem swap stat exit_code exec_cwd exec_host
-# bjobs -u all -d -o "jobid job_name user submit_time start_time finish_time run_time cpu
+if __name__ == "__main__":
+    processor = RunNextflow()
+    processor.batch_input = sys.argv[1] if len(sys.argv) > 1 else ''
+    processor.pipeline = sys.argv[2] if len(sys.argv) > 2 else 'nanopore'
+    processor.profile = sys.argv[3] if len(sys.argv) > 3 else 'codon'
+    processor.root_dir = sys.argv[4] if len(sys.argv) > 4 else 'gs://prj-int-dev-covid19-nf-gls'
+    processor.batch_index = sys.argv[5] if len(sys.argv) > 5 else '0'
+    processor.snapshot_date = sys.argv[6] if len(sys.argv) > 6 else '2023-03-13'
+    processor.test_submission = sys.argv[7] if len(sys.argv) > 7 else 'true'
+    processor.study_accession = sys.argv[8] if len(sys.argv) > 8 else 'PRJEB45555'
+    processor.dataset_name = sys.argv[9] if len(sys.argv) > 9 else 'sarscov2_metadata'
+    processor.project_id = sys.argv[10] if len(sys.argv) > 10 else 'prj-int-dev-covid19-nf-gls'
+    processor.process_batch()
