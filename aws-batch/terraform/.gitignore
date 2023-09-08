@@ -1,0 +1,5 @@
+.env
+secrets/
+.terraform*
+terraform.*
+.DS_STORE
