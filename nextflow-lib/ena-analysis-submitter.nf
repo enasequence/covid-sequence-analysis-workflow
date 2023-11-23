@@ -42,9 +42,9 @@ process ena_analysis_submit {
 
     #PRJEB45555 is the root study ID for the public analysis objects. Do not change it as the public analysis objects and the private ones are submitted differently.
     if [ "${study_accession}" = 'PRJEB45555' ]; then
-        analysis_submission.py -t ${test_submission} -o ${run_accession}_output/${study_accession} -p PRJEB61669 -s ${sample_accession} -r ${run_accession} -f ${output_bam},${output_coverage_gz},${output_annot_vcf_gz} -a PATHOGEN_ANALYSIS -au \${webin_id} -ap \${webin_password}
-        analysis_submission.py -t ${test_submission} -o ${run_accession}_output/${study_accession} -p PRJEB61668 -s ${sample_accession} -r ${run_accession} -f ${filtered_vcf_gz} -a COVID19_FILTERED_VCF -au \${webin_id} -ap \${webin_password}
-        analysis_submission.py -t ${test_submission} -o ${run_accession}_output/${study_accession} -p PRJEB61667 -s ${sample_accession} -r ${run_accession} -f ${consensus_fasta_gz} -a COVID19_CONSENSUS -au \${webin_id} -ap \${webin_password}
+        analysis_submission.py -t ${test_submission} -o ${run_accession}_output/${study_accession} -p PRJEB70460 -s ${sample_accession} -r ${run_accession} -f ${output_bam},${output_coverage_gz},${output_annot_vcf_gz} -a PATHOGEN_ANALYSIS -au \${webin_id} -ap \${webin_password}
+        analysis_submission.py -t ${test_submission} -o ${run_accession}_output/${study_accession} -p PRJEB70461 -s ${sample_accession} -r ${run_accession} -f ${filtered_vcf_gz} -a COVID19_FILTERED_VCF -au \${webin_id} -ap \${webin_password}
+        analysis_submission.py -t ${test_submission} -o ${run_accession}_output/${study_accession} -p PRJEB70462 -s ${sample_accession} -r ${run_accession} -f ${consensus_fasta_gz} -a COVID19_CONSENSUS -au \${webin_id} -ap \${webin_password}
     else
         analysis_submission.py -t ${test_submission} -o ${run_accession}_output/${study_accession} -p ${study_accession} -s ${sample_accession} -r ${run_accession} -f ${output_bam},${output_coverage_gz},${output_annot_vcf_gz} -a PATHOGEN_ANALYSIS -au \${webin_id} -ap \${webin_password}
         analysis_submission.py -t ${test_submission} -o ${run_accession}_output/${study_accession} -p ${study_accession} -s ${sample_accession} -r ${run_accession} -f ${filtered_vcf_gz} -a COVID19_FILTERED_VCF -au \${webin_id} -ap \${webin_password}
