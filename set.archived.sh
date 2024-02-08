@@ -9,7 +9,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 output_dir="${DIR}/results"; mkdir -p "${output_dir}"
 
 ###########################################################
-# Get all analyses archived under parent_study = PRJEB45555: PRJEB55347, PRJEB55357, PRJEB57999, PRJEB59442, PRJEB61672
+# Get all analyses archived under parent_study = PRJEB45555: PRJEB55347, PRJEB55357, PRJEB57999, PRJEB59442, PRJEB61672, PRJEB70463
 # PRJEB55347: PRJEB43947, PRJEB45554, PRJEB45619
 # PRJEB55357: PRJEB55349, PRJEB55355, PRJEB55356
 # PRJEB57999: PRJEB57992, PRJEB57993, PRJEB57995
